@@ -33,7 +33,7 @@ Favourites, recently played games and a tidier five-state save ring, on top of e
 | Per-game settings | One setting for every game | **Each game remembers** its shader, colour correction, fast-forward speed and fast-forward sound |
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
-| Lid shut | Keeps drawing a black screen | **Stops drawing** while the lid is shut (still powers off after 3 minutes) |
+| Asleep (lid shut or `POWER` tapped) | Keeps drawing a black screen 60 times a second | **Stops drawing** until you wake it, and still powers off after 3 minutes. See [Power, sleep and battery](#power-sleep-and-battery) |
 
 Everything else works the way slot does, including the automatic suspend state when you close the lid, quick save and load, rewind, fast-forward, link play and the mGBA / gpSP core picker.
 
@@ -62,6 +62,41 @@ Everything else works the way slot does, including the automatic suspend state w
 </p>
 
 <sub>Screenshots are rendered from slot advance's own drawing code at the RG SP's 720 x 480. The All, Recents and Favourites shelves use original cartridge-label artwork from the included starter pack. The switcher shows a stand-in scene instead of a game.</sub>
+
+---
+
+# Power, sleep and battery
+
+### Sleep
+
+Close the lid or tap `POWER` and the RG SP goes to sleep:
+
+- Your game is saved to its suspend slot (`resume.state`) straight away. This is separate from your five save states and never touches them.
+- The game is paused and the screen backlight turns off, exactly as in slot.
+- **New in slot advance:** once the screen is dark, slot stops drawing altogether. Upstream slot keeps drawing a black screen 60 times a second while asleep. slot advance draws nothing and only wakes every 50 ms to check the buttons, the lid (read every 150 ms, as before) and the sleep timer.
+
+Open the lid or tap `POWER` again and you are straight back in the game, with the first picture drawn immediately.
+
+### Powering off by itself
+
+After **3 minutes** asleep, the RG SP powers off on its own. This happens on the charger too. The game stays in the slot, so the next time you power on it resumes where you were. Holding `POWER` still opens the power menu, as in slot.
+
+### Why this isn't a "true" hardware sleep
+
+On the RG SP, only the `POWER` button can wake the hardware from deep sleep. Opening the lid can't, and the timer that would power it off after 3 minutes doesn't work in deep sleep. A true hardware sleep would break "open the lid to play" and the automatic power off, so slot advance keeps the processor running and simply stops the work nobody can see. It doesn't change the system card, the kernel or any drivers.
+
+> [!NOTE]
+> Battery life while asleep has not been measured yet, so slot advance makes no claims about it. If you test it, the fairest comparison is a full charge, an hour asleep, then the same on upstream slot.
+
+### Low battery
+
+| Battery | What happens |
+|---|---|
+| 15% | A small "Battery Low: 15%" banner at the top of the screen. **New** |
+| 10% | A small "Battery Low: 10%" banner. **New** |
+| 5% | Your game is saved and the RG SP powers off, as in slot. |
+
+Each banner appears once per discharge, in game or on the carousel. Nothing appears while charging, and plugging in resets both, so they can show again on the next discharge. If the battery drops while the RG SP is asleep, the banner shows within about 10 seconds of waking. The battery is checked every 10 seconds.
 
 ---
 
