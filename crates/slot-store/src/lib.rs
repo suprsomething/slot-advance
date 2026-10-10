@@ -3,6 +3,7 @@ pub mod cart_shell;
 mod config;
 mod core;
 mod favourites;
+mod game_profile;
 pub mod gb;
 mod gb_palette;
 mod gba;
@@ -22,6 +23,9 @@ pub use core::{
     core_for, core_for_platform, read_selected_cores, write_selected_core, Core, SELECTED_CORE_FILE,
 };
 pub use favourites::{favourite_key, read_favourites, write_favourites, FAVOURITES_FILE};
+pub use game_profile::{
+    profile_key, GameProfile, GameProfiles, ProfileField, Resolved, GAME_PROFILES_FILE,
+};
 pub use gb_palette::GbPalette;
 pub use gba::{header_clean, header_code, header_title, header_title_code};
 pub use platform::Platform;
