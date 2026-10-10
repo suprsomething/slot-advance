@@ -24,7 +24,7 @@ fn load_faces(app: &mut App, c: &mut Compositor) {
     }
 }
 fn settle(app: &mut App) {
-    for _ in 0..14 {
+    for _ in 0..40 {
         app.update(0.05);
     }
 }
@@ -34,8 +34,9 @@ fn shot(app: &mut App, c: &mut Compositor, path: PathBuf) {
     let face = word_face(&text);
     let tex = c.create_texture(face.w, face.h, &face.rgba);
     app.set_shelf_platform_face(tex, face.w);
-    app.update(0.05);
-    app.update(0.25);
+    for _ in 0..30 {
+        app.update(0.01);
+    }
     let mut draw = Vec::new();
     app.draw(&mut draw);
     c.begin_frame();
