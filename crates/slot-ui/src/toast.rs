@@ -29,11 +29,13 @@ pub enum Toast {
     FastForward6,
     FfSoundOn,
     FfSoundOff,
+    BatteryLow15,
+    BatteryLow10,
     Palette(GbPalette),
 }
 
 impl Toast {
-    const FIXED: [Toast; 21] = [
+    const FIXED: [Toast; 23] = [
         Toast::StateSaved,
         Toast::StateLoaded,
         Toast::NeedsGpsp,
@@ -55,6 +57,8 @@ impl Toast {
         Toast::FastForward6,
         Toast::FfSoundOn,
         Toast::FfSoundOff,
+        Toast::BatteryLow15,
+        Toast::BatteryLow10,
     ];
 
     /// The banner naming a fast-forward speed, for the speeds slot offers.
@@ -116,6 +120,8 @@ impl Toast {
             Toast::FastForward6 => "Fast-Forward 6×",
             Toast::FfSoundOn => "FF Sound On",
             Toast::FfSoundOff => "FF Sound Off",
+            Toast::BatteryLow15 => "Battery Low: 15%",
+            Toast::BatteryLow10 => "Battery Low: 10%",
             Toast::Palette(p) => p.label(),
         }
     }
