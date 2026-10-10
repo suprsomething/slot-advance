@@ -30,6 +30,10 @@ Favourites, recently played games and a tidier five-state save ring, on top of e
 | Save-state switcher | Left / Right | **Up / Down** as well |
 | Deleting a state | Instant | **Asks first**: Y, then Y again |
 | GBA screen shader | Grid by default | **Off** by default (GBA is an exact 3x on a 720 x 480 screen, so it is already pixel perfect) |
+| Per-game settings | One setting for every game | **Each game remembers** its shader, colour correction, fast-forward speed and fast-forward sound |
+| After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
+| Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
+| Lid shut | Keeps drawing a black screen | **Stops drawing** while the lid is shut (still powers off after 3 minutes) |
 
 Everything else works the way slot does, including the automatic suspend state when you close the lid, quick save and load, rewind, fast-forward, link play and the mGBA / gpSP core picker.
 
@@ -87,6 +91,8 @@ Buttons side by side mean either one. A `+` means both together. **New** marks w
 
 ### In game
 
+Shader, colour correction and fast-forward changes made in game are saved **for that game only**. Games you have never changed follow the defaults in the settings menu.
+
 | Button | What it does | |
 |---|---|---|
 | `SELECT` + `R1` | Save a state (five per game, the sixth replaces the oldest) | **New** |
@@ -95,12 +101,14 @@ Buttons side by side mean either one. A `+` means both together. **New** marks w
 | Hold `MENU` | Save, eject the cart and go back to the carousel | |
 | `SELECT` + `B` / `A` | Previous / next screen shader, named in a banner at the top | |
 | `SELECT` + `Y` | Toggle colour correction | |
+| `SELECT` + `L2` / `R2` | Slower / faster fast-forward (2x, 3x, 4x, 6x), for this game | **New** |
+| `SELECT` + `X` | Fast-forward sound on / off, for this game | **New** |
 | Hold `L2` | Rewind | |
 | Hold `R2` | Fast-forward | |
 | Double tap `R2` | Lock fast-forward on; press again to unlock | |
 | Hold `X` / `Y` | Turbo A / Turbo B | |
 | `SELECT` + `MENU` | Link with another device running slot | |
-| Close the lid | Save to the suspend slot and sleep. This never touches your five states | |
+| Close the lid, or tap `POWER` | Save to the suspend slot and sleep. This never touches your five states | |
 
 ### In the save-state switcher
 
@@ -139,11 +147,12 @@ Ready-made downloads for this fork are coming soon.
 |---|---|
 | `Config/favourites.txt` | Your favourites, one per line, e.g. `GBA/Mother 3 (Japan)`. Safe to edit on a computer. |
 | `Config/recents.txt` | Recently played games, newest first. |
+| `Config/game_profiles.txt` | Each game's own shader, colour correction and fast-forward choices. Delete a game's lines to put it back on the defaults. |
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state` for the lid and suspend. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
 
-Both `.txt` files live in `Config/`, so replacing `System/` on an update leaves them alone.
+All three `.txt` files live in `Config/`, so replacing `System/` on an update leaves them alone.
 
 ---
 
