@@ -262,10 +262,14 @@ pub enum Phase {
 pub struct App {
     phase: Phase,
     shelves: Vec<(Platform, Shelf)>,
-    /// The Favourites shelf, always the last entry of `shelves`. Empty until something is
-    /// starred, which keeps it out of the L2 / R2 cycle.
+    /// Where the platform shelves end. After them come the two category shelves, Recents
+    /// (`rec_at`) then Favourites (`fav_at`), each empty until it has something to show,
+    /// which keeps it out of the L2 / R2 cycle.
+    lib_end: usize,
+    rec_at: usize,
     fav_at: usize,
     favourites: BTreeSet<String>,
+    recents: Vec<String>,
     retired_faces: Vec<TexId>,
     shelf_at: usize,
     play_held: Option<Millis>,
@@ -384,7 +388,9 @@ fn shelves_of(carts: Vec<Cart>) -> Vec<(Platform, Shelf)> {
 impl App {
     pub fn new(carts: Vec<Cart>) -> Self {
         let mut shelves = shelves_of(carts);
-        let fav_at = shelves.len();
+        let lib_end = shelves.len();
+        let (rec_at, fav_at) = (lib_end, lib_end + 1);
+        shelves.push((Platform::Gba, Shelf::new(Vec::new())));
         shelves.push((Platform::Gba, Shelf::new(Vec::new())));
         let shelf_at = shelves
             .iter()
@@ -397,8 +403,11 @@ impl App {
             state_writer,
             phase: Phase::Shelf,
             shelves,
+            lib_end,
+            rec_at,
             fav_at,
             favourites: BTreeSet::new(),
+            recents: Vec::new(),
             retired_faces: Vec::new(),
             shelf_at,
             play_held: None,
@@ -497,7 +506,8 @@ impl App {
         app.root = Some(root.to_path_buf());
         app.state = read_slot_state(root);
         app.favourites = slot_store::read_favourites(root);
-        app.restock_favourites();
+        app.recents = slot_store::read_recents(root);
+        app.restock_categories();
         if app.state.clock_set {
             app.start();
         } else {
@@ -554,8 +564,8 @@ impl App {
         self.name_pending = true;
     }
 
-    /// L2 / R2 on the carousel: step between All and Favourites, or shake when there is
-    /// nowhere to go (nothing starred yet).
+    /// L2 / R2 on the carousel: step through All, Recents and Favourites, skipping any that
+    /// are empty, or shake when there is nowhere to go.
     fn switch_category(&mut self, by: i32) {
         match self.next_shelf(by) {
             Some(_) => self.switch_shelf(by),
@@ -590,42 +600,83 @@ impl App {
                 eprintln!("slot: favourites: {e}");
             }
         }
-        self.restock_favourites();
+        self.restock_categories();
     }
 
-    /// Rebuilds the Favourites shelf from the starred set and re-marks the stars on every
-    /// other shelf. Keeps whichever cart Favourites had selected when it is still there,
-    /// and otherwise the same position, so unstarring slides the next cart into the slot.
-    fn restock_favourites(&mut self) {
-        let starred: Vec<Cart> = self.shelves[..self.fav_at]
+    pub fn on_recents(&self) -> bool {
+        self.shelf_at == self.rec_at
+    }
+
+    pub fn recents(&self) -> &[String] {
+        &self.recents
+    }
+
+    /// The library cart a favourites or recents key names, if it is on the card.
+    fn library_cart(&self, key: &str) -> Option<&Cart> {
+        self.shelves[..self.lib_end]
+            .iter()
+            .flat_map(|(_, shelf)| shelf.carts.iter())
+            .find(|c| slot_store::favourite_key(c.platform, &c.stem) == key)
+    }
+
+    /// A game started: it goes to the front of Recents and onto the card.
+    fn record_recent(&mut self, stem: &str) {
+        let Some(cart) = self.shelf().carts.iter().find(|c| c.stem == stem) else {
+            return;
+        };
+        let key = slot_store::favourite_key(cart.platform, &cart.stem);
+        if self.recents.first() == Some(&key) {
+            return;
+        }
+        slot_store::touch_recent(&mut self.recents, &key);
+        if let Some(root) = &self.root {
+            if let Err(e) = slot_store::write_recents(root, &self.recents) {
+                eprintln!("slot: recents: {e}");
+            }
+        }
+        self.restock_categories();
+        // Recents always opens on the game played last, which is also the cart in the slot
+        // when it was played from Recents itself.
+        self.shelves[self.rec_at].1.select(0);
+    }
+
+    /// Rebuilds Recents and Favourites from their lists and re-marks the favourite stars
+    /// on every shelf but Favourites, where every cart would wear one.
+    fn restock_categories(&mut self) {
+        let recent: Vec<Cart> = self
+            .recents
+            .iter()
+            .filter_map(|k| self.library_cart(k).cloned())
+            .take(slot_store::RECENTS_MAX)
+            .collect();
+        let starred: Vec<Cart> = self.shelves[..self.lib_end]
             .iter()
             .flat_map(|(_, shelf)| shelf.carts.iter())
             .filter(|c| self.is_favourite(c))
             .cloned()
             .collect();
-        let marks: Vec<Vec<bool>> = self.shelves[..self.fav_at]
+        self.restock(self.rec_at, recent);
+        self.restock(self.fav_at, starred);
+
+        let marks: Vec<Vec<bool>> = self
+            .shelves
             .iter()
-            .map(|(_, shelf)| shelf.carts.iter().map(|c| self.is_favourite(c)).collect())
+            .enumerate()
+            .map(|(at, (_, shelf))| {
+                shelf
+                    .carts
+                    .iter()
+                    .map(|c| at != self.fav_at && self.is_favourite(c))
+                    .collect()
+            })
             .collect();
         for ((_, shelf), marks) in self.shelves.iter_mut().zip(marks) {
             shelf.set_marks(marks);
         }
 
-        let fav = &self.shelves[self.fav_at].1;
-        let kept = fav.carts.get(fav.index).and_then(|c| {
-            starred
-                .iter()
-                .position(|s| s.stem == c.stem && s.platform == c.platform)
-        });
-        let fav = &mut self.shelves[self.fav_at].1;
-        let at = fav.index;
-        let old = fav.restock(starred);
-        fav.select(kept.unwrap_or(at.min(fav.carts.len().saturating_sub(1))));
-        self.retired_faces.extend(old);
-
-        if self.on_favourites() && self.shelf().carts.is_empty() {
+        if self.shelf_at >= self.lib_end && self.shelf().carts.is_empty() {
             self.play_held = None;
-            if let Some(to) = self.shelves[..self.fav_at]
+            if let Some(to) = self.shelves[..self.lib_end]
                 .iter()
                 .position(|(_, s)| !s.carts.is_empty())
             {
@@ -636,6 +687,23 @@ impl App {
                 self.name_pending = true;
             }
         }
+    }
+
+    /// Swaps a category shelf's carts. Keeps whichever cart it had selected when that cart
+    /// is still there, and otherwise the same position, so unstarring slides the next cart
+    /// into the slot.
+    fn restock(&mut self, at: usize, carts: Vec<Cart>) {
+        let shelf = &self.shelves[at].1;
+        let kept = shelf.carts.get(shelf.index).and_then(|c| {
+            carts
+                .iter()
+                .position(|s| s.stem == c.stem && s.platform == c.platform)
+        });
+        let shelf = &mut self.shelves[at].1;
+        let was = shelf.index;
+        let old = shelf.restock(carts);
+        shelf.select(kept.unwrap_or(was.min(shelf.carts.len().saturating_sub(1))));
+        self.retired_faces.extend(old);
     }
 
     fn jump_letter(&mut self, dir: i32) {
@@ -685,7 +753,7 @@ impl App {
         self.shelves
             .iter()
             .enumerate()
-            .filter(|(at, _)| *at != self.fav_at)
+            .filter(|(at, _)| *at < self.lib_end)
             .filter(|(_, (p, _))| platform.is_none_or(|want| *p == want))
             .find_map(|(at, (_, shelf))| {
                 shelf
@@ -790,8 +858,10 @@ impl App {
     /// goes without: everything there is starred.
     pub fn set_star_face(&mut self, face: TexId, w: u32, h: u32) {
         let fav_at = self.fav_at;
-        for (_, shelf) in &mut self.shelves[..fav_at] {
-            shelf.set_star(face, w, h);
+        for (at, (_, shelf)) in self.shelves.iter_mut().enumerate() {
+            if at != fav_at {
+                shelf.set_star(face, w, h);
+            }
         }
     }
 
@@ -830,7 +900,10 @@ impl App {
         if self.on_favourites() {
             return Some("Favourites");
         }
-        let stocked = self.shelves[..self.fav_at]
+        if self.on_recents() {
+            return Some("Recents");
+        }
+        let stocked = self.shelves[..self.lib_end]
             .iter()
             .filter(|(_, s)| !s.carts.is_empty())
             .count();
@@ -853,7 +926,7 @@ impl App {
     }
 
     pub fn carts(&self) -> impl Iterator<Item = &Cart> {
-        self.shelves[..self.fav_at]
+        self.shelves[..self.lib_end]
             .iter()
             .flat_map(|(_, shelf)| shelf.carts.iter())
     }
@@ -876,8 +949,8 @@ impl App {
 
     pub fn set_faces(&mut self, faces: Vec<TexId>) {
         let mut faces = faces.into_iter();
-        let fav_at = self.fav_at;
-        for (_, shelf) in &mut self.shelves[..fav_at] {
+        let lib_end = self.lib_end;
+        for (_, shelf) in &mut self.shelves[..lib_end] {
             let n = shelf.carts.len();
             shelf.set_faces(faces.by_ref().take(n).collect());
         }
@@ -1795,6 +1868,9 @@ impl App {
             };
             if seated.is_none() {
                 self.link_loaded = None;
+            }
+            if let Some(cart) = seated.as_deref() {
+                self.record_recent(cart);
             }
             self.record_cart(seated);
         }
