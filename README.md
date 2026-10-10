@@ -180,7 +180,10 @@ slot advance runs on the same system card (SD1) as slot. If your RG SP already r
 
 1. Power off the RG SP, then put the games card (SD2) in your computer.
 2. *Optional:* to keep a way back, rename `System/slot` on the card to `slot.previous`.
-3. Unzip the download, open the folder, and copy everything inside it onto the top level of the card. If asked, choose **Replace** (or **Merge** for folders). Only the files in `System` are replaced. Your games, saves, states, favourites and settings are not in the download, so they stay as they are.
+3. Unzip the download and open its `System` folder. Select **everything inside it** and drag it into the `System` folder on the card. When asked, choose **Replace**. Your games, saves, states, favourites and settings are not in `System`, so they stay as they are.
+
+> [!WARNING]
+> On a Mac, don't drag the download's top-level folders (`Games`, `Saves`, `States` and so on) onto the card's folders of the same name. They are empty, and Finder's **Replace** swaps a whole folder for the empty one, deleting what was in it. When upgrading, only the contents of `System` need copying.
 4. Eject the card, put it back, and power on.
 
 The **slot. ADVANCE boot logo** appears from the second power-on. On the first start, slot writes it to the system card for the next boot, and keeps the stock picture there as a backup.
