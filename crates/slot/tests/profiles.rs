@@ -209,3 +209,97 @@ fn changing_a_default_moves_games_that_follow_it_but_not_games_that_chose() {
         "the new default overrode Emerald's own choice"
     );
 }
+
+fn select_r2(a: &mut App) {
+    a.apply(Action::PaletteNext);
+}
+
+fn select_l2(a: &mut App) {
+    a.apply(Action::PalettePrev);
+}
+
+#[test]
+fn select_l2_and_r2_step_this_games_fast_forward_speed_and_stop_at_the_ends() {
+    let d = with_defaults(SlotState {
+        ff_speed: 4,
+        ..Default::default()
+    });
+    let mut a = boot(&d);
+    play(&mut a, "Emerald");
+    assert_eq!(a.ff_speed(), 4);
+    select_l2(&mut a);
+    assert_eq!(a.ff_speed(), 3);
+    assert_eq!(a.toast(), Some(slot_ui::Toast::FastForward3));
+    select_l2(&mut a);
+    select_l2(&mut a);
+    assert_eq!(a.ff_speed(), 2, "the slowest speed wrapped round");
+    for _ in 0..5 {
+        select_r2(&mut a);
+    }
+    assert_eq!(a.ff_speed(), 6, "the fastest speed wrapped round");
+    assert_eq!(a.toast(), Some(slot_ui::Toast::FastForward6));
+    a.settle_settings();
+    assert_eq!(
+        GameProfiles::read(d.path())
+            .get(Platform::Gba, "Emerald")
+            .ff_speed,
+        Some(6)
+    );
+    eject(&mut a);
+    play(&mut a, "Fusion");
+    assert_eq!(a.ff_speed(), 4, "Emerald's speed leaked into Fusion");
+    assert_eq!(read_slot_state(d.path()).ff_speed, 4, "the default moved");
+}
+
+#[test]
+fn select_x_toggles_this_games_fast_forward_sound() {
+    let d = with_defaults(SlotState::default());
+    let mut a = boot(&d);
+    play(&mut a, "Emerald");
+    assert!(!a.ff_sound());
+    a.apply(Action::FfSoundToggle);
+    assert!(a.ff_sound());
+    assert_eq!(a.toast(), Some(slot_ui::Toast::FfSoundOn));
+    eject(&mut a);
+    play(&mut a, "Fusion");
+    assert!(
+        !a.ff_sound(),
+        "Emerald's fast-forward sound leaked into Fusion"
+    );
+    eject(&mut a);
+    play(&mut a, "Emerald");
+    assert!(a.ff_sound(), "Emerald forgot its fast-forward sound");
+}
+
+#[test]
+fn a_game_boy_cart_on_a_named_palette_still_steps_its_palette() {
+    let d = with_defaults(SlotState {
+        gb_palettes: true,
+        ..Default::default()
+    });
+    let mut a = boot(&d);
+    play(&mut a, "Emerald");
+    a.set_palette_live(true);
+    let speed = a.ff_speed();
+    let palette = a.gb_palette();
+    select_r2(&mut a);
+    assert_eq!(
+        a.ff_speed(),
+        speed,
+        "SELECT + R2 changed fast-forward on a palette cart"
+    );
+    assert_ne!(a.gb_palette(), palette, "the palette did not step");
+}
+
+#[test]
+fn fast_forward_chords_do_nothing_on_the_carousel() {
+    let d = with_defaults(SlotState::default());
+    let mut a = boot(&d);
+    let speed = a.ff_speed();
+    select_r2(&mut a);
+    a.apply(Action::FfSoundToggle);
+    assert_eq!(a.ff_speed(), speed);
+    assert!(!a.ff_sound());
+    a.settle_settings();
+    assert!(!d.path().join(GAME_PROFILES_FILE).exists());
+}

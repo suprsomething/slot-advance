@@ -38,6 +38,8 @@ pub enum Action {
     GameMenu,
     MuteToggle,
     ColourCorrectionToggle,
+    /// SELECT + X: the seated game's fast-forward sound on or off.
+    FfSoundToggle,
     PaletteNext,
     PalettePrev,
     ShaderNext,
@@ -419,6 +421,7 @@ fn chord(b: Btn) -> Option<(u16, Action)> {
         Btn::R2 => (256, Action::PaletteNext),
         Btn::A => (512, Action::ShaderNext),
         Btn::B => (1024, Action::ShaderPrev),
+        Btn::X => (2048, Action::FfSoundToggle),
         Btn::VolUp => (2048, Action::MuteToggle),
         Btn::VolDown => (4096, Action::MuteToggle),
         _ => return None,

@@ -510,12 +510,8 @@ fn a_and_b_on_their_own_are_untouched_by_the_shader_chord() {
     assert_eq!(g.feed(Up(B), 90), vec![GbaUp(B)]);
 }
 
-#[test]
-fn x_under_select_reaches_the_game() {
-    let mut g = Gestures::new();
-    assert!(g.feed(Down(Select), 0).is_empty());
-    assert_eq!(g.feed(Down(X), 10), vec![GbaDown(Select), GbaDown(X)]);
-}
+// slot advance takes SELECT + X for the seated game's fast-forward sound, so X under SELECT
+// no longer reaches the game: a GBA has no X, and X on its own (turbo A) is untouched below.
 
 #[test]
 fn select_and_either_volume_key_mutes_for_a_volume_wheel_with_no_chord() {
@@ -533,4 +529,23 @@ fn select_and_either_volume_key_mutes_for_a_volume_wheel_with_no_chord() {
             "the mute chord's SELECT reached the game"
         );
     }
+}
+
+#[test]
+fn select_and_x_toggles_fast_forward_sound_and_keeps_x_from_the_game() {
+    let mut g = Gestures::new();
+    assert!(g.feed(Down(Select), 0).is_empty());
+    assert_eq!(g.feed(Down(X), 60), vec![FfSoundToggle]);
+    assert!(
+        g.feed(Up(X), 90).is_empty(),
+        "X reached the game as turbo A"
+    );
+    assert!(g.feed(Up(Select), 120).is_empty());
+}
+
+#[test]
+fn x_on_its_own_still_reaches_the_game() {
+    let mut g = Gestures::new();
+    assert_eq!(g.feed(Down(X), 0), vec![GbaDown(X)]);
+    assert_eq!(g.feed(Up(X), 50), vec![GbaUp(X)]);
 }

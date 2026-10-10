@@ -1676,6 +1676,23 @@ impl App {
         self.hud.toast(said, self.now());
     }
 
+    /// SELECT + L2 / R2 in a game: the next slower or faster fast-forward speed, kept in
+    /// that game's profile. Stops at either end rather than wrapping, so holding the chord
+    /// never jumps from the fastest to the slowest.
+    fn step_ff_speed(&mut self, faster: bool) {
+        let from = self.ff_speed();
+        let to = ff_next(from, faster);
+        let wrapped = (faster && to < from) || (!faster && to > from);
+        let to = if wrapped { from } else { to };
+        if to != from && !self.set_profile(slot_store::ProfileField::FfSpeed(to)) {
+            self.state.ff_speed = to;
+            self.persist();
+        }
+        if let Some(said) = Toast::fast_forward(to) {
+            self.hud.toast(said, self.now());
+        }
+    }
+
     fn adjust(&mut self, action: Action) -> bool {
         if action == Action::MuteToggle {
             self.mute_toggle();
@@ -1686,6 +1703,12 @@ impl App {
             return true;
         }
         if let Action::PaletteNext | Action::PalettePrev = action {
+            // SELECT + L2 / R2: a Game Boy cart on a named palette steps the palette, as it
+            // always has; any other seated game, GBA included, steps its fast-forward speed.
+            if !self.palette_live && matches!(self.phase, Phase::Playing { .. }) {
+                self.step_ff_speed(action == Action::PaletteNext);
+                return true;
+            }
             if self.palette_live && matches!(self.phase, Phase::Playing { .. }) {
                 let to = match action {
                     Action::PalettePrev => self.state.gb_palette.prev(),
@@ -1695,6 +1718,21 @@ impl App {
                 self.palette_pending = Some(to);
                 self.persist();
                 self.hud.toast(Toast::Palette(to), self.now());
+            }
+            return true;
+        }
+        if action == Action::FfSoundToggle {
+            if matches!(self.phase, Phase::Playing { .. }) {
+                let to = !self.ff_sound();
+                if !self.set_profile(slot_store::ProfileField::FfSound(to)) {
+                    self.state.ff_sound = to;
+                    self.persist();
+                }
+                let said = match to {
+                    true => Toast::FfSoundOn,
+                    false => Toast::FfSoundOff,
+                };
+                self.hud.toast(said, self.now());
             }
             return true;
         }

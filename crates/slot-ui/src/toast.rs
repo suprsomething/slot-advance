@@ -23,11 +23,17 @@ pub enum Toast {
     ShaderDot,
     ShaderSimpletex,
     CardUnwritable,
+    FastForward2,
+    FastForward3,
+    FastForward4,
+    FastForward6,
+    FfSoundOn,
+    FfSoundOff,
     Palette(GbPalette),
 }
 
 impl Toast {
-    const FIXED: [Toast; 15] = [
+    const FIXED: [Toast; 21] = [
         Toast::StateSaved,
         Toast::StateLoaded,
         Toast::NeedsGpsp,
@@ -43,7 +49,24 @@ impl Toast {
         Toast::ShaderDot,
         Toast::ShaderSimpletex,
         Toast::CardUnwritable,
+        Toast::FastForward2,
+        Toast::FastForward3,
+        Toast::FastForward4,
+        Toast::FastForward6,
+        Toast::FfSoundOn,
+        Toast::FfSoundOff,
     ];
+
+    /// The banner naming a fast-forward speed, for the speeds slot offers.
+    pub fn fast_forward(frames: u8) -> Option<Toast> {
+        match frames {
+            2 => Some(Toast::FastForward2),
+            3 => Some(Toast::FastForward3),
+            4 => Some(Toast::FastForward4),
+            6 => Some(Toast::FastForward6),
+            _ => None,
+        }
+    }
 
     pub fn all() -> Vec<Toast> {
         Self::FIXED
@@ -87,6 +110,12 @@ impl Toast {
             Toast::ShaderDot => "Shader: Dot",
             Toast::ShaderSimpletex => "Shader: Simpletex",
             Toast::CardUnwritable => "Can't write to SD card",
+            Toast::FastForward2 => "Fast-Forward 2×",
+            Toast::FastForward3 => "Fast-Forward 3×",
+            Toast::FastForward4 => "Fast-Forward 4×",
+            Toast::FastForward6 => "Fast-Forward 6×",
+            Toast::FfSoundOn => "Fast-Forward Sound On",
+            Toast::FfSoundOff => "Fast-Forward Sound Off",
             Toast::Palette(p) => p.label(),
         }
     }
