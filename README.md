@@ -6,7 +6,7 @@
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP.**
 
-Favourites, recently played games and a tidier five-state save ring, on top of everything slot already does.
+A refined GBA experience for the Anbernic RG SP. Featuring intelligent standby, persistent per-game settings, effortless game navigation and enhanced save-state management—all while preserving Slot's beautifully minimal design.
 
 <a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot-advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License"></a>
 <a href="https://github.com/BrandonKowalski/slot"><img src="https://img.shields.io/badge/Based_on-slot-4d4d57?style=for-the-badge&labelColor=242429" height="32" alt="Based on slot"></a>
