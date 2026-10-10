@@ -42,6 +42,21 @@ fn shot(app: &mut App, c: &mut Compositor, path: PathBuf) {
     c.begin_frame();
     c.draw_list(&draw);
     let pixels = c.read_frame();
+    // Reject a frame captured during a carousel transition.
+    let colour_at_centre = (210..310)
+        .flat_map(|y| (240..480).map(move |x| (x, y)))
+        .filter(|(x, y)| {
+            let at = (y * OUT_W as usize + x) * 4;
+            let rgb = &pixels[at..at + 3];
+            *rgb.iter().max().unwrap() > 100
+                && rgb.iter().max().unwrap() - rgb.iter().min().unwrap() > 25
+        })
+        .count();
+    assert!(
+        colour_at_centre > 8_000,
+        "Centre cartridge is missing or still moving: {}",
+        path.display()
+    );
     let mut encoder = png::Encoder::new(fs::File::create(&path).unwrap(), OUT_W, OUT_H);
     encoder.set_color(png::ColorType::Rgba);
     encoder.set_depth(png::BitDepth::Eight);
@@ -111,15 +126,15 @@ fn main() {
     app.apply(Action::GbaDown(Btn::Right));
     app.apply(Action::GbaUp(Btn::Right));
     settle(&mut app);
-    shot(&mut app, &mut c, out.join("all-with-favourites.png"));
+    shot(&mut app, &mut c, out.join("all-cartridge-art.png"));
     app.apply(Action::FfStart);
     app.apply(Action::FfStop);
     settle(&mut app);
     assert!(app.on_recents());
-    shot(&mut app, &mut c, out.join("recents.png"));
+    shot(&mut app, &mut c, out.join("recents-cartridge-art.png"));
     app.apply(Action::FfStart);
     app.apply(Action::FfStop);
     settle(&mut app);
     assert!(app.on_favourites());
-    shot(&mut app, &mut c, out.join("favourites.png"));
+    shot(&mut app, &mut c, out.join("favourites-cartridge-art.png"));
 }

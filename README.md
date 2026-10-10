@@ -41,14 +41,14 @@ Everything else works the way slot does, including the automatic suspend state w
 ### All, with favourites starred
 
 <p align="center">
-<img src=".github/resources/screenshots/advance/all-with-favourites.png" width="70%" alt="The All shelf with original Mario Kart cartridge-label artwork and a gold favourite star">
+<img src=".github/resources/screenshots/advance/all-cartridge-art.png" width="70%" alt="The All shelf with original Mario Kart cartridge-label artwork and a gold favourite star">
 </p>
 
 ### Recents and Favourites
 
 <p align="center">
-<img src=".github/resources/screenshots/advance/recents.png" width="48%" alt="The Recents shelf, newest first">
-<img src=".github/resources/screenshots/advance/favourites.png" width="48%" alt="The Favourites shelf">
+<img src=".github/resources/screenshots/advance/recents-cartridge-art.png" width="48%" alt="The Recents shelf, newest first">
+<img src=".github/resources/screenshots/advance/favourites-cartridge-art.png" width="48%" alt="The Favourites shelf">
 </p>
 
 ### The save-state switcher, and the delete question
