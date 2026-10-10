@@ -114,8 +114,8 @@ impl Toast {
             Toast::FastForward3 => "Fast-Forward 3×",
             Toast::FastForward4 => "Fast-Forward 4×",
             Toast::FastForward6 => "Fast-Forward 6×",
-            Toast::FfSoundOn => "Fast-Forward Sound On",
-            Toast::FfSoundOff => "Fast-Forward Sound Off",
+            Toast::FfSoundOn => "FF Sound On",
+            Toast::FfSoundOff => "FF Sound Off",
             Toast::Palette(p) => p.label(),
         }
     }
