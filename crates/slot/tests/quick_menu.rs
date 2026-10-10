@@ -261,21 +261,21 @@ fn screen_opens_a_page_of_its_own_and_b_comes_back_to_it() {
 }
 
 #[test]
-fn each_platform_keeps_its_own_shader_wraps_and_starts_on_grid_and_simpletex() {
+fn each_platform_keeps_its_own_shader_wraps_and_starts_on_off_and_simpletex() {
     let (d, mut a, _) = on_carousel();
     open_at(&mut a, QuickRow::GbaShader);
-    assert_eq!(a.quick_value(QuickRow::GbaShader), Some(QuickValue::Grid));
+    assert_eq!(a.quick_value(QuickRow::GbaShader), Some(QuickValue::Off));
     assert_eq!(
         a.quick_value(QuickRow::GbShader),
         Some(QuickValue::Simpletex)
     );
     for (btn, want, shown) in [
-        (Btn::Right, Shader::Dot, QuickValue::Dot),
-        (Btn::Right, Shader::Off, QuickValue::Off),
-        (Btn::Left, Shader::Dot, QuickValue::Dot),
-        (Btn::Left, Shader::Grid, QuickValue::Grid),
+        (Btn::Right, Shader::Lcd3x, QuickValue::Lcd3x),
+        (Btn::Right, Shader::Grid, QuickValue::Grid),
         (Btn::Left, Shader::Lcd3x, QuickValue::Lcd3x),
         (Btn::Left, Shader::Off, QuickValue::Off),
+        (Btn::Left, Shader::Dot, QuickValue::Dot),
+        (Btn::Left, Shader::Grid, QuickValue::Grid),
     ] {
         press(&mut a, btn);
         assert_eq!(a.quick_value(QuickRow::GbaShader), Some(shown), "{btn:?}");
@@ -289,7 +289,7 @@ fn each_platform_keeps_its_own_shader_wraps_and_starts_on_grid_and_simpletex() {
     press(&mut a, Btn::Down);
     press(&mut a, Btn::Left);
     assert_eq!(read_slot_state(d.path()).shader_gb, Shader::Grid);
-    assert_eq!(read_slot_state(d.path()).shader_gba, Shader::Off);
+    assert_eq!(read_slot_state(d.path()).shader_gba, Shader::Grid);
 }
 
 #[test]

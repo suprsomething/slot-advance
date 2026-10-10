@@ -103,7 +103,7 @@ impl Default for SlotState {
             ff_speed: FF_SPEED_DEFAULT,
             ff_sound: false,
             colour_correction: false,
-            shader_gba: Shader::Grid,
+            shader_gba: Shader::Off,
             shader_gb: Shader::Simpletex,
             eject_save: true,
             turbo: true,

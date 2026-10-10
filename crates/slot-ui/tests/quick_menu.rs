@@ -197,3 +197,12 @@ fn the_two_carets_point_different_ways() {
         "a caret glyph is missing from the symbols font"
     );
 }
+
+#[test]
+fn the_favourite_star_is_in_the_symbols_font() {
+    let star = slot_ui::star_face(34.0);
+    assert!(
+        star.w > 0 && star.rgba.chunks(4).any(|p| p[3] > 200),
+        "the star glyph is missing from the trimmed symbols font"
+    );
+}

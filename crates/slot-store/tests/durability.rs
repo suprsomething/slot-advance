@@ -165,7 +165,7 @@ fn a_first_boot_rumbles_and_fast_forwards_silently_at_the_default() {
     assert_eq!(s.ff_speed, FF_SPEED_DEFAULT);
     assert!(!s.ff_sound, "boots with fast forward audible");
     assert!(!s.colour_correction, "boots with the picture tinted");
-    assert_eq!(s.shader_gba, Shader::Grid);
+    assert_eq!(s.shader_gba, Shader::Off);
     assert_eq!(s.shader_gb, Shader::Simpletex);
 }
 
@@ -194,7 +194,7 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             ff_speed: FF_SPEED_DEFAULT,
             ff_sound: false,
             colour_correction: false,
-            shader_gba: Shader::Grid,
+            shader_gba: Shader::Off,
             shader_gb: Shader::Simpletex,
             eject_save: true,
             turbo: true,
