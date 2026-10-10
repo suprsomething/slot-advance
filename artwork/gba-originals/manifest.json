@@ -1,0 +1,192 @@
+{
+  "license": "CC-BY-SA-4.0",
+  "size": [
+    798,
+    414
+  ],
+  "labels": [
+    {
+      "title": "Pokemon - Emerald Version",
+      "file": "Pokemon - Emerald Version (USA, Europe).png",
+      "region": "USA",
+      "photographer": "Missingno_force",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-BPEE-0/missingno-force-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-BPEE-0/missingno-force-1_01_front.jpg?ts=tjrrlv",
+      "crop": [
+        257,
+        251,
+        1565,
+        933
+      ],
+      "source_file": "AGB-BPEE-0-1.jpg"
+    },
+    {
+      "title": "Pokemon - Fire Red Version",
+      "file": "Pokemon - Fire Red Version (U) (V1.1).png",
+      "region": "USA",
+      "photographer": "Missingno_force",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-BPRE-1/missingno-force-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-BPRE-1/missingno-force-1_01_front.jpg?ts=tjrrmm",
+      "crop": [
+        280,
+        233,
+        1586,
+        917
+      ],
+      "source_file": "AGB-BPRE-1-1.jpg"
+    },
+    {
+      "title": "Drill Dozer",
+      "file": "Drill Dozer (USA).png",
+      "region": "USA",
+      "photographer": "3615Retro",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-V49E-0/3615retro-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-V49E-0/3615retro-1_01_front.jpg?ts=tjrrlu",
+      "crop": [
+        245,
+        857,
+        2265,
+        1730
+      ],
+      "source_file": "AGB-V49E-0-0.jpg"
+    },
+    {
+      "title": "Final Fantasy VI Advance",
+      "file": "Final Fantasy VI Advance.png",
+      "region": "USA",
+      "photographer": "Missingno_force",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-BZ6E-0/missingno-force-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-BZ6E-0/missingno-force-1_01_front.jpg?ts=tjrrm3",
+      "crop": [
+        270,
+        294,
+        1588,
+        927
+      ],
+      "source_file": "AGB-BZ6E-0-1.jpg"
+    },
+    {
+      "title": "Kirby - Nightmare in Dream Land",
+      "file": "Kirby - Nightmare in Dream Land.png",
+      "region": "USA",
+      "photographer": "EchelonPrime",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-A7KE-0/echelonprime-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-A7KE-0/echelonprime-1_01_front.jpg?ts=tjrrlz",
+      "crop": [
+        445,
+        450,
+        2460,
+        1440
+      ],
+      "source_file": "AGB-A7KE-0-0.jpg"
+    },
+    {
+      "title": "Mario Kart - Super Circuit",
+      "file": "Mario Kart - Super Circuit (USA).png",
+      "region": "USA",
+      "photographer": "FexCollects",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-AMKE-0/fexcollects-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-AMKE-0/fexcollects-1_01_front.jpg?ts=tjrrmc",
+      "crop": [
+        426,
+        424,
+        2425,
+        1454
+      ],
+      "source_file": "AGB-AMKE-0-0.jpg"
+    },
+    {
+      "title": "Pokemon Mystery Dungeon - Red Rescue Team",
+      "file": "Pokemon Mystery Dungeon - Red Rescue Team.png",
+      "region": "USA",
+      "photographer": "HDR",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-B24E-0/hdr-2.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-B24E-0/hdr-2_01_front.jpg?ts=tjrrmj",
+      "crop": [
+        468,
+        503,
+        2406,
+        1461
+      ],
+      "source_file": "AGB-B24E-0-1.jpg"
+    },
+    {
+      "title": "Metroid - Zero Mission",
+      "file": "Metroid - Zero Mission (USA).png",
+      "region": "Europe",
+      "photographer": "Missingno_force",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-BMXP-0/missingno-force-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-BMXP-0/missingno-force-1_01_front.jpg?ts=tjrrmj",
+      "crop": [
+        257,
+        257,
+        1604,
+        927
+      ],
+      "source_file": "AGB-BMXP-0-1.jpg"
+    },
+    {
+      "title": "Advance Wars",
+      "file": "Advance Wars (USA) (Rev 1).png",
+      "region": "Europe",
+      "photographer": "ikk5",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-AWRP-0/ikk5-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-AWRP-0/ikk5-1_01_front.jpg?ts=tlbnn9",
+      "crop": [
+        345,
+        362,
+        2070,
+        1202
+      ],
+      "source_file": "AGB-AWRP-0-0.jpg"
+    },
+    {
+      "title": "Legend of Zelda, The - The Minish Cap",
+      "file": "Legend of Zelda, The - The Minish Cap (USA).png",
+      "region": "Europe",
+      "photographer": "ikk5",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-BZMP-0/ikk5-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-BZMP-0/ikk5-1_01_front.jpg?ts=tkmi00",
+      "crop": [
+        345,
+        371,
+        2030,
+        1234
+      ],
+      "source_file": "AGB-BZMP-0-1.jpg",
+      "aliases": [
+        "The Legend of Zelda - The Minish Cap"
+      ]
+    },
+    {
+      "title": "Kirby & The Amazing Mirror",
+      "file": "Kirby & The Amazing Mirror (USA).png",
+      "region": "Europe",
+      "photographer": "3615Retro",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-B8KP-0/3615retro-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-B8KP-0/3615retro-1_01_front.jpg?ts=tjrrm7",
+      "crop": [
+        236,
+        239,
+        1290,
+        782
+      ],
+      "source_file": "AGB-B8KP-0-0.jpg"
+    },
+    {
+      "title": "Final Fantasy Tactics Advance",
+      "file": "Final Fantasy Tactics Advance.png",
+      "region": "Europe",
+      "photographer": "Granmastro",
+      "source": "https://gbhwdb.gekkio.fi/cartridges/AGB-AFXP-0/granmastro-1.html",
+      "photo": "https://gbhwdb.gekkio.fi/static/AGB-AFXP-0/granmastro-1_01_front.jpg?ts=tk0sbx",
+      "crop": [
+        268,
+        236,
+        1567,
+        864
+      ],
+      "source_file": "AGB-AFXP-0-0.jpg"
+    }
+  ]
+}
