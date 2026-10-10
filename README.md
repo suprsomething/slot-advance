@@ -65,12 +65,6 @@ Everything else works the way slot does, including the automatic suspend state w
 
 ---
 
-# Game-label artwork
-
-A [12-game original cartridge-label starter pack](artwork/gba-originals/README.md) is included, with Pokémon Emerald and FireRed, Mario Kart, Kirby, Zelda and more. Copy the game PNGs into `Labels/GBA/`, matching each ROM filename, or use the optional installer described in the pack. Existing artwork is preserved. Source credits and artwork regions are documented with the pack.
-
----
-
 # Controls
 
 Buttons side by side mean either one. A `+` means both together. **New** marks what this fork adds or changes.
