@@ -192,6 +192,8 @@ impl Frontend {
         self.session.app_mut().set_alert_face(alert);
         let legend = legend_faces(compositor, &LEGEND);
         self.session.app_mut().set_legend_faces(legend);
+        let confirm = legend_faces(compositor, &slot_ui::CONFIRM_LEGEND);
+        self.session.app_mut().set_confirm_faces(confirm);
         let hint = set_clock_hint_face();
         self.clocks.hint = Some(compositor.create_texture(hint.w, hint.h, &hint.rgba));
         let shadow = cart_shadow();
@@ -677,8 +679,9 @@ fn sync_switcher(app: &mut App, compositor: &mut Compositor, texes: Faces, state
             .map(|l| upload(compositor, texes.undo, hint_face("X", l)));
         app.set_undo_face(label);
     }
-    if state.titled.as_deref() != app.polaroid_stamp() {
-        state.titled = app.polaroid_stamp().map(str::to_string);
+    let key = app.polaroid_title_key();
+    if state.titled != key {
+        state.titled = key;
         let face = title_face(&app.polaroid_title(&format_stamp(app.wall_secs())));
         let id = upload(compositor, texes.title, face);
         app.set_polaroid_title_face(id);

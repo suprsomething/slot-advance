@@ -322,6 +322,7 @@ pub struct App {
     polaroids: Option<Polaroids>,
     pending: Option<(PendingUndo, Millis)>,
     legend_faces: Vec<TexId>,
+    confirm_faces: Vec<TexId>,
     undo_face: Option<TexId>,
     clock_faces: Option<(TexId, TexId)>,
     quick_menu_faces: Option<QuickMenuFaces>,
@@ -460,6 +461,7 @@ impl App {
             polaroids: None,
             pending: None,
             legend_faces: Vec::new(),
+            confirm_faces: Vec::new(),
             undo_face: None,
             clock_faces: None,
             quick_menu_faces: None,
@@ -1484,13 +1486,26 @@ impl App {
                 Action::FfStart if !self.may_fast_forward() => self.refuse(),
                 _ => {}
             },
+            // A delete waits for a second Y. Every other press keeps the state and does
+            // nothing else, so an A meant for the question can never load it.
+            Phase::Polaroids { .. } if self.confirming_delete() => match action {
+                Action::GbaDown(Btn::Y) => self.delete_selected(),
+                Action::GbaDown(_) | Action::Polaroids | Action::ShelfLeft | Action::ShelfRight => {
+                    self.keep_selected()
+                }
+                _ => {}
+            },
             Phase::Polaroids { .. } => match action {
-                Action::ShelfLeft | Action::GbaDown(Btn::Left) => self.flick(Polaroids::left),
-                Action::ShelfRight | Action::GbaDown(Btn::Right) => self.flick(Polaroids::right),
+                Action::ShelfLeft | Action::GbaDown(Btn::Left) | Action::GbaDown(Btn::Up) => {
+                    self.flick(Polaroids::left)
+                }
+                Action::ShelfRight | Action::GbaDown(Btn::Right) | Action::GbaDown(Btn::Down) => {
+                    self.flick(Polaroids::right)
+                }
                 Action::GbaDown(Btn::A) => self.load_selected(),
                 Action::GbaDown(Btn::B) | Action::Polaroids => self.close_polaroids(),
                 Action::GbaDown(Btn::X) => self.undo(self.now()),
-                Action::GbaDown(Btn::Y) => self.delete_selected(),
+                Action::GbaDown(Btn::Y) => self.ask_delete(),
                 _ => {}
             },
             Phase::About if action == Action::GbaDown(Btn::B) || action == Action::QuickMenu => {
@@ -3330,6 +3345,26 @@ impl App {
         }
     }
 
+    pub fn confirming_delete(&self) -> bool {
+        self.polaroids
+            .as_ref()
+            .is_some_and(Polaroids::is_confirming)
+    }
+
+    fn ask_delete(&mut self) {
+        if let Some(p) = &mut self.polaroids {
+            p.ask_delete();
+        }
+        self.push_hint_faces();
+    }
+
+    fn keep_selected(&mut self) {
+        if let Some(p) = &mut self.polaroids {
+            p.keep();
+        }
+        self.push_hint_faces();
+    }
+
     fn delete_selected(&mut self) {
         let stamp = self
             .polaroids
@@ -3353,6 +3388,7 @@ impl App {
         if p.is_empty() {
             self.close_polaroids();
         }
+        self.push_hint_faces();
     }
 
     fn undo_targets(&self, stamp: &str) -> bool {
@@ -3437,14 +3473,35 @@ impl App {
         self.push_hint_faces();
     }
 
+    /// `CONFIRM_LEGEND`'s faces, shown while a delete waits for its second Y.
+    pub fn set_confirm_faces(&mut self, faces: Vec<TexId>) {
+        self.confirm_faces = faces;
+        self.push_hint_faces();
+    }
+
+    /// What the switcher's title face is drawn from: the selection, and whether the top
+    /// plate is asking about deleting it. The frontend re-rasterises when this changes.
+    pub fn polaroid_title_key(&self) -> Option<String> {
+        let stamp = self.polaroid_stamp()?;
+        Some(match self.confirming_delete() {
+            true => format!("{stamp}?delete"),
+            false => stamp.to_string(),
+        })
+    }
+
     pub fn set_undo_face(&mut self, face: Option<TexId>) {
         self.undo_face = face;
         self.push_hint_faces();
     }
 
     fn push_hint_faces(&mut self) {
-        let mut faces = self.legend_faces.clone();
-        faces.extend(self.undo_face);
+        let mut faces = match self.confirming_delete() {
+            true => self.confirm_faces.clone(),
+            false => self.legend_faces.clone(),
+        };
+        if !self.confirming_delete() {
+            faces.extend(self.undo_face);
+        }
         if let Some(p) = &mut self.polaroids {
             p.set_hint_faces(faces);
         }
@@ -3603,8 +3660,14 @@ fn system_secs() -> i64 {
         .unwrap_or(0)
 }
 
+/// The state the next save will delete, so undoing that save can put it back. Only when
+/// the ring is exactly full: an over-full ring left from the old ten-deep one moves its
+/// extras into `older/` instead of deleting them, so there is nothing to restore.
 fn doomed(ring: &StateRing) -> Option<(String, Vec<u8>, Vec<u8>)> {
     let entries = ring.list().ok()?;
+    if entries.len() != RING_MAX {
+        return None;
+    }
     let oldest = entries.get(RING_MAX - 1)?;
     let (state, thumb) = ring.read(&oldest.stamp).ok()?;
     Some((oldest.stamp.clone(), state, thumb))

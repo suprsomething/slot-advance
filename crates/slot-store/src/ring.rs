@@ -4,7 +4,13 @@ use crate::atomic::{atomic_write, sync_dir};
 use crate::core::Core;
 use crate::platform::Platform;
 
-pub const RING_MAX: usize = 10;
+/// Manual states kept per cart. Each SELECT + R1 adds one; a sixth pushes out the oldest.
+pub const RING_MAX: usize = 5;
+
+/// Where states beyond the ring go when a save would push out more than one at once. That
+/// only happens to a cart saved under the old ten-deep ring, so those states are moved here,
+/// out of the switcher, instead of being deleted.
+pub const OLDER_DIR: &str = "older";
 
 const STATE_EXT: &str = "state";
 const THUMB_EXT: &str = "png";
@@ -117,12 +123,46 @@ impl StateRing {
             .unwrap_or(first)
     }
 
+    /// Drops what no longer fits. One state over is the ring turning: the oldest is
+    /// deleted. More than one over means states from the old ten-deep ring, which are moved
+    /// into `older/` instead, so nothing saved before the ring shrank is ever lost.
     fn evict(&self) -> std::io::Result<()> {
-        for old in self.list()?.into_iter().skip(RING_MAX) {
-            std::fs::remove_file(&old.state)?;
-            let _ = std::fs::remove_file(&old.thumb);
+        let over: Vec<StateEntry> = self.list()?.into_iter().skip(RING_MAX).collect();
+        if over.len() == 1 {
+            std::fs::remove_file(&over[0].state)?;
+            let _ = std::fs::remove_file(&over[0].thumb);
+            return Ok(());
         }
+        if over.is_empty() {
+            return Ok(());
+        }
+        let older = self.dir.join(OLDER_DIR);
+        std::fs::create_dir_all(&older)?;
+        for old in over {
+            let (state, thumb) = free_pair(&older, &old.stamp);
+            if old.thumb.exists() {
+                std::fs::rename(&old.thumb, &thumb)?;
+            }
+            std::fs::rename(&old.state, &state)?;
+        }
+        sync_dir(&older.join("."));
+        sync_dir(&self.dir.join("."));
         Ok(())
+    }
+
+    /// The states moved out of the ring by `evict`, newest first. Not offered in the
+    /// switcher; kept so a person can recover one from a card reader.
+    pub fn older(&self) -> Vec<PathBuf> {
+        let Ok(dir) = std::fs::read_dir(self.dir.join(OLDER_DIR)) else {
+            return Vec::new();
+        };
+        let mut out: Vec<PathBuf> = dir
+            .filter_map(|e| e.ok().map(|e| e.path()))
+            .filter(|p| p.extension().and_then(|e| e.to_str()) == Some(STATE_EXT))
+            .collect();
+        out.sort();
+        out.reverse();
+        out
     }
 
     fn path(&self, stem: &str, ext: &str) -> PathBuf {
@@ -147,4 +187,22 @@ fn is_stamp(s: &str) -> bool {
             b'0' => c.is_ascii_digit(),
             _ => c == *shape,
         })
+}
+
+/// A `<stamp>.state` / `<stamp>.png` pair in `dir` that does not overwrite anything there.
+fn free_pair(dir: &Path, stamp: &str) -> (PathBuf, PathBuf) {
+    let pair = |name: &str| {
+        (
+            dir.join(format!("{name}.{STATE_EXT}")),
+            dir.join(format!("{name}.{THUMB_EXT}")),
+        )
+    };
+    let first = pair(stamp);
+    if !first.0.exists() && !first.1.exists() {
+        return first;
+    }
+    (2u32..)
+        .map(|n| pair(&format!("{stamp}-{n}")))
+        .find(|(s, t)| !s.exists() && !t.exists())
+        .unwrap_or(first)
 }

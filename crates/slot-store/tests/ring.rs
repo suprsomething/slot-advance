@@ -1,8 +1,8 @@
-use slot_store::{Core, Platform, StateRing, RING_MAX};
+use slot_store::{Core, Platform, StateRing, OLDER_DIR, RING_MAX};
 use tempfile::tempdir;
 
 #[test]
-fn ring_evicts_the_oldest_beyond_ten() {
+fn ring_evicts_the_oldest_beyond_five() {
     let d = tempdir().unwrap();
     let r = StateRing::new(d.path(), Platform::Gba, Core::Mgba, "Emerald");
     for i in 0..14 {
@@ -12,7 +12,7 @@ fn ring_evicts_the_oldest_beyond_ten() {
     let l = r.list().unwrap();
     assert_eq!(l.len(), RING_MAX);
     assert_eq!(l[0].stamp, "2026-08-09_00-00-13");
-    assert_eq!(l[9].stamp, "2026-08-09_00-00-04");
+    assert_eq!(l[RING_MAX - 1].stamp, "2026-08-09_00-00-09");
     let orphans = std::fs::read_dir(d.path().join("States/GBA/mgba/Emerald"))
         .unwrap()
         .count();
@@ -52,7 +52,7 @@ fn eviction_is_by_stamp_not_by_write_order() {
     let l = r.list().unwrap();
     assert_eq!(l.len(), RING_MAX);
     assert_eq!(l[0].stamp, "2026-08-09_00-00-11");
-    assert_eq!(l[RING_MAX - 1].stamp, "2026-08-09_00-00-02");
+    assert_eq!(l[RING_MAX - 1].stamp, "2026-08-09_00-00-07");
 }
 
 #[test]
@@ -254,4 +254,92 @@ fn a_second_retirement_in_the_same_second_does_not_overwrite_the_first() {
     assert_ne!(first, second, "the second retirement took the same name");
     assert_eq!(std::fs::read(&first).unwrap(), [1u8; 8], "the first went");
     assert_eq!(std::fs::read(&second).unwrap(), [2u8; 8]);
+}
+
+#[test]
+fn the_ring_holds_five() {
+    assert_eq!(RING_MAX, 5);
+}
+
+/// A card saved under the old ten-deep ring: the first save after the change would push
+/// out six states at once. None of them is deleted; they move into `older/`.
+#[test]
+fn states_from_the_old_ten_deep_ring_move_aside_instead_of_being_deleted() {
+    let d = tempdir().unwrap();
+    let dir = d.path().join("States/GBA/mgba/Emerald");
+    std::fs::create_dir_all(&dir).unwrap();
+    for i in 0..10 {
+        std::fs::write(
+            dir.join(format!("2026-08-09_00-00-{i:02}.state")),
+            [i as u8; 8],
+        )
+        .unwrap();
+        std::fs::write(dir.join(format!("2026-08-09_00-00-{i:02}.png")), b"png").unwrap();
+    }
+    let r = StateRing::new(d.path(), Platform::Gba, Core::Mgba, "Emerald");
+    assert_eq!(
+        r.list().unwrap().len(),
+        10,
+        "the old states are not offered before a save"
+    );
+
+    r.push(&[99u8; 8], b"png", "2026-08-09_00-01-00").unwrap();
+    let l = r.list().unwrap();
+    assert_eq!(l.len(), RING_MAX);
+    assert_eq!(l[0].stamp, "2026-08-09_00-01-00");
+    assert_eq!(l[RING_MAX - 1].stamp, "2026-08-09_00-00-06");
+
+    let older = r.older();
+    assert_eq!(older.len(), 6, "an old state was deleted instead of moved");
+    for i in 0..6 {
+        let state = dir
+            .join(OLDER_DIR)
+            .join(format!("2026-08-09_00-00-{i:02}.state"));
+        assert_eq!(
+            std::fs::read(&state).unwrap(),
+            vec![i as u8; 8],
+            "{state:?}"
+        );
+        assert!(dir
+            .join(OLDER_DIR)
+            .join(format!("2026-08-09_00-00-{i:02}.png"))
+            .exists());
+    }
+
+    r.push(&[100u8; 8], b"png", "2026-08-09_00-02-00").unwrap();
+    assert_eq!(r.list().unwrap().len(), RING_MAX);
+    assert_eq!(
+        r.older().len(),
+        6,
+        "a normal turn of the ring moved a state aside"
+    );
+}
+
+#[test]
+fn moving_aside_never_overwrites_what_is_already_there() {
+    let d = tempdir().unwrap();
+    let dir = d.path().join("States/GBA/mgba/Emerald");
+    std::fs::create_dir_all(dir.join(OLDER_DIR)).unwrap();
+    std::fs::write(
+        dir.join(OLDER_DIR).join("2026-08-09_00-00-00.state"),
+        b"first",
+    )
+    .unwrap();
+    for i in 0..7 {
+        std::fs::write(
+            dir.join(format!("2026-08-09_00-00-{i:02}.state")),
+            [i as u8; 8],
+        )
+        .unwrap();
+    }
+    let r = StateRing::new(d.path(), Platform::Gba, Core::Mgba, "Emerald");
+    r.push(&[9u8; 8], b"png", "2026-08-09_00-01-00").unwrap();
+    assert_eq!(
+        std::fs::read(dir.join(OLDER_DIR).join("2026-08-09_00-00-00.state")).unwrap(),
+        b"first"
+    );
+    assert_eq!(
+        std::fs::read(dir.join(OLDER_DIR).join("2026-08-09_00-00-00-2.state")).unwrap(),
+        vec![0u8; 8]
+    );
 }

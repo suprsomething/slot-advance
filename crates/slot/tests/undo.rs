@@ -2,19 +2,19 @@ mod common;
 
 use common::{app_playing_in, app_playing_with, tmp_root_with_carts, CoreSnapshot};
 use slot_input::{Action, Btn};
-use slot_store::{Core, Platform, StateRing};
+use slot_store::{Core, Platform, StateRing, RING_MAX};
 
 #[test]
 fn undoing_a_save_removes_it_and_restores_the_evicted_entry() {
     let d = tmp_root_with_carts(&["Emerald"]);
     let r = StateRing::new(d.path(), Platform::Gba, Core::Mgba, "Emerald");
-    for i in 0..10 {
+    for i in 0..RING_MAX {
         r.push(&[i as u8; 64], b"png", &format!("2026-08-09_00-00-{i:02}"))
             .unwrap();
     }
     let mut a = app_playing_in(d.path(), "Emerald");
     a.apply_at(Action::SaveState, 1_000);
-    assert_eq!(r.list().unwrap().len(), 10);
+    assert_eq!(r.list().unwrap().len(), RING_MAX);
     assert!(r
         .list()
         .unwrap()
@@ -23,7 +23,7 @@ fn undoing_a_save_removes_it_and_restores_the_evicted_entry() {
 
     a.undo(2_000);
     let l = r.list().unwrap();
-    assert_eq!(l.len(), 10);
+    assert_eq!(l.len(), RING_MAX);
     assert!(
         l.iter().any(|e| e.stamp == "2026-08-09_00-00-00"),
         "the evicted oldest entry was not restored"
@@ -147,5 +147,60 @@ fn the_plate_is_drawn_only_over_the_switcher_and_only_while_the_offer_stands() {
         open.len(),
         expired.len() + 1,
         "the plate outlived the offer"
+    );
+}
+
+#[test]
+fn undoing_the_save_that_moved_old_states_aside_puts_nothing_back_twice() {
+    let d = tmp_root_with_carts(&["Emerald"]);
+    let dir = d.path().join("States/GBA/mgba/Emerald");
+    std::fs::create_dir_all(&dir).unwrap();
+    for i in 0..10 {
+        std::fs::write(
+            dir.join(format!("2026-08-09_00-00-{i:02}.state")),
+            [i as u8; 8],
+        )
+        .unwrap();
+    }
+    let r = StateRing::new(d.path(), Platform::Gba, Core::Mgba, "Emerald");
+    let mut a = app_playing_in(d.path(), "Emerald");
+    a.apply_at(Action::SaveState, 1_000);
+    assert_eq!(r.older().len(), 6);
+    a.undo(2_000);
+    let l = r.list().unwrap();
+    assert_eq!(l.len(), RING_MAX - 1, "undo did not remove the new save");
+    assert_eq!(r.older().len(), 6, "an old state was lost or duplicated");
+    assert!(
+        l.iter().all(|e| !r
+            .older()
+            .iter()
+            .any(|o| o.file_stem().and_then(|s| s.to_str()) == Some(&e.stamp))),
+        "undo copied a moved-aside state back into the ring"
+    );
+}
+
+#[test]
+fn closing_the_lid_saves_to_resume_and_leaves_the_manual_ring_alone() {
+    let d = tmp_root_with_carts(&["Emerald"]);
+    let r = StateRing::new(d.path(), Platform::Gba, Core::Mgba, "Emerald");
+    for i in 0..RING_MAX {
+        r.push(&[i as u8; 64], b"png", &format!("2026-08-09_00-00-{i:02}"))
+            .unwrap();
+    }
+    let before = r.list().unwrap();
+    let mut a = app_playing_in(d.path(), "Emerald");
+    for _ in 0..3 {
+        a.apply(Action::LidClose);
+        a.apply(Action::LidOpen);
+    }
+    a.settle_saves();
+    assert_eq!(
+        r.list().unwrap(),
+        before,
+        "a lid close touched the manual states"
+    );
+    assert!(
+        r.read_resume().unwrap().is_some(),
+        "closing the lid did not write the suspend state"
     );
 }

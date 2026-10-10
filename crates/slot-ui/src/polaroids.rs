@@ -21,6 +21,14 @@ const MARGIN: f32 = 16.0;
 
 pub const LEGEND: [(&str, &str); 3] = [("B", "Back"), ("Y", "Delete"), ("A", "Load")];
 const WAYS_OUT: usize = 2;
+
+/// The bottom plate while a delete waits for its second Y: keeping the state on the left,
+/// where the ways out sit, and deleting it on the right, under the screenshot's own action.
+pub const CONFIRM_LEGEND: [(&str, &str); 2] = [("B", "Keep"), ("Y", "Delete")];
+const CONFIRM_WAYS_OUT: usize = 1;
+
+/// What the top plate says in place of the timestamp while a delete waits for its answer.
+pub const CONFIRM_TITLE: &str = "Delete this state?";
 const UNDO_KEY: &str = "X";
 
 pub struct PhotoFace {
@@ -52,6 +60,7 @@ pub struct Polaroids {
     title: Option<TexId>,
     hint_faces: Vec<TexId>,
     undo: Option<String>,
+    confirming: bool,
 }
 
 impl Polaroids {
@@ -63,7 +72,22 @@ impl Polaroids {
             title: None,
             hint_faces: Vec::new(),
             undo: None,
+            confirming: false,
         }
+    }
+
+    /// The first Y: ask before deleting the state on screen.
+    pub fn ask_delete(&mut self) {
+        self.confirming = !self.entries.is_empty();
+    }
+
+    /// Anything but a second Y: keep the state.
+    pub fn keep(&mut self) {
+        self.confirming = false;
+    }
+
+    pub fn is_confirming(&self) -> bool {
+        self.confirming
     }
 
     pub fn set_faces(&mut self, faces: Vec<TexId>) {
@@ -83,6 +107,9 @@ impl Polaroids {
     }
 
     pub fn hints(&self) -> Vec<Hint> {
+        if self.confirming {
+            return hint_row(&CONFIRM_LEGEND);
+        }
         let mut out = hint_row(&LEGEND);
         if let Some(label) = &self.undo {
             out.push(Hint {
@@ -106,6 +133,9 @@ impl Polaroids {
     }
 
     pub fn title(&self, now: &str) -> String {
+        if self.confirming {
+            return CONFIRM_TITLE.to_string();
+        }
         match self.selected() {
             Some(e) => Self::relative_time(&e.stamp, now),
             None => String::new(),
@@ -116,6 +146,7 @@ impl Polaroids {
         if self.index >= self.entries.len() {
             return;
         }
+        self.confirming = false;
         self.entries.remove(self.index);
         if self.index < self.faces.len() {
             self.faces.remove(self.index);
@@ -206,11 +237,15 @@ impl Polaroids {
             .iter()
             .map(|h| hint_width(h.key, &h.label) as f32)
             .collect();
-        let tail = &widths[WAYS_OUT..];
+        let ways_out = match self.confirming {
+            true => CONFIRM_WAYS_OUT,
+            false => WAYS_OUT,
+        };
+        let tail = &widths[ways_out..];
         let tail_w = tail.iter().sum::<f32>() + HINT_GAP * (tail.len() - 1) as f32;
         let mut x = MARGIN;
         for (i, w) in widths.iter().enumerate() {
-            if i == WAYS_OUT {
+            if i == ways_out {
                 x = OUT_W as f32 - MARGIN - tail_w;
             }
             out.push(hint_quad(x, y, *w, self.hint_faces.get(i).copied()));
