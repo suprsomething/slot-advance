@@ -58,11 +58,15 @@ Everything else works the way slot does, including the automatic suspend state w
 <img src=".github/resources/screenshots/advance/switcher-delete.png" width="48%" alt="The switcher asking Delete this state?">
 </p>
 
-<sub>Screenshots are rendered from slot advance's own drawing code at the RG SP's 720 x 480. Cart labels are plain text until you add label art, and the switcher shows a stand-in scene instead of a game.</sub>
+<sub>Screenshots are rendered from slot advance's own drawing code at the RG SP's 720 x 480. These interface screenshots use plain text cart labels; the original-label artwork pack is shown below. The switcher shows a stand-in scene instead of a game.</sub>
 
 ---
 
 # Game-label artwork
+
+<p align="center">
+<img src="artwork/gba-originals/preview.png" width="100%" alt="Twelve original GBA cartridge labels: Pokémon Emerald and FireRed, Drill Dozer, Final Fantasy VI Advance, Kirby Nightmare in Dream Land, Mario Kart Super Circuit, Pokémon Mystery Dungeon, Metroid Zero Mission, Advance Wars, Zelda The Minish Cap, Kirby and the Amazing Mirror, and Final Fantasy Tactics Advance">
+</p>
 
 A [12-game original cartridge-label starter pack](artwork/gba-originals/README.md) is included, with Pokémon Emerald and FireRed, Mario Kart, Kirby, Zelda and more. Copy the game PNGs into `Labels/GBA/`, matching each ROM filename, or use the optional installer described in the pack. Existing artwork is preserved. Source credits and artwork regions are documented with the pack.
 
