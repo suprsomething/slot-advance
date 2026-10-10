@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".github/resources/hero.png?v=slot-advance-hero-1" width="100%" alt="Slot Advance hero artwork featuring the Anbernic RG SP">
+<img src=".github/resources/slot-advance-hero.png" width="100%" alt="Slot Advance hero artwork featuring the Anbernic RG SP">
 
 # slot advance
 
