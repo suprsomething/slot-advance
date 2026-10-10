@@ -167,8 +167,19 @@ fn the_shipped_slot_advance_logo_is_centred_on_a_black_rg_sp_screen() {
     .unwrap();
     let logo = compose(&decode(&card).unwrap(), (720, 480)).unwrap();
     assert_eq!((logo.width, logo.height), (720, 480));
-    for (x, y) in [(0, 0), (719, 0), (0, 479), (719, 479), (360, 20), (360, 460)] {
-        assert_eq!(at(&logo, x, y), [0, 0, 0], "background at {x},{y} is not black");
+    for (x, y) in [
+        (0, 0),
+        (719, 0),
+        (0, 479),
+        (719, 479),
+        (360, 20),
+        (360, 460),
+    ] {
+        assert_eq!(
+            at(&logo, x, y),
+            [0, 0, 0],
+            "background at {x},{y} is not black"
+        );
     }
     let inked: Vec<(usize, usize)> = (0..480)
         .flat_map(|y| (0..720).map(move |x| (x, y)))
@@ -182,8 +193,16 @@ fn the_shipped_slot_advance_logo_is_centred_on_a_black_rg_sp_screen() {
         inked.iter().map(|p| p.1).min().unwrap(),
         inked.iter().map(|p| p.1).max().unwrap(),
     );
-    assert!(l.abs_diff(719 - r) <= 3, "not centred across: {l} | {}", 719 - r);
-    assert!(t.abs_diff(479 - b) <= 3, "not centred down: {t} | {}", 479 - b);
+    assert!(
+        l.abs_diff(719 - r) <= 3,
+        "not centred across: {l} | {}",
+        719 - r
+    );
+    assert!(
+        t.abs_diff(479 - b) <= 3,
+        "not centred down: {t} | {}",
+        479 - b
+    );
 
     let white = inked
         .iter()

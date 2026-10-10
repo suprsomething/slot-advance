@@ -41,18 +41,43 @@ fn a_missing_gauge_is_not_drawn_as_empty() {
 }
 
 #[test]
-fn the_compliance_block_is_the_credits() {
+fn the_about_text_names_slot_advance_and_its_sources() {
     let all = sticker_lines(&fields()).join("\n").to_uppercase();
+    for owed in [
+        "SLOT ADVANCE",
+        "BASED ON SLOT",
+        "BRANDON T. KOWALSKI",
+        "MGBA",
+        "GPSP",
+        "SEE README FOR FULL CREDITS",
+    ] {
+        assert!(all.contains(owed), "the About text does not mention {owed}");
+    }
+}
+
+#[test]
+fn the_readme_carries_the_credits_the_about_screen_points_to() {
+    let readme = std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../../README.md"))
+        .unwrap()
+        .to_uppercase();
+    let credits = &readme[readme.find("# CREDITS").expect("a Credits section")..];
     for owed in [
         "MGBA",
         "GPSP",
-        "BASEOS BY PVAIBHAV",
+        "BASEOS",
+        "PVAIBHAV",
         "OPEN SANS",
-        "NERD",
+        "NERD FONTS",
+        "RYAN L MCINTYRE",
         "LCD3X",
+        "GIGAHERZ",
+        "CART SOUNDS",
         "CLAUDE",
     ] {
-        assert!(all.contains(owed), "the credits do not mention {owed}");
+        assert!(
+            credits.contains(owed),
+            "the README credits do not mention {owed}"
+        );
     }
 }
 

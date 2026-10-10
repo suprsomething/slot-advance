@@ -217,7 +217,10 @@ All three `.txt` files live in `Config/`, so replacing `System/` on an update le
 - **[ciscosweater/slots](https://github.com/ciscosweater/slots)**: the Recents category is adapted from this community fork, and its favourites tab inspired ours.
 - **[mGBA](https://mgba.io)** by endrift and **[gpSP](https://github.com/libretro/gpsp)** through [libretro](https://www.libretro.com): the emulation.
 - **[AGS-102](https://github.com/BrandonKowalski/AGS-102)**, a fork of [BaseOS](https://github.com/pvaibhav/BaseOS) by @pvaibhav: the operating system slot boots on.
-- **[Open Sans](https://github.com/googlefonts/opensans)** (SIL Open Font License) and **[Nerd Fonts](https://www.nerdfonts.com)** symbols (MIT), including the favourite star.
+- **[Open Sans](https://github.com/googlefonts/opensans)** (SIL Open Font License) and **[Nerd Fonts](https://www.nerdfonts.com)** symbols by Ryan L McIntyre (MIT), including the favourite star.
+- The LCD3x screen shader's panel mask is derived from **gigaherz's LCD3x**.
+- The cart sounds are recordings of Brandon T. Kowalski's childhood Game Boy.
+- Both slot and slot advance were built with **Claude** (see [AI disclosure](#ai-disclosure)).
 
 slot advance is released under the same licence as slot, the [GNU GPL v3 or later](LICENSE).
 

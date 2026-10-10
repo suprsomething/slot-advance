@@ -36,20 +36,21 @@ pub struct StickerFields<'a> {
     pub dirty_digit: char,
 }
 
-pub const CREDITS: [&str; 10] = [
-    "EMULATION POWERED BY MGBA",
-    "AND GPSP. UNDERLYING OS IS",
-    "BASEOS BY PVAIBHAV. TYPE IS",
-    "OPEN SANS AND NERD FONTS",
-    "SYMBOLS BY RYAN L MCINTYRE.",
-    "THE PANEL MASK IS DERIVED",
-    "FROM GIGAHERZ'S LCD3X. THE",
-    "CART SOUNDS ARE MY CHILDHOOD",
-    "GAMEBOY. I WASTED WATER",
-    "BUILDING THIS WITH CLAUDE.",
+/// slot advance's About text. The full credits (BaseOS, the fonts, the LCD3x mask, the cart
+/// sounds) live in the README, which the last line points to.
+pub const CREDITS: [&str; 9] = [
+    "SLOT ADVANCE",
+    "A GBA-FOCUSED FORK OF SLOT",
+    "FOR THE ANBERNIC RG SP.",
+    "FAVOURITES, RECENT GAMES,",
+    "AND REFINED SAVE STATES.",
+    "BASED ON SLOT BY",
+    "BRANDON T. KOWALSKI.",
+    "EMULATION BY MGBA AND GPSP.",
+    "SEE README FOR FULL CREDITS.",
 ];
 
-pub const ORIGIN: [&str; 2] = ["S/LOT-USA", "MADE IN ITHACA"];
+pub const ORIGIN: [&str; 2] = ["S/LOT-USA", "BASED ON SLOT"];
 
 pub const COPYRIGHT: &str = "\u{a9} 2026 BRANDON T. KOWALSKI";
 
