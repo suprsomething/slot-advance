@@ -25,7 +25,7 @@ type Shared = Arc<(Mutex<Queue>, Condvar)>;
 
 pub struct CartFaces {
     queue: Shared,
-    built: Receiver<(Key, CartFace)>,
+    built: Receiver<(Key, String, CartFace)>,
     pending: HashSet<Key>,
     asked: Vec<FaceWant>,
     free: Vec<TexId>,
@@ -55,8 +55,8 @@ impl CartFaces {
 
     pub fn sync(&mut self, app: &mut App, compositor: &mut Compositor) {
         self.free.extend(app.shed_faces());
-        while let Ok((key, face)) = self.built.try_recv() {
-            self.place(app, compositor, key, face);
+        while let Ok((key, stem, face)) = self.built.try_recv() {
+            self.place(app, compositor, key, &stem, face);
         }
         let wants = app.face_wants();
         if wants != self.asked {
@@ -70,11 +70,11 @@ impl CartFaces {
             .map(|w| (w.shelf, w.index))
             .collect();
         while !waiting.is_empty() {
-            let Ok((key, face)) = self.built.recv() else {
+            let Ok((key, stem, face)) = self.built.recv() else {
                 return;
             };
             waiting.retain(|k| *k != key);
-            self.place(app, compositor, key, face);
+            self.place(app, compositor, key, &stem, face);
         }
     }
 
@@ -97,9 +97,21 @@ impl CartFaces {
         wake.notify_all();
     }
 
-    fn place(&mut self, app: &mut App, compositor: &mut Compositor, key: Key, face: CartFace) {
+    fn place(
+        &mut self,
+        app: &mut App,
+        compositor: &mut Compositor,
+        key: Key,
+        stem: &str,
+        face: CartFace,
+    ) {
         self.pending.remove(&key);
         self.asked.retain(|w| (w.shelf, w.index) != key);
+        // The Favourites shelf is rebuilt whenever a cart is starred, so a face built for
+        // one of its places may arrive after another cart has moved into that place.
+        if app.face_cart(key.0, key.1).map(|c| c.stem.as_str()) != Some(stem) {
+            return;
+        }
         let tex = match self.free.pop() {
             Some(tex) => {
                 compositor.update_texture(tex, face.w, face.h, &face.rgba);
@@ -119,7 +131,7 @@ impl Drop for CartFaces {
     }
 }
 
-fn work(queue: &Shared, outbox: &Sender<(Key, CartFace)>, root: &Path) {
+fn work(queue: &Shared, outbox: &Sender<(Key, String, CartFace)>, root: &Path) {
     let (lock, wake) = &**queue;
     loop {
         let (key, cart) = {
@@ -135,7 +147,7 @@ fn work(queue: &Shared, outbox: &Sender<(Key, CartFace)>, root: &Path) {
             }
         };
         let face = cart_face_with(&cart, label_art(root, &cart));
-        if outbox.send((key, face)).is_err() {
+        if outbox.send((key, cart.stem, face)).is_err() {
             return;
         }
     }

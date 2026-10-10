@@ -6,6 +6,8 @@ mod gl;
 mod grade;
 #[cfg(target_os = "macos")]
 mod headless;
+#[cfg(all(target_os = "linux", not(feature = "device")))]
+mod headless_egl;
 #[cfg(feature = "host")]
 mod host;
 mod lcd3x;
@@ -22,6 +24,8 @@ pub use fbo::{canvas_size, Compositor, BACKDROP};
 pub use grade::{blue_light_gain, BLUE_LIGHT_MAX};
 #[cfg(target_os = "macos")]
 pub use headless::HeadlessSurface;
+#[cfg(all(target_os = "linux", not(feature = "device")))]
+pub use headless_egl::HeadlessSurface;
 #[cfg(feature = "host")]
 pub use host::HostSurface;
 pub use lcd3x::{lcd3x_factors, lcd3x_mask, ScreenEffect};

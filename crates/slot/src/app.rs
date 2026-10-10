@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -262,6 +262,11 @@ pub enum Phase {
 pub struct App {
     phase: Phase,
     shelves: Vec<(Platform, Shelf)>,
+    /// The Favourites shelf, always the last entry of `shelves`. Empty until something is
+    /// starred, which keeps it out of the L2 / R2 cycle.
+    fav_at: usize,
+    favourites: BTreeSet<String>,
+    retired_faces: Vec<TexId>,
     shelf_at: usize,
     play_held: Option<Millis>,
     refusal: Option<Refusal>,
@@ -350,6 +355,9 @@ pub struct App {
     state_writer: crate::state_writer::StateWriter,
 }
 
+/// Size of the favourite star glyph, in pixels at full cart scale.
+pub const STAR_PX: f32 = 34.0;
+
 const FACE_AHEAD: i32 = 8;
 const FACE_KEEP: i32 = 12;
 
@@ -375,7 +383,9 @@ fn shelves_of(carts: Vec<Cart>) -> Vec<(Platform, Shelf)> {
 
 impl App {
     pub fn new(carts: Vec<Cart>) -> Self {
-        let shelves = shelves_of(carts);
+        let mut shelves = shelves_of(carts);
+        let fav_at = shelves.len();
+        shelves.push((Platform::Gba, Shelf::new(Vec::new())));
         let shelf_at = shelves
             .iter()
             .position(|(_, s)| !s.carts.is_empty())
@@ -387,6 +397,9 @@ impl App {
             state_writer,
             phase: Phase::Shelf,
             shelves,
+            fav_at,
+            favourites: BTreeSet::new(),
+            retired_faces: Vec::new(),
             shelf_at,
             play_held: None,
             refusal: None,
@@ -483,6 +496,8 @@ impl App {
         let mut app = App::new(carts);
         app.root = Some(root.to_path_buf());
         app.state = read_slot_state(root);
+        app.favourites = slot_store::read_favourites(root);
+        app.restock_favourites();
         if app.state.clock_set {
             app.start();
         } else {
@@ -539,6 +554,90 @@ impl App {
         self.name_pending = true;
     }
 
+    /// L2 / R2 on the carousel: step between All and Favourites, or shake when there is
+    /// nowhere to go (nothing starred yet).
+    fn switch_category(&mut self, by: i32) {
+        match self.next_shelf(by) {
+            Some(_) => self.switch_shelf(by),
+            None => self.refuse(),
+        }
+    }
+
+    pub fn on_favourites(&self) -> bool {
+        self.shelf_at == self.fav_at
+    }
+
+    pub fn favourites(&self) -> &BTreeSet<String> {
+        &self.favourites
+    }
+
+    pub fn is_favourite(&self, cart: &Cart) -> bool {
+        self.favourites
+            .contains(&slot_store::favourite_key(cart.platform, &cart.stem))
+    }
+
+    /// Y on the carousel: star or unstar the cart in front of the slot.
+    fn toggle_favourite(&mut self) {
+        let Some(cart) = self.shelf().carts.get(self.shelf().index).cloned() else {
+            return;
+        };
+        let key = slot_store::favourite_key(cart.platform, &cart.stem);
+        if !self.favourites.remove(&key) {
+            self.favourites.insert(key);
+        }
+        if let Some(root) = &self.root {
+            if let Err(e) = slot_store::write_favourites(root, &self.favourites) {
+                eprintln!("slot: favourites: {e}");
+            }
+        }
+        self.restock_favourites();
+    }
+
+    /// Rebuilds the Favourites shelf from the starred set and re-marks the stars on every
+    /// other shelf. Keeps whichever cart Favourites had selected when it is still there,
+    /// and otherwise the same position, so unstarring slides the next cart into the slot.
+    fn restock_favourites(&mut self) {
+        let starred: Vec<Cart> = self.shelves[..self.fav_at]
+            .iter()
+            .flat_map(|(_, shelf)| shelf.carts.iter())
+            .filter(|c| self.is_favourite(c))
+            .cloned()
+            .collect();
+        let marks: Vec<Vec<bool>> = self.shelves[..self.fav_at]
+            .iter()
+            .map(|(_, shelf)| shelf.carts.iter().map(|c| self.is_favourite(c)).collect())
+            .collect();
+        for ((_, shelf), marks) in self.shelves.iter_mut().zip(marks) {
+            shelf.set_marks(marks);
+        }
+
+        let fav = &self.shelves[self.fav_at].1;
+        let kept = fav.carts.get(fav.index).and_then(|c| {
+            starred
+                .iter()
+                .position(|s| s.stem == c.stem && s.platform == c.platform)
+        });
+        let fav = &mut self.shelves[self.fav_at].1;
+        let at = fav.index;
+        let old = fav.restock(starred);
+        fav.select(kept.unwrap_or(at.min(fav.carts.len().saturating_sub(1))));
+        self.retired_faces.extend(old);
+
+        if self.on_favourites() && self.shelf().carts.is_empty() {
+            self.play_held = None;
+            if let Some(to) = self.shelves[..self.fav_at]
+                .iter()
+                .position(|(_, s)| !s.carts.is_empty())
+            {
+                self.shelf_at = to;
+                self.shelf_platform = slot_ui::Printed::default();
+                self.slot_letter = None;
+                self.shelf_named = None;
+                self.name_pending = true;
+            }
+        }
+    }
+
     fn jump_letter(&mut self, dir: i32) {
         let before = self.shelf().index;
         match dir > 0 {
@@ -586,6 +685,7 @@ impl App {
         self.shelves
             .iter()
             .enumerate()
+            .filter(|(at, _)| *at != self.fav_at)
             .filter(|(_, (p, _))| platform.is_none_or(|want| *p == want))
             .find_map(|(at, (_, shelf))| {
                 shelf
@@ -686,6 +786,15 @@ impl App {
         }
     }
 
+    /// The favourite star drawn above starred carts on the All shelf. Favourites itself
+    /// goes without: everything there is starred.
+    pub fn set_star_face(&mut self, face: TexId, w: u32, h: u32) {
+        let fav_at = self.fav_at;
+        for (_, shelf) in &mut self.shelves[..fav_at] {
+            shelf.set_star(face, w, h);
+        }
+    }
+
     pub fn set_gb_cart_shadows(&mut self, notched: TexId, rounded: TexId) {
         for (_, shelf) in &mut self.shelves {
             shelf.set_gb_shadow(GbShell::Notched, notched);
@@ -718,7 +827,17 @@ impl App {
 
     pub fn shelf_platform_name(&self) -> Option<&'static str> {
         self.next_shelf(1)?;
-        Some(self.shelves[self.shelf_at].0.name())
+        if self.on_favourites() {
+            return Some("Favourites");
+        }
+        let stocked = self.shelves[..self.fav_at]
+            .iter()
+            .filter(|(_, s)| !s.carts.is_empty())
+            .count();
+        match stocked {
+            1 => Some("All"),
+            _ => Some(self.shelves[self.shelf_at].0.name()),
+        }
     }
 
     pub fn set_battery_percent_face(&mut self, face: TexId, w: u32) {
@@ -734,7 +853,7 @@ impl App {
     }
 
     pub fn carts(&self) -> impl Iterator<Item = &Cart> {
-        self.shelves
+        self.shelves[..self.fav_at]
             .iter()
             .flat_map(|(_, shelf)| shelf.carts.iter())
     }
@@ -757,7 +876,8 @@ impl App {
 
     pub fn set_faces(&mut self, faces: Vec<TexId>) {
         let mut faces = faces.into_iter();
-        for (_, shelf) in &mut self.shelves {
+        let fav_at = self.fav_at;
+        for (_, shelf) in &mut self.shelves[..fav_at] {
             let n = shelf.carts.len();
             shelf.set_faces(faces.by_ref().take(n).collect());
         }
@@ -797,7 +917,7 @@ impl App {
 
     pub fn shed_faces(&mut self) -> Vec<TexId> {
         let neighbours = self.neighbour_shelves();
-        let mut shed = Vec::new();
+        let mut shed = std::mem::take(&mut self.retired_faces);
         for (at, (_, shelf)) in self.shelves.iter_mut().enumerate() {
             let keep = if at == self.shelf_at {
                 shelf.around(FACE_KEEP)
@@ -1269,6 +1389,9 @@ impl App {
                 Action::Insert => self.insert(!self.state.eject_save),
                 Action::GbaDown(Btn::L1) => self.switch_shelf(-1),
                 Action::GbaDown(Btn::R1) => self.switch_shelf(1),
+                Action::RewindStart => self.switch_category(-1),
+                Action::FfStart => self.switch_category(1),
+                Action::GbaDown(Btn::Y) => self.toggle_favourite(),
                 _ => {}
             },
             Phase::Inserting { .. } if action == Action::Eject => self.eject(),

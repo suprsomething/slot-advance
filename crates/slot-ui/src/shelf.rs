@@ -41,6 +41,9 @@ const PART: f32 = 130.0;
 
 const SLOTS: i32 = 3;
 
+/// Gap between a favourite star and the top of its cart, at full cart size.
+const STAR_GAP: f32 = 10.0;
+
 const REPEAT_DELAY_MS: Millis = 400;
 const REPEAT_MS: [Millis; 4] = [110, 85, 65, 50];
 
@@ -56,6 +59,8 @@ pub struct Shelf {
     ride: f32,
     vel: f32,
     held: Option<(i32, Millis, usize)>,
+    marks: Vec<bool>,
+    star: Option<(TexId, f32, f32)>,
 }
 
 impl Shelf {
@@ -72,7 +77,22 @@ impl Shelf {
             ride: 0.0,
             vel: 0.0,
             held: None,
+            marks: Vec::new(),
+            star: None,
         }
+    }
+
+    /// Swaps in a new row of carts, keeping the shadows and the star, and hands back the
+    /// faces the old row held so their textures can be reused.
+    pub fn restock(&mut self, carts: Vec<Cart>) -> Vec<TexId> {
+        let old: Vec<TexId> = self.faces.drain(..).flatten().collect();
+        self.shells = carts.iter().map(gb_shell_of).collect();
+        self.faces = vec![None; carts.len()];
+        self.marks = Vec::new();
+        self.carts = carts;
+        self.held = None;
+        self.select(self.index.min(self.carts.len().saturating_sub(1)));
+        old
     }
 
     pub fn select(&mut self, i: usize) {
@@ -91,6 +111,20 @@ impl Shelf {
             GbShell::Notched => self.gb_shadow = Some(face),
             GbShell::Rounded => self.gbc_shadow = Some(face),
         }
+    }
+
+    /// The texture drawn above every marked cart, and its size at full cart scale.
+    pub fn set_star(&mut self, tex: TexId, w: u32, h: u32) {
+        self.star = Some((tex, w as f32, h as f32));
+    }
+
+    /// Which carts wear the favourite star, by index. Missing entries are unmarked.
+    pub fn set_marks(&mut self, marks: Vec<bool>) {
+        self.marks = marks;
+    }
+
+    pub fn is_marked(&self, i: usize) -> bool {
+        self.marks.get(i).copied().unwrap_or(false)
     }
 
     pub fn set_faces(&mut self, faces: Vec<TexId>) {
@@ -349,6 +383,17 @@ impl Shelf {
                         alpha: recede_alpha(alpha),
                     });
                 }
+            }
+            if let (true, Some((tex, sw, sh))) = (self.is_marked(i), self.star) {
+                let (sw, sh) = (sw * scale, sh * scale);
+                out.push(Draw::Tex {
+                    x: x + (w - sw) / 2.0,
+                    y: y - STAR_GAP * scale - sh,
+                    w: sw,
+                    h: sh,
+                    tex,
+                    alpha: alpha * dim,
+                });
             }
             out.push(match self.face(i) {
                 Some(tex) => Draw::Tex {

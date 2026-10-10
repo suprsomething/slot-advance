@@ -167,6 +167,28 @@ pub fn badge_face(badge: Badge, px: f32, colour: [u8; 3]) -> CartFace {
     haloed(&out, f.w, f.h, colour)
 }
 
+/// Nerd Fonts' solid star (Font Awesome `star`), drawn above a favourite cart.
+pub const STAR_GLYPH: char = '\u{f005}';
+pub const STAR_GOLD: [u8; 3] = [0xf2, 0xc1, 0x2e];
+
+/// The favourite star: the glyph cropped to its own ink, gold inside a dark halo so it
+/// reads against both a black panel and a bright wallpaper.
+pub fn star_face(px: f32) -> CartFace {
+    let blank = CartFace {
+        rgba: Vec::new(),
+        w: 0,
+        h: 0,
+    };
+    let Some(font) = symbols_font() else {
+        return blank;
+    };
+    let (m, cov) = font.rasterize(STAR_GLYPH, px);
+    if m.width == 0 || m.height == 0 {
+        return blank;
+    }
+    haloed(&cov, m.width as u32, m.height as u32, STAR_GOLD)
+}
+
 struct Raster {
     cov: Vec<u8>,
     w: u32,

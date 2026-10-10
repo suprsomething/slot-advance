@@ -202,6 +202,11 @@ impl Frontend {
         let rounded = gb_cart_shadow(GbShell::Rounded);
         let rounded = compositor.create_texture(rounded.w, rounded.h, &rounded.rgba);
         self.session.app_mut().set_gb_cart_shadows(notched, rounded);
+        let star = slot_ui::star_face(crate::app::STAR_PX);
+        let star_id = compositor.create_texture(star.w, star.h, &star.rgba);
+        self.session
+            .app_mut()
+            .set_star_face(star_id, star.w, star.h);
         let bolt = icon_face(Icon::Charging, BOLT_PX, HUD_INK);
         let bolt_id = compositor.create_texture(bolt.w, bolt.h, &bolt.rgba);
         self.session.app_mut().set_bolt_face(bolt_id);
