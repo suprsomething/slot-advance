@@ -201,6 +201,7 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             rewind: true,
             gb_palettes: false,
             gb_palette: GbPalette::DEFAULT,
+            last_category: slot_store::Category::All,
         }
     );
 }

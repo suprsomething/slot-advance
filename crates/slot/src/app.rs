@@ -545,8 +545,48 @@ impl App {
             None => {
                 self.state.cart = None;
                 self.state.cart_platform = None;
+                self.select_last_played();
                 self.name_pending = true;
             }
+        }
+    }
+
+    /// With the slot empty at boot, the carousel opens on the game played last, in the
+    /// category it was started from. When that category no longer holds it (unstarred, say)
+    /// the library does; when the game is gone from the card, the carousel stays where it was.
+    fn select_last_played(&mut self) {
+        let Some(key) = self.recents.first().cloned() else {
+            return;
+        };
+        let in_shelf = |app: &Self, at: usize| {
+            app.shelves[at]
+                .1
+                .carts
+                .iter()
+                .position(|c| slot_store::favourite_key(c.platform, &c.stem) == key)
+        };
+        let category = match self.state.last_category {
+            slot_store::Category::Recents => Some(self.rec_at),
+            slot_store::Category::Favourites => Some(self.fav_at),
+            slot_store::Category::All => None,
+        };
+        let found = category
+            .and_then(|at| in_shelf(self, at).map(|i| (at, i)))
+            .or_else(|| (0..self.lib_end).find_map(|at| in_shelf(self, at).map(|i| (at, i))));
+        if let Some((at, i)) = found {
+            self.shelf_at = at;
+            self.shelves[at].1.select(i);
+        }
+    }
+
+    /// The category the carousel is showing, as remembered in `slot.state`.
+    fn current_category(&self) -> slot_store::Category {
+        if self.shelf_at == self.rec_at {
+            slot_store::Category::Recents
+        } else if self.shelf_at == self.fav_at {
+            slot_store::Category::Favourites
+        } else {
+            slot_store::Category::All
         }
     }
 
@@ -1923,6 +1963,7 @@ impl App {
             self.shelf_mut().release_hold();
         }
         let mut touched = false;
+        let mut started = false;
         let at = self.shelf_at;
         let next = match &mut self.phase {
             Phase::Shelf => {
@@ -1942,7 +1983,9 @@ impl App {
                 *t += dt;
                 let at = SEATED_AT - Sfx::Insert.lead();
                 touched = !*resumed && was < at && *t >= at;
-                (*t >= INSERT_S && *core_ready).then(|| Phase::Playing {
+                let done = *t >= INSERT_S && *core_ready;
+                started = done && !*resumed;
+                done.then(|| Phase::Playing {
                     cart: std::mem::take(cart),
                 })
             }
@@ -1972,10 +2015,21 @@ impl App {
             if seated.is_none() {
                 self.link_loaded = None;
             }
+            // Only a game the player started moves the remembered category: resuming the
+            // seated game at boot happens on the library shelf and must not overwrite it.
+            let category = self.current_category();
+            let moved = started && self.state.last_category != category;
+            if moved {
+                self.state.last_category = category;
+            }
             if let Some(cart) = seated.as_deref() {
                 self.record_recent(cart);
             }
+            let cart_changed = self.state.cart != seated;
             self.record_cart(seated);
+            if moved && !cart_changed {
+                self.persist();
+            }
         }
         self.step_screen(dt);
     }
