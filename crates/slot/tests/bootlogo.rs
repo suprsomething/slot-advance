@@ -157,3 +157,57 @@ fn a_config_logo_that_is_not_a_24_bit_bmp_falls_back_to_the_shipped_one() {
     let card = card_with(&[(CARD_LOGO, &shipped), (USER_LOGO, b"not a bmp")]);
     assert_eq!(chosen(card.path()), Some(shipped));
 }
+
+#[test]
+fn the_shipped_slot_advance_logo_is_centred_on_a_black_rg_sp_screen() {
+    let card = std::fs::read(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../card/System/bootlogo.bmp"
+    ))
+    .unwrap();
+    let logo = compose(&decode(&card).unwrap(), (720, 480)).unwrap();
+    assert_eq!((logo.width, logo.height), (720, 480));
+    for (x, y) in [(0, 0), (719, 0), (0, 479), (719, 479), (360, 20), (360, 460)] {
+        assert_eq!(at(&logo, x, y), [0, 0, 0], "background at {x},{y} is not black");
+    }
+    let inked: Vec<(usize, usize)> = (0..480)
+        .flat_map(|y| (0..720).map(move |x| (x, y)))
+        .filter(|&(x, y)| at(&logo, x, y).iter().any(|&c| c > 40))
+        .collect();
+    let (l, r) = (
+        inked.iter().map(|p| p.0).min().unwrap(),
+        inked.iter().map(|p| p.0).max().unwrap(),
+    );
+    let (t, b) = (
+        inked.iter().map(|p| p.1).min().unwrap(),
+        inked.iter().map(|p| p.1).max().unwrap(),
+    );
+    assert!(l.abs_diff(719 - r) <= 3, "not centred across: {l} | {}", 719 - r);
+    assert!(t.abs_diff(479 - b) <= 3, "not centred down: {t} | {}", 479 - b);
+
+    let white = inked
+        .iter()
+        .any(|&(x, y)| at(&logo, x, y).iter().all(|&c| c > 240));
+    let lavender = inked.iter().any(|&(x, y)| {
+        let [r, g, b] = at(&logo, x, y);
+        b > 220 && r > 110 && r < 180 && g < 130
+    });
+    assert!(white, "no white wordmark");
+    assert!(lavender, "no lavender ADVANCE");
+    let below = inked
+        .iter()
+        .filter(|&&(x, y)| {
+            let [r, g, b] = at(&logo, x, y);
+            b > 220 && r < 180 && g < 130 && x > 0 && y > 0
+        })
+        .map(|p| p.1)
+        .min()
+        .unwrap();
+    let white_bottom = inked
+        .iter()
+        .filter(|&&(x, y)| at(&logo, x, y).iter().all(|&c| c > 240))
+        .map(|p| p.1)
+        .max()
+        .unwrap();
+    assert!(below > white_bottom, "ADVANCE is not under slot.");
+}
