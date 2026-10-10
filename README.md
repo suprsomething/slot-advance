@@ -6,7 +6,7 @@
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP.**
 
-Favourites, recently played games and a tidier five-state save ring, on top of everything slot already does.
+A refined GBA experience for the Anbernic RG SP. Featuring intelligent standby, persistent per-game settings, effortless game navigation and enhanced save-state management—all while preserving Slot's beautifully minimal design.
 
 <a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot-advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License"></a>
 <a href="https://github.com/BrandonKowalski/slot"><img src="https://img.shields.io/badge/Based_on-slot-4d4d57?style=for-the-badge&labelColor=242429" height="32" alt="Based on slot"></a>
@@ -44,24 +44,24 @@ Everything else works the way slot does, including the automatic suspend state w
 ### All, with favourites starred
 
 <p align="center">
-<img src=".github/resources/screenshots/advance/all-cartridge-art.png" width="70%" alt="The All shelf with original Mario Kart cartridge-label artwork and a gold favourite star">
+<img src=".github/resources/screenshots/advance/all-unbound.png" width="70%" alt="The All shelf with Pokémon Unbound cartridge-label artwork and a gold favourite star">
 </p>
 
 ### Recents and Favourites
 
 <p align="center">
-<img src=".github/resources/screenshots/advance/recents-cartridge-art.png" width="48%" alt="The Recents shelf, newest first">
-<img src=".github/resources/screenshots/advance/favourites-cartridge-art.png" width="48%" alt="The Favourites shelf">
+<img src=".github/resources/screenshots/advance/recents-unbound.png" width="48%" alt="The Recents shelf showing Pokémon Unbound, newest first">
+<img src=".github/resources/screenshots/advance/favourites-unbound.png" width="48%" alt="The Favourites shelf showing Pokémon Unbound">
 </p>
 
 ### The save-state switcher, and the delete question
 
 <p align="center">
-<img src=".github/resources/screenshots/advance/switcher.png" width="48%" alt="The save-state switcher showing a state saved 9 minutes ago">
-<img src=".github/resources/screenshots/advance/switcher-delete.png" width="48%" alt="The switcher asking Delete this state?">
+<img src=".github/resources/screenshots/advance/switcher-unbound.png" width="48%" alt="The save-state switcher showing Pokémon Unbound’s Hall of Fame saved 9 minutes ago">
+<img src=".github/resources/screenshots/advance/switcher-delete-unbound.png" width="48%" alt="The Pokémon Unbound switcher asking Delete this state?">
 </p>
 
-<sub>Screenshots are rendered from slot advance's own drawing code at the RG SP's 720 x 480. The All, Recents and Favourites shelves use original cartridge-label artwork from the included starter pack. The switcher shows a stand-in scene instead of a game.</sub>
+<sub>Screenshots are rendered from slot advance's own drawing code at the RG SP's 720 x 480. The shelves feature user-supplied Pokémon Unbound label artwork alongside Kirby and Pokémon Emerald labels from the starter pack. The save-state switcher uses a user-supplied Pokémon Unbound Hall of Fame screenshot, with Slot's normal controls and delete-confirmation overlays.</sub>
 
 ---
 
