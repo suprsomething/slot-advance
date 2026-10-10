@@ -1,7 +1,6 @@
 <div align="center">
 
-<!-- Main image placeholder: replace .github/resources/hero.png with the final artwork (same file name, any size around 1280 x 480). -->
-<img src=".github/resources/hero.png" width="100%" alt="slot advance">
+<img src=".github/resources/hero.png?v=slot-advance-hero-1" width="100%" alt="Slot Advance hero artwork featuring the Anbernic RG SP">
 
 # slot advance
 
