@@ -270,6 +270,9 @@ pub struct App {
     fav_at: usize,
     favourites: BTreeSet<String>,
     recents: Vec<String>,
+    /// Each game's own shader, colour correction and fast-forward choices. The seated cart's
+    /// are applied over the defaults in `state`; nothing else reads them.
+    profiles: slot_store::GameProfiles,
     retired_faces: Vec<TexId>,
     shelf_at: usize,
     play_held: Option<Millis>,
@@ -409,6 +412,7 @@ impl App {
             fav_at,
             favourites: BTreeSet::new(),
             recents: Vec::new(),
+            profiles: slot_store::GameProfiles::default(),
             retired_faces: Vec::new(),
             shelf_at,
             play_held: None,
@@ -509,6 +513,7 @@ impl App {
         app.state = read_slot_state(root);
         app.favourites = slot_store::read_favourites(root);
         app.recents = slot_store::read_recents(root);
+        app.profiles = slot_store::GameProfiles::read(root);
         app.restock_categories();
         if app.state.clock_set {
             app.start();
@@ -1227,23 +1232,56 @@ impl App {
         self.state.rumble
     }
 
-    pub fn ff_speed(&self) -> u8 {
-        self.state.ff_speed
-    }
-
-    pub fn ff_sound(&self) -> bool {
-        self.state.ff_sound
-    }
-
-    pub fn screen_shader(&self) -> Shader {
-        match self.platform {
-            Platform::Gba => self.state.shader_gba,
-            Platform::Gb | Platform::Gbc => self.state.shader_gb,
+    /// The settings in force: the seated cart's own profile over the defaults in `state`,
+    /// or just the defaults on the carousel. Resolved fresh on every call, so a cart only
+    /// ever sees its own profile and changing carts can never carry one across.
+    pub fn resolved(&self) -> slot_store::Resolved {
+        match self.seated_cart() {
+            Some(cart) => self
+                .profiles
+                .get(cart.platform, &cart.stem)
+                .resolve(cart.platform, &self.state),
+            None => slot_store::GameProfile::default().resolve(self.platform, &self.state),
         }
     }
 
+    /// The seated cart's own profile, as written to the card.
+    pub fn seated_profile(&self) -> Option<slot_store::GameProfile> {
+        self.seated_cart()
+            .map(|c| self.profiles.get(c.platform, &c.stem))
+    }
+
+    pub fn ff_speed(&self) -> u8 {
+        self.resolved().ff_speed
+    }
+
+    pub fn ff_sound(&self) -> bool {
+        self.resolved().ff_sound
+    }
+
+    pub fn screen_shader(&self) -> Shader {
+        self.resolved().shader
+    }
+
     pub fn colour_correction(&self) -> bool {
-        self.state.colour_correction
+        self.resolved().colour
+    }
+
+    /// Records a change made while a cart is seated into that cart's profile and queues the
+    /// file. Answers false when there is no seated cart, or its name cannot be stored, and
+    /// the caller then changes the default instead, as slot always has.
+    fn set_profile(&mut self, field: slot_store::ProfileField) -> bool {
+        let Some((platform, stem)) = self.seated_cart().map(|c| (c.platform, c.stem.clone()))
+        else {
+            return false;
+        };
+        if !self.profiles.set(platform, &stem, field) {
+            return false;
+        }
+        if let Some(root) = &self.root {
+            self.state_writer.save_profiles(root, &self.profiles);
+        }
+        true
     }
 
     pub fn powering_off(&self) -> bool {
@@ -1615,19 +1653,26 @@ impl App {
         if !matches!(self.phase, Phase::Inserting { .. } | Phase::Playing { .. }) {
             return;
         }
-        let (shader, choices) = match self.platform {
-            Platform::Gba => (&mut self.state.shader_gba, &Shader::GBA[..]),
-            Platform::Gb | Platform::Gbc => (&mut self.state.shader_gb, &Shader::GB[..]),
+        let platform = self.seated_cart().map_or(self.platform, |c| c.platform);
+        let choices = match platform {
+            Platform::Gba => &Shader::GBA[..],
+            Platform::Gb | Platform::Gbc => &Shader::GB[..],
         };
-        *shader = shader.step(choices, right);
-        let said = match *shader {
+        let to = self.screen_shader().step(choices, right);
+        if !self.set_profile(slot_store::ProfileField::Shader(to)) {
+            match platform {
+                Platform::Gba => self.state.shader_gba = to,
+                Platform::Gb | Platform::Gbc => self.state.shader_gb = to,
+            }
+            self.persist();
+        }
+        let said = match to {
             Shader::Off => Toast::ShaderOff,
             Shader::Lcd3x => Toast::ShaderLcd3x,
             Shader::Grid => Toast::ShaderGrid,
             Shader::Dot => Toast::ShaderDot,
             Shader::Simpletex => Toast::ShaderSimpletex,
         };
-        self.persist();
         self.hud.toast(said, self.now());
     }
 
@@ -1654,8 +1699,13 @@ impl App {
             return true;
         }
         if action == Action::ColourCorrectionToggle {
-            self.change_setting(QuickRow::ColourCorrection, true);
-            let said = match self.state.colour_correction {
+            let to = !self.colour_correction();
+            if self.set_profile(slot_store::ProfileField::Colour(to)) {
+                self.colour_pending = Some(to);
+            } else {
+                self.change_setting(QuickRow::ColourCorrection, true);
+            }
+            let said = match self.colour_correction() {
                 true => Toast::ColourOn,
                 false => Toast::ColourOff,
             };
@@ -3214,6 +3264,11 @@ impl App {
             return false;
         };
         self.now().saturating_sub(self.dozed_at) >= power.timeout().as_millis() as Millis
+    }
+
+    /// Waits for queued `slot.state` and game-profile writes to reach the card.
+    pub fn settle_settings(&self) {
+        self.state_writer.flush();
     }
 
     pub fn settle_saves(&mut self) {

@@ -2200,13 +2200,22 @@ fn the_shader_shortcut_steps_the_seated_carts_shader_both_ways_and_names_it() {
         ),
     ] {
         s.app_mut().apply(action);
+        s.app_mut().settle_settings();
+        assert_eq!(s.app().screen_shader(), want, "{action:?}");
         assert_eq!(
-            slot_store::read_slot_state(d.path()).shader_gba,
-            want,
-            "{action:?}"
+            slot_store::GameProfiles::read(d.path())
+                .get(Platform::Gba, "Emerald")
+                .shader,
+            Some(want),
+            "{action:?} never reached the seated game's profile"
         );
         assert_eq!(s.app().toast(), Some(said), "{action:?}");
     }
+    assert_eq!(
+        slot_store::read_slot_state(d.path()).shader_gba,
+        Shader::Off,
+        "an in-game shader change moved the default every other game uses"
+    );
     assert_eq!(
         slot_store::read_slot_state(d.path()).shader_gb,
         Shader::Simpletex,
