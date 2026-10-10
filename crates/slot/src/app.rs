@@ -1336,6 +1336,12 @@ impl App {
         self.restarting && self.now() >= self.act_at
     }
 
+    /// Dozing with nothing left to show: the panel is dark and the core paused, so the
+    /// device loop can stop drawing (see `standby`). A shutdown under way is not standby.
+    pub fn standing_by(&self) -> bool {
+        matches!(self.phase, Phase::Doze { .. }) && !self.shutting_down()
+    }
+
     pub fn shutting_down(&self) -> bool {
         self.powering_off || self.restarting
     }

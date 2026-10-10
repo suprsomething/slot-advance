@@ -525,6 +525,12 @@ impl Frontend {
         self.start.elapsed().as_millis() as Millis
     }
 
+    /// Whether the main loop may stop drawing: the device is dozing, and no label rebuild
+    /// or shutdown is under way.
+    pub fn standing_by(&self) -> bool {
+        self.rebuild.is_none() && self.session.app().standing_by()
+    }
+
     pub fn powering_off(&self) -> bool {
         self.session.app().ready_to_power_off()
     }
