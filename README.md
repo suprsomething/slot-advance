@@ -128,12 +128,34 @@ Shader, colour correction and fast-forward changes made in game are saved **for 
 
 # Installing
 
-slot advance installs the same way as slot. Follow the [slot guide](https://slot-cfw.fyi) to set up both SD cards, then replace `System/slot` on the games card with the slot advance build.
+**[Download the latest slot advance](https://github.com/suprsomething/slot-advance/releases/latest)**: the file is `slot-advance-v3-rg-sp.zip`. It is a complete games card for the RG SP. Unzipped, its contents go straight onto the card. It holds no games, saves or settings, so it never overwrites yours.
+
+slot advance runs on the same system card (SD1) as slot. If your RG SP already runs slot, you can skip straight to **Upgrading**.
+
+### New install
+
+1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1).
+2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
+3. Unzip `slot-advance-v3-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-v3-rg-sp`.
+4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
+5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
+6. Eject the card, put it in the RG SP's second slot, and power on. Set the clock when asked.
+
+### Upgrading from slot or an earlier slot advance
+
+1. Power off the RG SP, then put the games card (SD2) in your computer.
+2. *Optional:* to keep a way back, rename `System/slot` on the card to `slot.previous`.
+3. Unzip the download, open the folder, and copy everything inside it onto the top level of the card. If asked, choose **Replace** (or **Merge** for folders). Only the files in `System` are replaced. Your games, saves, states, favourites and settings are not in the download, so they stay as they are.
+4. Eject the card, put it back, and power on.
+
+The **slot. ADVANCE boot logo** appears from the second power-on. On the first start, slot writes it to the system card for the next boot, and keeps the stock picture there as a backup.
 
 > [!IMPORTANT]
 > ROMs must be unzipped. slot does not read `.zip` or `.7z` files.
 
-Ready-made downloads for this fork are coming soon.
+### Going back
+
+Copy `System/slot` from an earlier download (or your `slot.previous`) over `System/slot` on the card. Your saves and settings work with either.
 
 ### Where things are kept on the games card
 
@@ -141,6 +163,7 @@ Ready-made downloads for this fork are coming soon.
 |---|---|
 | `Config/favourites.txt` | Your favourites, one per line, e.g. `GBA/Mother 3 (Japan)`. Safe to edit on a computer. |
 | `Config/recents.txt` | Recently played games, newest first. |
+| `System/bootlogo.bmp` | The slot. ADVANCE boot logo. Put your own 24-bit `.bmp` at `Config/bootlogo.bmp` to use that instead. |
 | `Config/game_profiles.txt` | Each game's own shader, colour correction and fast-forward choices. Delete a game's lines to put it back on the defaults. |
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state` for the lid and suspend. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
