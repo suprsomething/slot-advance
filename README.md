@@ -33,9 +33,10 @@ A refined GBA experience for the Anbernic RG SP. Featuring intelligent standby, 
 | Per-game settings | One setting for every game | **Each game remembers** its shader, colour correction, fast-forward speed and fast-forward sound |
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
-| Asleep (lid shut or `POWER` tapped) | Keeps drawing a black screen 60 times a second | **Stops drawing** until you wake it, and still powers off after 3 minutes. See [Power, sleep and battery](#power-sleep-and-battery) |
+| Asleep (lid shut or `POWER` tapped) | Keeps the processor running and drawing a black screen, then powers off after 3 minutes | **Real hardware sleep.** Opening the lid carries on instantly; powers off after the time you choose in **Settings > Sleep** (30 minutes by default). See [Power, sleep and battery](#power-sleep-and-battery) |
+| Wi-Fi | On whenever BaseOS starts it | **Off**, because nothing in slot advance uses it except link play. See [Wi-Fi and link play](#wi-fi-and-link-play) |
 
-Everything else works the way slot does, including the automatic suspend state when you close the lid, quick save and load, rewind, fast-forward, link play and the mGBA / gpSP core picker.
+Everything else works the way slot does, including the automatic suspend state when you close the lid, quick save and load, rewind, fast-forward and the mGBA / gpSP core picker. Link play is still there, but needs Wi-Fi turned back on first.
 
 ---
 
@@ -71,22 +72,38 @@ Everything else works the way slot does, including the automatic suspend state w
 
 Close the lid or tap `POWER` and the RG SP goes to sleep:
 
-- Your game is saved to its suspend slot (`resume.state`) straight away. This is separate from your five save states and never touches them.
-- The game is paused and the screen backlight turns off, exactly as in slot.
-- **New in slot advance:** once the screen is dark, slot stops drawing altogether. Upstream slot keeps drawing a black screen 60 times a second while asleep. slot advance draws nothing and only wakes every 50 ms to check the buttons, the lid (read every 150 ms, as before) and the sleep timer.
+1. **Your game is saved first**, to its suspend slot (`resume.state`), and the write is finished before anything else happens. This is separate from your five save states and never touches them.
+2. The screen goes dark and the RG SP **suspends to RAM**: the processor stops, and the game waits in memory exactly where you left it.
 
-Open the lid or tap `POWER` again and you are straight back in the game, with the first picture drawn immediately.
+Open the lid and you are back in the game in about a second, mid-frame, with nothing reloaded. Tapping `POWER` with the lid open sleeps and wakes it the same way.
 
-### Powering off by itself
+With the lid shut, `POWER` does nothing: it can't light the screen inside a closed case. Plugging in a charger or any other stray wake sends it straight back to sleep.
 
-After **3 minutes** asleep, the RG SP powers off on its own. This happens on the charger too. The game stays in the slot, so the next time you power on it resumes where you were. Holding `POWER` still opens the power menu, as in slot.
+### Sleep duration
 
-### Why this isn't a "true" hardware sleep
+**Settings > Sleep** sets how long the RG SP sleeps before it powers off by itself: **3 min, 15 min, 30 min (default), 1 hr, 2 hr or 8 hr**. The time runs from the moment you close the lid. When it runs out, the RG SP shuts down cleanly with the game still in the slot, so the next power-on resumes where you were. Opening the lid at any point before then carries straight on.
 
-On the RG SP, only the `POWER` button can wake the hardware from deep sleep. Opening the lid can't, and the timer that would power it off after 3 minutes doesn't work in deep sleep. A true hardware sleep would break "open the lid to play" and the automatic power off, so slot advance keeps the processor running and simply stops the work nobody can see. It doesn't change the system card, the kernel or any drivers.
+On a low battery it wakes and powers off early, to leave at least 10% in the battery rather than run flat while asleep. At 10% or less it sleeps for 3 minutes, as before.
 
-> [!NOTE]
-> Battery life while asleep has not been measured yet, so slot advance makes no claims about it. If you test it, the fairest comparison is a full charge, an hour asleep, then the same on upstream slot.
+### If anything goes wrong
+
+- If your game could not be written to the card when you closed the lid, the RG SP will **not** power itself off: it keeps sleeping, tries the save again, and only shuts down once the game is safe (or the battery reaches 5%).
+- If the hardware won't sleep, slot advance falls back to its old standby (screen off, powers off after 3 minutes) for that doze, and tries hardware sleep again next time.
+- Each sleep is noted in `slot.log` on the games card.
+
+### Wi-Fi and link play
+
+BaseOS powers the Wi-Fi radio at every boot, even though nothing in slot advance connects to a network. slot advance switches it off about 20 seconds after starting, and also switches off six USB controllers the RG SP has no ports for (the USB-C port is separate and still works for charging). Neither change is permanent: BaseOS starts both again at the next boot.
+
+Link play (both the link cable and the wireless adapter) runs over Wi-Fi between two RG SPs, so while Wi-Fi is off the link shortcut shows **Link Off**. To use link play, add this line to `Config/slot.state` on the games card and restart:
+
+```
+wifi=on
+```
+
+### Battery
+
+In development testing, hardware sleep used well under half the power of the old standby. Figures for the finished release will be added here once they've been measured.
 
 ### Low battery
 
@@ -206,6 +223,8 @@ Copy `System/slot` from an earlier download (or your `slot.previous`) over `Syst
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state` for the lid and suspend. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
+| `Config/slot.state` | Your settings, including `sleep_minutes` and `wifi`. |
+| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep. |
 
 All three `.txt` files live in `Config/`, so replacing `System/` on an update leaves them alone.
 
