@@ -61,8 +61,6 @@ Everything else works the way slot does, including the automatic suspend state w
 <img src=".github/resources/screenshots/advance/switcher-delete-unbound.png" width="48%" alt="The Pokémon Unbound switcher asking Delete this state?">
 </p>
 
-<sub>Screenshots are rendered from slot advance's own drawing code at the RG SP's 720 x 480. The shelves feature user-supplied Pokémon Unbound label artwork alongside Kirby and Pokémon Emerald labels from the starter pack. The save-state switcher uses a user-supplied Pokémon Unbound Hall of Fame screenshot, with Slot's normal controls and delete-confirmation overlays.</sub>
-
 ---
 
 # Power, sleep and battery
