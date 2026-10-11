@@ -204,6 +204,7 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             last_category: slot_store::Category::All,
             sleep_minutes: slot_store::SLEEP_MINUTES_DEFAULT,
             wifi: false,
+            show_titles: false,
         }
     );
 }
@@ -454,4 +455,29 @@ fn a_sleep_duration_that_is_not_offered_falls_back_to_the_default() {
     let read = read_slot_state(d.path());
     assert_eq!(read.sleep_minutes, slot_store::SLEEP_MINUTES_DEFAULT);
     assert!(read.wifi, "wifi=ON is read as on");
+}
+
+#[test]
+fn show_titles_round_trips_and_defaults_to_off() {
+    let d = tmp_root();
+    let on = SlotState {
+        clock_set: true,
+        show_titles: true,
+        ..SlotState::default()
+    };
+    write_slot_state(d.path(), &on).unwrap();
+    assert_eq!(read_slot_state(d.path()), on);
+    let path = d.path().join("Config/slot.state");
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.lines().any(|l| l == "show_titles=1"), "{text}");
+    let older: String = text
+        .lines()
+        .filter(|l| !l.starts_with("show_titles="))
+        .map(|l| format!("{l}\n"))
+        .collect();
+    std::fs::write(&path, older).unwrap();
+    assert!(
+        !read_slot_state(d.path()).show_titles,
+        "titles must default to off"
+    );
 }

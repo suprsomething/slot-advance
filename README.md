@@ -32,6 +32,7 @@ A refined GBA experience for the Anbernic RG SP. Featuring intelligent standby, 
 | GBA screen shader | Grid by default | **Off** by default (GBA is an exact 3x on a 720 x 480 screen, so it is already pixel perfect) |
 | Per-game settings | One setting for every game | **Each game remembers** its shader, colour correction, fast-forward speed and fast-forward sound |
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
+| Game titles | None | **Optional** small titles above the carts, in **Settings > Screen > Show Game Titles** (off by default). The title comes from the file name, minus tags like `(USA)`, `(Rev 1)` or `[!]`; your files are never renamed |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
 | Asleep (lid shut or `POWER` tapped) | Keeps the processor running and drawing a black screen, then powers off after 3 minutes | **Real hardware sleep.** Opening the lid carries on instantly; powers off after the time you choose in **Settings > Sleep** (30 minutes by default). See [Power, sleep and battery](#power-sleep-and-battery) |
 | Wi-Fi | On whenever BaseOS starts it | **Off**, because nothing in slot advance uses it except link play. See [Wi-Fi and link play](#wi-fi-and-link-play) |
@@ -223,7 +224,7 @@ Copy `System/slot` from an earlier download (or your `slot.previous`) over `Syst
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state` for the lid and suspend. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
-| `Config/slot.state` | Your settings, including `sleep_minutes` and `wifi`. |
+| `Config/slot.state` | Your settings, including `sleep_minutes`, `wifi` and `show_titles`. |
 | `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep. |
 
 All three `.txt` files live in `Config/`, so replacing `System/` on an update leaves them alone.

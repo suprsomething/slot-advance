@@ -32,5 +32,6 @@ pub mod sleep;
 pub mod standby;
 pub mod state_writer;
 pub mod thumb;
+pub mod title_faces;
 pub mod video_mode;
 pub mod wallpaper;

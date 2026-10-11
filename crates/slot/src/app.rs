@@ -16,8 +16,8 @@ use slot_ui::{
     board_from, board_zoom, draw_backdrop, draw_empty_slot, draw_footer, draw_slot_name,
     draw_sticker, ease, grown, lid_at, lid_from, lift_of, on_board, shelf_cart_at, ClockPicker,
     Draw, FfState, GbShell, Hud, HudKind, Icon, LinkBadge, Millis, Placed, Polaroids, PowerChoice,
-    QuickMenu, QuickMenuFaces, QuickRow, QuickValue, Refusal, Shelf, SlotChrome, TexId, Toast,
-    BOARD_W, BOARD_X, CART_W, CHIP_H, CHIP_U, CHIP_V, CHIP_W, HINT_EDGE, HINT_H, HOP_LIFT,
+    QuickMenu, QuickMenuFaces, QuickRow, QuickValue, Refusal, Shelf, SlotChrome, TexId, TitleTex,
+    Toast, BOARD_W, BOARD_X, CART_W, CHIP_H, CHIP_U, CHIP_V, CHIP_W, HINT_EDGE, HINT_H, HOP_LIFT,
     SHADOW_H, SHADOW_W, SOCKET_H, SOCKET_U, SOCKET_V, SOCKET_W, TURN_PAD,
 };
 
@@ -277,6 +277,7 @@ pub struct App {
     /// are applied over the defaults in `state`; nothing else reads them.
     profiles: slot_store::GameProfiles,
     retired_faces: Vec<TexId>,
+    retired_titles: Vec<TexId>,
     shelf_at: usize,
     play_held: Option<Millis>,
     refusal: Option<Refusal>,
@@ -428,6 +429,7 @@ impl App {
             recents: Vec::new(),
             profiles: slot_store::GameProfiles::default(),
             retired_faces: Vec::new(),
+            retired_titles: Vec::new(),
             shelf_at,
             play_held: None,
             refusal: None,
@@ -530,6 +532,10 @@ impl App {
         let mut app = App::new(carts);
         app.root = Some(root.to_path_buf());
         app.state = read_slot_state(root);
+        let titles = app.state.show_titles;
+        for (_, shelf) in &mut app.shelves {
+            shelf.set_show_titles(titles);
+        }
         app.favourites = slot_store::read_favourites(root);
         app.recents = slot_store::read_recents(root);
         app.profiles = slot_store::GameProfiles::read(root);
@@ -767,6 +773,7 @@ impl App {
         });
         let shelf = &mut self.shelves[at].1;
         let was = shelf.index;
+        self.retired_titles.extend(shelf.take_titles());
         let old = shelf.restock(carts);
         shelf.select(kept.unwrap_or(was.min(shelf.carts.len().saturating_sub(1))));
         self.retired_faces.extend(old);
@@ -895,6 +902,7 @@ impl App {
             QuickRow::Turbo => Some(QuickValue::flag(self.state.turbo)),
             QuickRow::Rewind => Some(QuickValue::flag(self.state.rewind)),
             QuickRow::Sleep => QuickValue::sleep(self.state.sleep_minutes),
+            QuickRow::Titles => Some(QuickValue::flag(self.state.show_titles)),
             QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::Game => None,
         }
     }
@@ -1069,6 +1077,63 @@ impl App {
             for i in 0..shelf.carts.len() {
                 if !keep.contains(&i) {
                     shed.extend(shelf.take_face(i));
+                }
+            }
+        }
+        shed
+    }
+
+    pub fn show_titles(&self) -> bool {
+        self.state.show_titles
+    }
+
+    /// Carts that will be on screen and have no title face yet: the visible carts of this
+    /// shelf and of the shelves either side of it. Empty with titles off.
+    pub fn title_wants(&self) -> Vec<(usize, usize)> {
+        if !self.state.show_titles {
+            return Vec::new();
+        }
+        let mut wants: Vec<(usize, usize)> = self
+            .shelf()
+            .on_screen()
+            .into_iter()
+            .map(|i| (self.shelf_at, i))
+            .collect();
+        for at in self.neighbour_shelves() {
+            wants.extend(self.shelves[at].1.on_screen().into_iter().map(|i| (at, i)));
+        }
+        wants
+            .into_iter()
+            .filter(|(at, i)| self.shelves[*at].1.title(*i).is_none())
+            .collect()
+    }
+
+    pub fn set_cart_title(&mut self, shelf: usize, index: usize, title: TitleTex) -> Option<TexId> {
+        match self.shelves.get_mut(shelf) {
+            Some((_, row)) => row.set_title(index, title),
+            None => Some(title.tex),
+        }
+    }
+
+    /// Title faces no longer needed, for reuse: everything when titles are off, otherwise
+    /// those well away from the carts on screen.
+    pub fn shed_titles(&mut self) -> Vec<TexId> {
+        let neighbours = self.neighbour_shelves();
+        let on = self.state.show_titles;
+        let mut shed = std::mem::take(&mut self.retired_titles);
+        for (at, (_, shelf)) in self.shelves.iter_mut().enumerate() {
+            let keep = if !on {
+                Vec::new()
+            } else if at == self.shelf_at {
+                shelf.around(FACE_KEEP)
+            } else if neighbours.contains(&at) {
+                shelf.on_screen()
+            } else {
+                Vec::new()
+            };
+            for i in 0..shelf.carts.len() {
+                if !keep.contains(&i) {
+                    shed.extend(shelf.take_title(i));
                 }
             }
         }
@@ -1682,6 +1747,7 @@ impl App {
             | QuickRow::GbShader
             | QuickRow::GbPalettes
             | QuickRow::Sleep
+            | QuickRow::Titles
             | QuickRow::Rumble => {}
         }
     }
@@ -1720,6 +1786,13 @@ impl App {
             QuickRow::Turbo => s.turbo = !s.turbo,
             QuickRow::Rewind => s.rewind = !s.rewind,
             QuickRow::GbPalettes => s.gb_palettes = !s.gb_palettes,
+            QuickRow::Titles => {
+                s.show_titles = !s.show_titles;
+                let on = s.show_titles;
+                for (_, shelf) in &mut self.shelves {
+                    shelf.set_show_titles(on);
+                }
+            }
             QuickRow::Sleep => {
                 let to = sleep_step(s.sleep_minutes, right);
                 if to == s.sleep_minutes {
