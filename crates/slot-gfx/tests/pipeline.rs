@@ -781,3 +781,84 @@ fn the_dot_shader_keeps_a_white_screen_a_little_over_half_lit() {
         "a white cell averages {mean} under the dot shader"
     );
 }
+
+#[test]
+fn a_part_draws_only_the_chosen_slice_of_a_texture() {
+    let Some((_g, _s, mut c)) = compositor() else {
+        return;
+    };
+    // Four texels across: red, green, blue, white.
+    let rgba = [
+        255u8, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 255, 255,
+    ];
+    let tex = c.create_texture_nearest(4, 1, &rgba);
+
+    c.begin_frame();
+    c.draw_list(&[Draw::Part {
+        x: 100.0,
+        y: 100.0,
+        w: 40.0,
+        h: 10.0,
+        tex,
+        alpha: 1.0,
+        uv: [0.25, 0.0, 0.5, 1.0],
+    }]);
+    let frame = c.read_frame();
+
+    assert_eq!(
+        px(&frame, 105, 105),
+        [0, 255, 0],
+        "the left half is not the second texel"
+    );
+    assert_eq!(
+        px(&frame, 135, 105),
+        [0, 0, 255],
+        "the right half is not the third texel"
+    );
+    assert_eq!(
+        px(&frame, 98, 105),
+        [0, 0, 0],
+        "drawn outside its rectangle"
+    );
+    assert_eq!(
+        px(&frame, 142, 105),
+        [0, 0, 0],
+        "drawn outside its rectangle"
+    );
+}
+
+#[test]
+fn a_whole_part_draws_exactly_like_a_plain_texture() {
+    let Some((_g, _s, mut c)) = compositor() else {
+        return;
+    };
+    let rgba: Vec<u8> = (0..16 * 8)
+        .flat_map(|i| [i as u8, (i * 3) as u8, 200, 255])
+        .collect();
+    let tex = c.create_texture(16, 8, &rgba);
+    let at = (101.3, 57.6, 37.0, 19.0);
+    c.begin_frame();
+    c.draw_list(&[Draw::Tex {
+        x: at.0,
+        y: at.1,
+        w: at.2,
+        h: at.3,
+        tex,
+        alpha: 0.8,
+    }]);
+    let plain = c.read_frame();
+    c.begin_frame();
+    c.draw_list(&[Draw::Part {
+        x: at.0,
+        y: at.1,
+        w: at.2,
+        h: at.3,
+        tex,
+        alpha: 0.8,
+        uv: WHOLE,
+    }]);
+    assert!(
+        plain == c.read_frame(),
+        "a whole part differs from the texture"
+    );
+}

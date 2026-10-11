@@ -38,6 +38,18 @@ pub enum Draw {
         alpha: f32,
         turn: f32,
     },
+    /// Part of a texture: the source rectangle `uv` (left, top, width, height, as fractions
+    /// of the texture) stretched over `x`, `y`, `w`, `h`. Used to clip a scrolling title to
+    /// its window.
+    Part {
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        tex: TexId,
+        alpha: f32,
+        uv: [f32; 4],
+    },
     Game,
     Shot {
         tex: TexId,
@@ -51,6 +63,7 @@ pub struct Sprites {
     u_rect: gl::types::GLint,
     u_colour: gl::types::GLint,
     u_turn: gl::types::GLint,
+    u_uv: gl::types::GLint,
 }
 
 impl Sprites {
@@ -64,7 +77,7 @@ impl Sprites {
             gl::RGBA,
             Some(&[255u8; 4]),
         );
-        let (u_rect, u_colour, u_turn);
+        let (u_rect, u_colour, u_turn, u_uv);
         unsafe {
             gl::UseProgram(prog);
             gl::Uniform1i(crate::gl::uniform_location(prog, "u_tex"), 0);
@@ -76,6 +89,7 @@ impl Sprites {
             u_rect = crate::gl::uniform_location(prog, "u_rect");
             u_colour = crate::gl::uniform_location(prog, "u_colour");
             u_turn = crate::gl::uniform_location(prog, "u_turn");
+            u_uv = crate::gl::uniform_location(prog, "u_uv");
         }
         Ok(Sprites {
             prog,
@@ -84,6 +98,7 @@ impl Sprites {
             u_rect,
             u_colour,
             u_turn,
+            u_uv,
         })
     }
 
@@ -136,9 +151,10 @@ impl Sprites {
             gl::UseProgram(self.prog);
             gl::ActiveTexture(gl::TEXTURE0);
         }
+        const WHOLE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
         for item in items {
-            let (x, y, w, h, tex, colour, turn) = match *item {
-                Draw::Rect { x, y, w, h, colour } => (x, y, w, h, self.white, colour, 0.0),
+            let (x, y, w, h, tex, colour, turn, uv) = match *item {
+                Draw::Rect { x, y, w, h, colour } => (x, y, w, h, self.white, colour, 0.0, WHOLE),
                 Draw::Tex {
                     x,
                     y,
@@ -147,7 +163,19 @@ impl Sprites {
                     tex,
                     alpha,
                 } => match self.textures.get(tex.0) {
-                    Some(t) => (x, y, w, h, *t, [1.0, 1.0, 1.0, alpha], 0.0),
+                    Some(t) => (x, y, w, h, *t, [1.0, 1.0, 1.0, alpha], 0.0, WHOLE),
+                    None => continue,
+                },
+                Draw::Part {
+                    x,
+                    y,
+                    w,
+                    h,
+                    tex,
+                    alpha,
+                    uv,
+                } => match self.textures.get(tex.0) {
+                    Some(t) => (x, y, w, h, *t, [1.0, 1.0, 1.0, alpha], 0.0, uv),
                     None => continue,
                 },
                 Draw::Turned {
@@ -159,7 +187,7 @@ impl Sprites {
                     alpha,
                     turn,
                 } => match self.textures.get(tex.0) {
-                    Some(t) => (x, y, w, h, *t, [1.0, 1.0, 1.0, alpha], turn),
+                    Some(t) => (x, y, w, h, *t, [1.0, 1.0, 1.0, alpha], turn, WHOLE),
                     None => continue,
                 },
                 Draw::Game | Draw::Shot { .. } => continue,
@@ -174,6 +202,7 @@ impl Sprites {
                 gl::Uniform4f(self.u_rect, x, y, w, h);
                 gl::Uniform2f(self.u_turn, cos, sin);
                 gl::Uniform4f(self.u_colour, colour[0], colour[1], colour[2], colour[3]);
+                gl::Uniform4f(self.u_uv, uv[0], uv[1], uv[2], uv[3]);
             }
             quad.draw();
         }

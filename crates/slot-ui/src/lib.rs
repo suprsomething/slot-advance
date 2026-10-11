@@ -88,6 +88,8 @@ pub use sticker::{
     HOME, ORIGIN, STICKER_H, STICKER_W,
 };
 pub use title::{
-    cart_title_face, display_title, fitted_title, TitleTex, TITLE_FACE_H, TITLE_GAP, TITLE_INSET,
+    display_title, fitted_title, marquee, title_faces, visible_spans, Marquee, ShownTitle,
+    TitleFaces, TitleTex, MARQUEE_DELAY_S, MARQUEE_END_S, MARQUEE_SPEED, TITLE_FACE_H, TITLE_GAP,
+    TITLE_VIEW_W,
 };
 pub use toast::{toast_box, toast_face, toast_rect, Toast};

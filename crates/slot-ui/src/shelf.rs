@@ -6,7 +6,7 @@ use crate::cart::{cart_box, gb_shell_of, label_colour, label_text, CART_H, CART_
 use crate::hud::Millis;
 use crate::silhouette::GbShell;
 use crate::slot_chrome::{draw_empty_slot, MOUTH_H};
-use crate::title::{TitleTex, TITLE_FACE_H, TITLE_GAP};
+use crate::title::{ShownTitle, TITLE_FACE_H, TITLE_GAP};
 
 const SIDE_SCALE: f32 = 0.78;
 const SIDE_ALPHA: f32 = 0.55;
@@ -62,9 +62,11 @@ pub struct Shelf {
     held: Option<(i32, Millis, usize)>,
     marks: Vec<bool>,
     star: Option<(TexId, f32, f32)>,
-    /// Game titles above the carts (Settings > Screen > Show Game Titles).
+    /// The selected cart's title (Settings > Screen > Show Game Titles): which cart it
+    /// was made for, and how far into its marquee it is.
     show_titles: bool,
-    titles: Vec<Option<TitleTex>>,
+    title: Option<(usize, ShownTitle)>,
+    marquee: f32,
 }
 
 impl Shelf {
@@ -84,7 +86,8 @@ impl Shelf {
             marks: Vec::new(),
             star: None,
             show_titles: false,
-            titles: Vec::new(),
+            title: None,
+            marquee: 0.0,
         }
     }
 
@@ -92,7 +95,6 @@ impl Shelf {
     /// faces the old row held so their textures can be reused.
     pub fn restock(&mut self, carts: Vec<Cart>) -> Vec<TexId> {
         let old: Vec<TexId> = self.faces.drain(..).flatten().collect();
-        self.titles.clear();
         self.shells = carts.iter().map(gb_shell_of).collect();
         self.faces = vec![None; carts.len()];
         self.marks = Vec::new();
@@ -161,28 +163,53 @@ impl Shelf {
         self.show_titles
     }
 
-    pub fn title(&self, i: usize) -> Option<TitleTex> {
-        self.titles.get(i).copied().flatten()
+    /// The title drawn, if it belongs to the selected cart. One made for a cart that is no
+    /// longer selected is never drawn, so fast scrolling cannot show a stale name.
+    pub fn title(&self) -> Option<ShownTitle> {
+        self.title
+            .filter(|(i, _)| *i == self.index && self.show_titles)
+            .map(|(_, t)| t)
     }
 
-    /// Places cart `i`'s title face, handing back the texture it replaces.
-    pub fn set_title(&mut self, i: usize, title: TitleTex) -> Option<TexId> {
-        if i >= self.carts.len() {
-            return Some(title.tex);
+    /// The selected cart, when titles are on and its title is not ready yet.
+    pub fn wants_title(&self) -> Option<usize> {
+        (self.show_titles && !self.carts.is_empty() && self.title().is_none()).then_some(self.index)
+    }
+
+    /// Places cart `i`'s title, handing back the textures of the one it replaces (or this
+    /// one's, if `i` is no longer selected).
+    pub fn set_title(&mut self, i: usize, title: ShownTitle) -> Vec<TexId> {
+        if i != self.index || i >= self.carts.len() || !self.show_titles {
+            return title.textures().collect();
         }
-        if self.titles.len() < self.carts.len() {
-            self.titles.resize(self.carts.len(), None);
-        }
-        self.titles[i].replace(title).map(|t| t.tex)
+        self.marquee = 0.0;
+        self.title
+            .replace((i, title))
+            .map(|(_, old)| old.textures().collect())
+            .unwrap_or_default()
     }
 
-    pub fn take_title(&mut self, i: usize) -> Option<TexId> {
-        self.titles.get_mut(i).and_then(Option::take).map(|t| t.tex)
-    }
-
-    /// Every title texture this row holds, emptied out for reuse.
+    /// The title's textures, emptied out for reuse.
     pub fn take_titles(&mut self) -> Vec<TexId> {
-        self.titles.drain(..).flatten().map(|t| t.tex).collect()
+        self.title
+            .take()
+            .map(|(_, t)| t.textures().collect())
+            .unwrap_or_default()
+    }
+
+    /// Whether the title held belongs to a cart that is no longer selected.
+    pub fn title_is_stale(&self) -> bool {
+        self.title.is_some_and(|(i, _)| i != self.index)
+            || (self.title.is_some() && !self.show_titles)
+    }
+
+    /// Seconds into the selected title's marquee, set by the app each frame.
+    pub fn set_marquee(&mut self, t: f32) {
+        self.marquee = t;
+    }
+
+    pub fn marquee(&self) -> f32 {
+        self.marquee
     }
 
     pub fn on_screen(&self) -> Vec<usize> {
@@ -423,17 +450,15 @@ impl Shelf {
                     });
                 }
             }
-            // With titles on, the title sits just above the cart and the star above that.
-            // The space is kept even before a title face arrives, so the star never jumps.
+            // With titles on, the selected cart's title sits just above it, and every star
+            // sits above the title's space, so stars stay level and never jump.
             let mut top = y;
             if self.show_titles {
-                match self.title(i) {
-                    Some(title) => {
-                        let (draw, title_top) = title.above(x, y, w, scale, alpha * dim);
-                        out.push(draw);
-                        top = title_top;
+                top = y - (TITLE_GAP + TITLE_FACE_H as f32) * scale;
+                if i == self.index {
+                    if let Some(title) = self.title() {
+                        title.draw(x + w / 2.0, y, scale, alpha * dim, self.marquee, out);
                     }
-                    None => top = y - (TITLE_GAP + TITLE_FACE_H as f32) * scale,
                 }
             }
             if let (true, Some((tex, sw, sh))) = (self.is_marked(i), self.star) {

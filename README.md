@@ -32,7 +32,7 @@ A refined GBA experience for the Anbernic RG SP. Featuring intelligent standby, 
 | GBA screen shader | Grid by default | **Off** by default (GBA is an exact 3x on a 720 x 480 screen, so it is already pixel perfect) |
 | Per-game settings | One setting for every game | **Each game remembers** its shader, colour correction, fast-forward speed and fast-forward sound |
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
-| Game titles | None | **Optional** small titles above the carts, in **Settings > Screen > Show Game Titles** (off by default). The title comes from the file name, minus tags like `(USA)`, `(Rev 1)` or `[!]`; your files are never renamed |
+| Game titles | None | **Optional** small title above the selected cart, in **Settings > Screen > Show Game Titles** (off by default). A title too long for its space shows cut short for 2 seconds, then scrolls slowly to its end, rests, and starts again. The title comes from the file name, minus tags like `(USA)`, `(Rev 1)` or `[!]`; your files are never renamed |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
 | Asleep (lid shut or `POWER` tapped) | Keeps the processor running and drawing a black screen, then powers off after 3 minutes | **Real hardware sleep.** Opening the lid carries on instantly; powers off after the time you choose in **Settings > Sleep** (30 minutes by default). See [Power, sleep and battery](#power-sleep-and-battery) |
 | Wi-Fi | On whenever BaseOS starts it | **Off**, because nothing in slot advance uses it except link play. See [Wi-Fi and link play](#wi-fi-and-link-play) |

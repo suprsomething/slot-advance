@@ -1,15 +1,11 @@
-//! Builds the title faces drawn above carts when Settings > Screen > Show Game Titles is
-//! on, for the carts about to be on screen, and recycles the textures of carts that have
-//! scrolled well away (or all of them when titles are switched off).
+//! Builds the selected cart's title when Settings > Screen > Show Game Titles is on: a
+//! face that fits the title's window and, for a long title, the whole line to scroll. Both
+//! are drawn once per selection, never per frame, into textures that are reused.
 
 use slot_gfx::{Compositor, TexId};
-use slot_ui::{cart_box, cart_title_face, display_title, TitleTex, TITLE_INSET};
+use slot_ui::{display_title, title_faces, ShownTitle, TitleTex, UndoFace};
 
 use crate::app::App;
-
-/// At most this many faces are drawn in one frame: a full row is seven, so a whole
-/// shelf's titles arrive on the first frame and scrolling adds one or two at a time.
-const PER_FRAME: usize = 7;
 
 #[derive(Default)]
 pub struct TitleFaces {
@@ -19,25 +15,31 @@ pub struct TitleFaces {
 impl TitleFaces {
     pub fn sync(&mut self, app: &mut App, compositor: &mut Compositor) {
         self.free.extend(app.shed_titles());
-        for (shelf, index) in app.title_wants().into_iter().take(PER_FRAME) {
-            let Some(cart) = app.face_cart(shelf, index) else {
-                continue;
-            };
-            let max_w = cart_box(cart.platform).0.saturating_sub(2 * TITLE_INSET);
-            let face = cart_title_face(&display_title(&cart.stem), max_w);
-            let tex = match self.free.pop() {
-                Some(tex) => {
-                    compositor.update_texture(tex, face.w, face.h, &face.rgba);
-                    tex
-                }
-                None => compositor.create_texture(face.w, face.h, &face.rgba),
-            };
-            let title = TitleTex {
-                tex,
-                w: face.w as f32,
-                h: face.h as f32,
-            };
-            self.free.extend(app.set_cart_title(shelf, index, title));
+        let Some((shelf, index)) = app.title_wants() else {
+            return;
+        };
+        let Some(cart) = app.face_cart(shelf, index) else {
+            return;
+        };
+        let faces = title_faces(&display_title(&cart.stem));
+        let short = self.upload(compositor, &faces.short);
+        let full = faces.full.as_ref().map(|f| self.upload(compositor, f));
+        let title = ShownTitle { short, full };
+        self.free.extend(app.set_cart_title(shelf, index, title));
+    }
+
+    fn upload(&mut self, compositor: &mut Compositor, face: &UndoFace) -> TitleTex {
+        let tex = match self.free.pop() {
+            Some(tex) => {
+                compositor.update_texture(tex, face.w, face.h, &face.rgba);
+                tex
+            }
+            None => compositor.create_texture(face.w, face.h, &face.rgba),
+        };
+        TitleTex {
+            tex,
+            w: face.w as f32,
+            h: face.h as f32,
         }
     }
 }

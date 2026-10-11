@@ -16,7 +16,7 @@ use slot_ui::{
     board_from, board_zoom, draw_backdrop, draw_empty_slot, draw_footer, draw_slot_name,
     draw_sticker, ease, grown, lid_at, lid_from, lift_of, on_board, shelf_cart_at, ClockPicker,
     Draw, FfState, GbShell, Hud, HudKind, Icon, LinkBadge, Millis, Placed, Polaroids, PowerChoice,
-    QuickMenu, QuickMenuFaces, QuickRow, QuickValue, Refusal, Shelf, SlotChrome, TexId, TitleTex,
+    QuickMenu, QuickMenuFaces, QuickRow, QuickValue, Refusal, Shelf, ShownTitle, SlotChrome, TexId,
     Toast, BOARD_W, BOARD_X, CART_W, CHIP_H, CHIP_U, CHIP_V, CHIP_W, HINT_EDGE, HINT_H, HOP_LIFT,
     SHADOW_H, SHADOW_W, SOCKET_H, SOCKET_U, SOCKET_V, SOCKET_W, TURN_PAD,
 };
@@ -278,6 +278,9 @@ pub struct App {
     profiles: slot_store::GameProfiles,
     retired_faces: Vec<TexId>,
     retired_titles: Vec<TexId>,
+    /// The selection the title marquee is timing, and the clock when it last started.
+    title_key: Option<(usize, usize)>,
+    title_from: f64,
     shelf_at: usize,
     play_held: Option<Millis>,
     refusal: Option<Refusal>,
@@ -430,6 +433,8 @@ impl App {
             profiles: slot_store::GameProfiles::default(),
             retired_faces: Vec::new(),
             retired_titles: Vec::new(),
+            title_key: None,
+            title_from: 0.0,
             shelf_at,
             play_held: None,
             refusal: None,
@@ -1087,57 +1092,60 @@ impl App {
         self.state.show_titles
     }
 
-    /// Carts that will be on screen and have no title face yet: the visible carts of this
-    /// shelf and of the shelves either side of it. Empty with titles off.
-    pub fn title_wants(&self) -> Vec<(usize, usize)> {
-        if !self.state.show_titles {
-            return Vec::new();
-        }
-        let mut wants: Vec<(usize, usize)> = self
-            .shelf()
-            .on_screen()
-            .into_iter()
-            .map(|i| (self.shelf_at, i))
-            .collect();
-        for at in self.neighbour_shelves() {
-            wants.extend(self.shelves[at].1.on_screen().into_iter().map(|i| (at, i)));
-        }
-        wants
-            .into_iter()
-            .filter(|(at, i)| self.shelves[*at].1.title(*i).is_none())
-            .collect()
+    /// The selected cart, when titles are on and its title is not ready: as (shelf, cart).
+    pub fn title_wants(&self) -> Option<(usize, usize)> {
+        self.shelf().wants_title().map(|i| (self.shelf_at, i))
     }
 
-    pub fn set_cart_title(&mut self, shelf: usize, index: usize, title: TitleTex) -> Option<TexId> {
+    /// Hands the selected cart its title. Returns the textures no longer needed: the old
+    /// title's, or this one's if the selection has already moved on.
+    pub fn set_cart_title(&mut self, shelf: usize, index: usize, title: ShownTitle) -> Vec<TexId> {
+        if shelf != self.shelf_at {
+            return title.textures().collect();
+        }
         match self.shelves.get_mut(shelf) {
             Some((_, row)) => row.set_title(index, title),
-            None => Some(title.tex),
+            None => title.textures().collect(),
         }
     }
 
-    /// Title faces no longer needed, for reuse: everything when titles are off, otherwise
-    /// those well away from the carts on screen.
+    /// Title textures no longer needed, for reuse: any title on a shelf that is not the
+    /// one shown, one made for a cart no longer selected, and everything with titles off.
     pub fn shed_titles(&mut self) -> Vec<TexId> {
-        let neighbours = self.neighbour_shelves();
-        let on = self.state.show_titles;
         let mut shed = std::mem::take(&mut self.retired_titles);
         for (at, (_, shelf)) in self.shelves.iter_mut().enumerate() {
-            let keep = if !on {
-                Vec::new()
-            } else if at == self.shelf_at {
-                shelf.around(FACE_KEEP)
-            } else if neighbours.contains(&at) {
-                shelf.on_screen()
-            } else {
-                Vec::new()
-            };
-            for i in 0..shelf.carts.len() {
-                if !keep.contains(&i) {
-                    shed.extend(shelf.take_title(i));
-                }
+            if at != self.shelf_at || shelf.title_is_stale() {
+                shed.extend(shelf.take_titles());
             }
         }
         shed
+    }
+
+    /// Seconds into the selected title's marquee. The clock only runs while the carousel
+    /// is in front with nothing open over it and the title is showing; anything else, a
+    /// new selection included, sends the title back to its still start.
+    fn tick_titles(&mut self) {
+        let at = self.shelf_at;
+        let key = (at, self.shelves[at].1.index);
+        let live = self.state.show_titles
+            && self.on_shelf()
+            && self.core_picker.is_none()
+            && self.power_menu.is_none()
+            && !self.shutting_down()
+            && self.shelves[at].1.title().is_some();
+        if !live || self.title_key != Some(key) {
+            self.title_key = Some(key);
+            self.title_from = self.clock;
+        }
+        let t = ((self.clock - self.title_from) / 1000.0) as f32;
+        for (i, (_, shelf)) in self.shelves.iter_mut().enumerate() {
+            shelf.set_marquee(if i == at { t } else { 0.0 });
+        }
+    }
+
+    /// How far into its marquee the selected title is, in seconds.
+    pub fn title_marquee(&self) -> f32 {
+        self.shelf().marquee()
     }
 
     fn neighbour_shelves(&self) -> Vec<usize> {
@@ -2153,6 +2161,7 @@ impl App {
             }
         }
         self.step_screen(dt);
+        self.tick_titles();
     }
 
     fn step_screen(&mut self, dt: f32) {

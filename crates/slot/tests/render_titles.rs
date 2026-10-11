@@ -12,7 +12,7 @@ use slot::title_faces::TitleFaces;
 use slot_gfx::{Compositor, HeadlessSurface, OUT_H, OUT_W};
 use slot_input::{Action, Btn};
 use slot_store::{write_slot_state, SlotState};
-use slot_ui::{cart_face, cart_shadow, star_face, QuickRow};
+use slot_ui::{cart_face, cart_shadow, star_face, QuickRow, TITLE_VIEW_W};
 use tempfile::TempDir;
 
 static GL: Mutex<()> = Mutex::new(());
@@ -28,7 +28,7 @@ const STEMS: [&str; 5] = [
     "Advance Wars (Europe) [!]",
     "Castlevania - Aria of Sorrow (USA) [T-En]",
     "Golden Sun (USA, Europe)",
-    "Pokemon - FireRed Version (USA)",
+    "Pokemon Mystery Dungeon - Red Rescue Team (USA, Australia)",
     "The Legend of Zelda - A Link to the Past & Four Swords (USA, Australia)",
 ];
 
@@ -81,16 +81,9 @@ fn shot(app: &App, c: &mut Compositor, name: &str) -> Vec<u8> {
     px
 }
 
-fn settle(app: &mut App) {
-    for _ in 0..60 {
-        app.update(1.0 / 60.0);
-    }
-}
-
-/// Light pixels in the band just above the selected cart, where only a title can be.
-fn ink_above_centre(px: &[u8], top: usize, bottom: usize) -> usize {
-    let (l, r) = (OUT_W as usize / 2 - 180, OUT_W as usize / 2 + 180);
-    (top..bottom)
+/// Light pixels in the band above the carts, between `l` and `r`, where only a title can be.
+fn ink(px: &[u8], l: usize, r: usize) -> usize {
+    (TITLE_TOP..TITLE_BOTTOM)
         .flat_map(|y| (l..r).map(move |x| (y, x)))
         .filter(|(y, x)| {
             let p = &px[(y * OUT_W as usize + x) * 4..][..3];
@@ -99,13 +92,36 @@ fn ink_above_centre(px: &[u8], top: usize, bottom: usize) -> usize {
         .count()
 }
 
+/// The pixels of the title band, for telling whether the title moved.
+fn band(px: &[u8]) -> Vec<u8> {
+    let row = OUT_W as usize * 4;
+    px[TITLE_TOP * row..TITLE_BOTTOM * row].to_vec()
+}
+
+const TITLE_TOP: usize = 96;
+const TITLE_BOTTOM: usize = 126;
+
+fn window() -> (usize, usize) {
+    let half = TITLE_VIEW_W as usize / 2;
+    (OUT_W as usize / 2 - half, OUT_W as usize / 2 + half)
+}
+
+/// Frames until `secs` have passed, syncing titles as the frontend does.
+fn run(app: &mut App, faces: &mut TitleFaces, c: &mut Compositor, secs: f32) {
+    for _ in 0..(secs * 60.0).round() as usize {
+        faces.sync(app, c);
+        app.update(1.0 / 60.0);
+    }
+}
+
 #[test]
-fn titles_draw_above_the_carts_and_off_changes_nothing() {
+fn titles_draw_above_the_selected_cart_and_off_changes_nothing() {
     let Some((_g, _s, mut c)) = compositor() else {
         eprintln!("no GL on this host, skipping");
         return;
     };
     let d = common::tmp_root_with_carts(&STEMS);
+    let (l, r) = window();
 
     let mut off = boot(&d, &mut c, false);
     let plain = shot(&off, &mut c, "0-off");
@@ -113,32 +129,62 @@ fn titles_draw_above_the_carts_and_off_changes_nothing() {
     faces.sync(&mut off, &mut c);
     let still_plain = shot(&off, &mut c, "0-off-after-sync");
     assert_eq!(plain, still_plain, "titles off, yet the carousel changed");
+    assert_eq!(
+        ink(&plain, 0, OUT_W as usize),
+        0,
+        "something above the carts with titles off"
+    );
 
     let mut on = boot(&d, &mut c, true);
     let mut faces = TitleFaces::default();
     faces.sync(&mut on, &mut c);
-    let titled = shot(&on, &mut c, "1-on");
-    assert_ne!(plain, titled, "titles on, yet nothing was drawn");
-    assert!(
-        ink_above_centre(&titled, 90, 132) > 100,
-        "no title above the selected cart"
-    );
+    let titled = shot(&on, &mut c, "1-on-short");
+    assert!(ink(&titled, l, r) > 100, "no title above the selected cart");
     assert_eq!(
-        ink_above_centre(&plain, 90, 132),
+        ink(&titled, 0, l) + ink(&titled, r, OUT_W as usize),
         0,
-        "something above the cart with titles off"
+        "a title off-centre"
     );
 
     on.apply(Action::GbaDown(Btn::Y));
     on.apply(Action::GbaUp(Btn::Y));
     shot(&on, &mut c, "2-on-starred");
 
-    for i in 0..STEMS.len() {
-        on.apply(Action::ShelfRight);
-        settle(&mut on);
-        faces.sync(&mut on, &mut c);
-        let px = shot(&on, &mut c, &format!("3-on-step-{i}"));
-        assert!(ink_above_centre(&px, 90, 132) > 100, "step {i}: no title");
+    // Along to the Pokemon Mystery Dungeon cart, whose title is too long for its window.
+    for _ in 0..3 {
+        on.apply(Action::GbaDown(Btn::Right));
+        on.apply(Action::GbaUp(Btn::Right));
+        run(&mut on, &mut faces, &mut c, 0.6);
+    }
+    let mut last_still = None;
+    for (name, at) in [
+        ("3-long-1.2s", 1.2),
+        ("3-long-1.9s", 1.9),
+        ("3-long-3s", 3.0),
+        ("3-long-5s", 5.0),
+        ("3-long-end", 9.0),
+    ] {
+        let now = on.title_marquee();
+        run(&mut on, &mut faces, &mut c, at - now);
+        let px = shot(&on, &mut c, name);
+        assert!(ink(&px, l, r) > 100, "{name}: no title");
+        assert_eq!(
+            ink(&px, 0, l) + ink(&px, r, OUT_W as usize),
+            0,
+            "{name}: the title ran outside its window"
+        );
+        let band = band(&px);
+        if at < 2.0 {
+            if let Some(prev) = &last_still {
+                assert!(prev == &band, "{name}: the title moved before the delay");
+            }
+            last_still = Some(band);
+        } else {
+            assert!(
+                last_still.as_ref() != Some(&band),
+                "{name}: the title never moved"
+            );
+        }
     }
 
     on.apply(Action::QuickMenu);
