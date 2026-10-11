@@ -225,9 +225,25 @@ Copy `System/slot` from an earlier download (or your `slot.previous`) over `Syst
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
 | `Config/slot.state` | Your settings, including `sleep_minutes`, `wifi` and `show_titles`. |
-| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep. |
+| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep. The first line names the exact build, e.g. `slot advance 0.4.0-beta.1 (85a3f34, built 2026-10-12)`. |
 
 All three `.txt` files live in `Config/`, so replacing `System/` on an update leaves them alone.
+
+---
+
+# Versions
+
+This build: **0.4.0-beta.1**
+
+From 0.4.0, slot advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
+
+- A **test build** has a pre-release suffix, such as `0.4.0-beta.1`. If a beta needs fixing, the next one is `0.4.0-beta.2`.
+- Once a beta is approved on the RG SP, the same code is released as `0.4.0`.
+- A **fix** to a release raises the last number (`0.4.1`); **new features** raise the middle one (`0.5.0`).
+- Releases on GitHub are tagged with an `advance-` prefix, such as `advance-0.4.0`, to keep them apart from the tags of slot itself in this repository.
+- The release before semantic versioning, **v3** (tag `advance-v3`), counts as 0.3.0. Its download and tag are unchanged.
+
+The version and the Git commit a build came from are written as the first line of `slot.log`, so any log identifies its build exactly.
 
 ---
 

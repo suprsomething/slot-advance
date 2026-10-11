@@ -71,6 +71,7 @@ impl Pacer {
 }
 
 pub fn run() {
+    eprintln!("slot: {}", slot::build_info::Build::current().describe());
     slot::boot_time::mark("start");
     let _ = std::thread::Builder::new()
         .name("slot-fonts".into())
