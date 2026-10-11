@@ -159,7 +159,7 @@ fn a_config_logo_that_is_not_a_24_bit_bmp_falls_back_to_the_shipped_one() {
 }
 
 #[test]
-fn the_shipped_slot_advance_logo_is_centred_on_a_black_rg_sp_screen() {
+fn the_shipped_striped_logo_sits_inside_a_black_rg_sp_screen() {
     let card = std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/../../card/System/bootlogo.bmp"
@@ -193,32 +193,33 @@ fn the_shipped_slot_advance_logo_is_centred_on_a_black_rg_sp_screen() {
         inked.iter().map(|p| p.1).min().unwrap(),
         inked.iter().map(|p| p.1).max().unwrap(),
     );
-    assert!(
-        l.abs_diff(719 - r) <= 3,
-        "not centred across: {l} | {}",
-        719 - r
-    );
-    assert!(
-        t.abs_diff(479 - b) <= 3,
-        "not centred down: {t} | {}",
-        479 - b
-    );
+    // The approved striped artwork is placed exactly as supplied. Its slant
+    // and stripes make it sit a little right of and above geometric centre,
+    // so this checks for a clear black border rather than exact centring.
+    for margin in [l, 719 - r, t, 479 - b] {
+        assert!(margin >= 100, "logo too close to the edge: {l} {r} {t} {b}");
+    }
 
     let white = inked
         .iter()
         .any(|&(x, y)| at(&logo, x, y).iter().all(|&c| c > 240));
-    let lavender = inked.iter().any(|&(x, y)| {
-        let [r, g, b] = at(&logo, x, y);
-        b > 220 && r > 110 && r < 180 && g < 130
-    });
     assert!(white, "no white wordmark");
-    assert!(lavender, "no lavender ADVANCE");
-    let below = inked
+    for stripe in [
+        [0x12, 0x6B, 0x7D],
+        [0x29, 0x9E, 0x9F],
+        [0x6B, 0xC4, 0xC2],
+        [0xE7, 0x35, 0x2B],
+        [0xF3, 0x79, 0x28],
+        [0xF5, 0xB9, 0x1A],
+    ] {
+        assert!(
+            inked.iter().any(|&(x, y)| at(&logo, x, y) == stripe),
+            "no {stripe:02X?} stripe"
+        );
+    }
+    let stripes_top = inked
         .iter()
-        .filter(|&&(x, y)| {
-            let [r, g, b] = at(&logo, x, y);
-            b > 220 && r < 180 && g < 130 && x > 0 && y > 0
-        })
+        .filter(|&&(x, y)| at(&logo, x, y) == [0x12, 0x6B, 0x7D])
         .map(|p| p.1)
         .min()
         .unwrap();
@@ -228,5 +229,8 @@ fn the_shipped_slot_advance_logo_is_centred_on_a_black_rg_sp_screen() {
         .map(|p| p.1)
         .max()
         .unwrap();
-    assert!(below > white_bottom, "ADVANCE is not under slot.");
+    assert!(
+        stripes_top > white_bottom,
+        "the stripes are not under the wordmark"
+    );
 }

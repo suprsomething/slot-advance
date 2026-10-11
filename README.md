@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".github/resources/slot-advance-hero.png" width="100%" alt="Slot Advance hero artwork featuring the Anbernic RG SP">
+<img src=".github/resources/slot-advance-hero-stripes.png" width="100%" alt="Slot Advance striped logo with the Anbernic RG SP">
 
 # slot advance
 
@@ -184,7 +184,7 @@ slot advance runs on the same system card (SD1) as slot. If your RG SP already r
 > On a Mac, don't drag the download's top-level folders (`Games`, `Saves`, `States` and so on) onto the card's folders of the same name. They are empty, and Finder's **Replace** swaps a whole folder for the empty one, deleting what was in it. When upgrading, only the contents of `System` need copying.
 4. Eject the card, put it back, and power on.
 
-The **slot. ADVANCE boot logo** appears from the second power-on. On the first start, slot writes it to the system card for the next boot, and keeps the stock picture there as a backup.
+The **slot. advance boot logo** appears from the second power-on. On the first start, slot writes it to the system card for the next boot, and keeps the stock picture there as a backup.
 
 > [!IMPORTANT]
 > ROMs must be unzipped. slot does not read `.zip` or `.7z` files.
@@ -199,7 +199,7 @@ Copy `System/slot` from an earlier download (or your `slot.previous`) over `Syst
 |---|---|
 | `Config/favourites.txt` | Your favourites, one per line, e.g. `GBA/Mother 3 (Japan)`. Safe to edit on a computer. |
 | `Config/recents.txt` | Recently played games, newest first. |
-| `System/bootlogo.bmp` | The slot. ADVANCE boot logo. Put your own 24-bit `.bmp` at `Config/bootlogo.bmp` to use that instead. |
+| `System/bootlogo.bmp` | The slot. advance boot logo. Put your own 24-bit `.bmp` at `Config/bootlogo.bmp` to use that instead. |
 | `Config/game_profiles.txt` | Each game's own shader, colour correction and fast-forward choices. Delete a game's lines to put it back on the defaults. |
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state` for the lid and suspend. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
