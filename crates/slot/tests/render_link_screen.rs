@@ -329,7 +329,7 @@ fn legend_faces() -> Vec<(TexId, Face)> {
 fn legend_pixels(title: &str, code: &str, name: &str) -> Vec<u8> {
     let d = common::tmp_root_with_carts(&["Zzz"]);
     common::write_retail_header(&d, "Cart", title, code);
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::Insert);
     app.set_core(Core::Gpsp);
     app.on_core_ready();
@@ -354,7 +354,7 @@ fn legend_pixels(title: &str, code: &str, name: &str) -> Vec<u8> {
 fn connected_legend_pixels(name: &str) -> Vec<u8> {
     let d = common::tmp_root_with_carts(&["Zzz"]);
     common::write_retail_header(&d, "Cart", "POKEMON RUBY", "AXVE");
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::Insert);
     app.set_core(Core::Gpsp);
     app.on_core_ready();
@@ -416,7 +416,7 @@ fn toast_faces() -> Vec<(TexId, Face)> {
 fn banner_pixels(core: Core, title: &str, code: &str, name: &str) -> Vec<u8> {
     let d = common::tmp_root_with_carts(&["Zzz"]);
     common::write_retail_header(&d, "Cart", title, code);
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::Insert);
     app.set_core(core);
     app.on_core_ready();
@@ -569,7 +569,7 @@ fn step_faces() -> Vec<(TexId, Face)> {
 fn first_step_pixels(warm: bool, name: &str) -> (Vec<u8>, Vec<RadioJob>) {
     let d = common::tmp_root_with_carts(&["Zzz"]);
     common::write_retail_header(&d, "Cart", "POKEMON RUBY", "AXVE");
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::Insert);
     app.set_core(Core::Gpsp);
     app.on_core_ready();

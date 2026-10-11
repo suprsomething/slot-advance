@@ -15,6 +15,11 @@ pub const FF_SPEEDS: [u8; 4] = [2, 3, 4, 6];
 
 pub const FF_SPEED_DEFAULT: u8 = 6;
 
+/// How long a closed RG SP sleeps before shutting down, in minutes (Settings > Sleep).
+pub const SLEEP_MINUTES: [u16; 6] = [3, 15, 30, 60, 120, 480];
+
+pub const SLEEP_MINUTES_DEFAULT: u16 = 30;
+
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct SlotState {
     pub cart: Option<String>,
@@ -41,6 +46,10 @@ pub struct SlotState {
     /// Which carousel category the last game was started from, so a reboot with the slot
     /// empty opens there with that game in front. Written only when a game starts.
     pub last_category: Category,
+    /// Minutes asleep before shutdown, one of `SLEEP_MINUTES`.
+    pub sleep_minutes: u16,
+    /// Wi-Fi left on for SlotLink. Off by default, with no menu: `wifi=on` in the file.
+    pub wifi: bool,
 }
 
 /// The carousel's categories: the library itself (All), then Recents and Favourites.
@@ -139,6 +148,8 @@ impl Default for SlotState {
             gb_palettes: false,
             gb_palette: GbPalette::DEFAULT,
             last_category: Category::All,
+            sleep_minutes: SLEEP_MINUTES_DEFAULT,
+            wifi: false,
         }
     }
 }
@@ -157,7 +168,7 @@ pub fn read_slot_state(root: &Path) -> SlotState {
 
 pub fn write_slot_state(root: &Path, s: &SlotState) -> std::io::Result<()> {
     let text = format!(
-        "cart={}\ncart_platform={}\nbrightness={}\nblue_light={}\nvolume={}\nvolume_hp={}\nmuted={}\nmuted_hp={}\nclock_set={}\nutc_offset_min={}\nrumble={}\nff_speed={}\nff_sound={}\ncolour_correction={}\nshader_gba={}\nshader_gb={}\neject_save={}\nturbo={}\nrewind={}\ngb_palettes={}\ngb_palette={}\nlast_category={}\n",
+        "cart={}\ncart_platform={}\nbrightness={}\nblue_light={}\nvolume={}\nvolume_hp={}\nmuted={}\nmuted_hp={}\nclock_set={}\nutc_offset_min={}\nrumble={}\nff_speed={}\nff_sound={}\ncolour_correction={}\nshader_gba={}\nshader_gb={}\neject_save={}\nturbo={}\nrewind={}\ngb_palettes={}\ngb_palette={}\nlast_category={}\nsleep_minutes={}\nwifi={}\n",
         s.cart.as_deref().unwrap_or(""),
         s.cart_platform.map_or(String::new(), platform_key),
         s.brightness,
@@ -179,7 +190,9 @@ pub fn write_slot_state(root: &Path, s: &SlotState) -> std::io::Result<()> {
         s.rewind as u8,
         s.gb_palettes as u8,
         s.gb_palette.core_name(),
-        s.last_category.name()
+        s.last_category.name(),
+        s.sleep_minutes,
+        if s.wifi { "on" } else { "off" }
     );
     atomic_write(&state_path(root), text.as_bytes())
 }
@@ -207,6 +220,8 @@ fn parse(text: &str) -> Option<SlotState> {
     let mut gb_palettes = None;
     let mut gb_palette = None;
     let mut last_category = None;
+    let mut sleep_minutes = None;
+    let mut wifi = None;
     for line in text.lines().filter(|l| !l.is_empty()) {
         let Some((key, value)) = line.split_once('=') else {
             continue;
@@ -233,6 +248,14 @@ fn parse(text: &str) -> Option<SlotState> {
             "gb_palettes" => gb_palettes = flag(value),
             "gb_palette" => gb_palette = GbPalette::parse(value),
             "last_category" => last_category = Category::parse(value),
+            "sleep_minutes" => {
+                sleep_minutes = value
+                    .trim()
+                    .parse::<u16>()
+                    .ok()
+                    .filter(|m| SLEEP_MINUTES.contains(m))
+            }
+            "wifi" => wifi = on_off(value),
             "shader_gb" => shader_gb = Shader::parse(value).filter(|s| Shader::GB.contains(s)),
             _ => {}
         }
@@ -262,6 +285,8 @@ fn parse(text: &str) -> Option<SlotState> {
         gb_palettes: gb_palettes.unwrap_or(fallback.gb_palettes),
         gb_palette: gb_palette.unwrap_or(fallback.gb_palette),
         last_category: last_category.unwrap_or(fallback.last_category),
+        sleep_minutes: sleep_minutes.unwrap_or(fallback.sleep_minutes),
+        wifi: wifi.unwrap_or(fallback.wifi),
     })
 }
 
@@ -288,6 +313,15 @@ fn ff_speed_value(value: &str) -> Option<u8> {
 
 fn level(value: &str, max: u8) -> Option<u8> {
     value.parse().ok().filter(|n| *n <= max)
+}
+
+/// `on` / `off`, as a person would write them, plus the `1` / `0` of the other flags.
+fn on_off(value: &str) -> Option<bool> {
+    match value.trim().to_ascii_lowercase().as_str() {
+        "on" | "1" | "true" | "yes" => Some(true),
+        "off" | "0" | "false" | "no" => Some(false),
+        _ => None,
+    }
 }
 
 fn flag(value: &str) -> Option<bool> {

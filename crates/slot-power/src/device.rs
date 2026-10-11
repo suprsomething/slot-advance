@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use crate::{Battery, Charge, LedState, Platform};
+use crate::{Battery, Charge, LedState, Platform, SleepPaths, Woke};
 
 const TOP_STEP: u32 = 9;
 
@@ -80,6 +80,8 @@ pub struct DevicePlatform {
     rtc: Option<PathBuf>,
     motor: Option<Motor>,
     led: Option<Led>,
+    sleep: Result<SleepPaths, String>,
+    sleep_armed: bool,
 }
 
 impl DevicePlatform {
@@ -118,6 +120,7 @@ impl DevicePlatform {
                 Led::Mono { dir, max }
             }
         });
+        let sleep = SleepPaths::probe(sysfs, &sysfs.with_file_name("proc"));
         DevicePlatform {
             root,
             sysfs: sysfs.to_path_buf(),
@@ -127,7 +130,31 @@ impl DevicePlatform {
             rtc,
             motor,
             led,
+            sleep,
+            sleep_armed: false,
         }
+    }
+
+    /// Arms the lid as a wake source for this session. Hardware sleep is only offered once
+    /// this has worked; until then (or if it never does) dozing stays software standby.
+    pub fn arm_sleep(&mut self) -> bool {
+        self.sleep_armed = match &self.sleep {
+            Ok(paths) => match paths.arm() {
+                Ok(()) => true,
+                Err(e) => {
+                    eprintln!("slot: sleep: unavailable, software standby only: {e}");
+                    false
+                }
+            },
+            Err(e) => {
+                eprintln!("slot: sleep: unavailable, software standby only: {e}");
+                false
+            }
+        };
+        if self.sleep_armed {
+            eprintln!("slot: sleep: ready (lid and rtc1 wake armed)");
+        }
+        self.sleep_armed
     }
 
     fn breadcrumb(&self, line: &str) {
@@ -518,6 +545,33 @@ impl Platform for DevicePlatform {
         if let Some(on) = motor_change(strength, motor.running) {
             motor.play(on);
         }
+    }
+
+    fn sleep_ready(&self) -> bool {
+        self.sleep_armed && self.sleep.is_ok()
+    }
+
+    fn suspend(&mut self, secs: u32) -> Woke {
+        match (&self.sleep, self.sleep_armed) {
+            (Ok(paths), true) => paths.suspend(secs),
+            _ => Woke::refused("hardware sleep is not armed"),
+        }
+    }
+
+    fn uptime(&self) -> Option<f64> {
+        match &self.sleep {
+            Ok(paths) => paths.uptime(),
+            Err(_) => fs::read_to_string("/proc/uptime")
+                .ok()?
+                .split_whitespace()
+                .next()?
+                .parse()
+                .ok(),
+        }
+    }
+
+    fn lid_open(&self) -> Option<bool> {
+        self.sleep.as_ref().ok()?.lid_open()
     }
 }
 

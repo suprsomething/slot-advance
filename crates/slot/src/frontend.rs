@@ -535,6 +535,17 @@ impl Frontend {
         self.session.app().ready_to_power_off()
     }
 
+    /// Whether the device should suspend to RAM now (see `App::sleep_due`).
+    pub fn sleep_due(&self) -> bool {
+        self.rebuild.is_none() && self.session.app().sleep_due()
+    }
+
+    /// Suspends until woken, then acts on the wake. Blocks while asleep.
+    pub fn sleep_now(&mut self) {
+        self.session.app_mut().sleep_now();
+        self.last = Instant::now();
+    }
+
     pub fn restarting(&self) -> bool {
         self.session.app().ready_to_restart()
     }

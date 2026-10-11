@@ -12,6 +12,7 @@ pub enum Toast {
     StateLoaded,
     NeedsGpsp,
     NoLink,
+    LinkOff,
     LinkEnded,
     PeerEnded,
     BiosMismatch,
@@ -35,11 +36,12 @@ pub enum Toast {
 }
 
 impl Toast {
-    const FIXED: [Toast; 23] = [
+    const FIXED: [Toast; 24] = [
         Toast::StateSaved,
         Toast::StateLoaded,
         Toast::NeedsGpsp,
         Toast::NoLink,
+        Toast::LinkOff,
         Toast::LinkEnded,
         Toast::PeerEnded,
         Toast::BiosMismatch,
@@ -103,6 +105,7 @@ impl Toast {
             Toast::StateLoaded => "State Loaded",
             Toast::NeedsGpsp => "Please switch to gpSP",
             Toast::NoLink => "No link support",
+            Toast::LinkOff => "Link Off",
             Toast::LinkEnded => "Link ended",
             Toast::PeerEnded => "Link was ended",
             Toast::BiosMismatch => "BIOS does not match",

@@ -5,7 +5,7 @@ use slot::frontend::Frontend;
 use slot::input::DeviceInput;
 use slot::standby::{Standby, Step, STANDBY_REST};
 use slot_gfx::{Compositor, FbdevSurface, Surface};
-use slot_power::{trace_first_frame, DevicePlatform};
+use slot_power::{quiet_hardware, trace_first_frame, DevicePlatform, Quiet};
 
 const CARD: &str = "/mnt/sdcard";
 
@@ -113,8 +113,12 @@ pub fn run() {
             return;
         }
     }
-    let platform = DevicePlatform::new(root.clone());
+    let mut platform = DevicePlatform::new(root.clone());
     eprintln!("slot: {}", platform.report());
+    // Hardware sleep first and on its own: the optional quieting below can never stop it.
+    platform.arm_sleep();
+    let keep_wifi = slot_store::read_slot_state(&root).wifi;
+    quiet_hardware(Quiet::device(keep_wifi));
     platform.trace_boot();
     slot::boot_time::mark("platform");
     let sink = match audio.map(|h| h.join()) {
@@ -151,6 +155,14 @@ pub fn run() {
             if frontend.powering_off() {
                 frontend.poweroff();
                 return;
+            }
+            if frontend.sleep_due() {
+                // Suspend to RAM. Returns once awake; the app has already decided whether
+                // to carry on, sleep again or shut down.
+                frontend.sleep_now();
+                input.after_wake();
+                pacer.resume();
+                continue;
             }
             if !frontend.standing_by() {
                 pacer.resume();
