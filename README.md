@@ -8,16 +8,16 @@
 
 <sub>Approximately 72% lower estimated standby current than continuous software standby, in preliminary development testing. The optimised result came from an experiment reproducing 0.4.0's configuration, not a battery measurement of the integrated release build. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
 
-<a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot-advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License: GPL-3.0"></a>
+<a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot.advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License: GPL-3.0"></a>
 <a href="https://github.com/BrandonKowalski/slot"><img src="https://img.shields.io/badge/Based_on-slot-4d4d57?style=for-the-badge&labelColor=242429" height="32" alt="Based on slot"></a>
-<a href="https://github.com/suprsomething/slot-advance/releases"><img src="https://img.shields.io/github/downloads/suprsomething/slot-advance/total?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="Downloads"></a>
+<a href="https://github.com/suprsomething/slot.advance/releases"><img src="https://img.shields.io/github/downloads/suprsomething/slot.advance/total?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="Downloads"></a>
 
 </div>
 
 | Release | Version | Description |
 |---|---|---|
-| **Current beta** | **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)**<br>[`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot-advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip) | Latest build with hardware sleep, improved standby efficiency, configurable sleep settings and optional game-title display. |
-| **Previous release** | [slot.advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3)<br>[`slot-advance-v3-rg-sp.zip`](https://github.com/suprsomething/slot-advance/releases/download/advance-v3/slot-advance-v3-rg-sp.zip) | Earlier version without hardware sleep or game-title display. |
+| **Current beta** | **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)**<br>[`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip) | Latest build with hardware sleep, improved standby efficiency, configurable sleep settings and optional game-title display. |
+| **Previous release** | [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3)<br>[`slot-advance-v3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-v3/slot-advance-v3-rg-sp.zip) | Earlier version without hardware sleep or game-title display. |
 
 **Beta status:** Version 0.4.0-beta.3 is a pre-release undergoing real-world testing. Once [validated](documentation/sleep-and-battery.md#validation-status), it will form the basis of the stable 0.4.0 release. See [Installing and updating](#installing-and-updating).
 
@@ -153,9 +153,9 @@ Before sleeping, slot.advance attempts to save your game to its separate suspend
 
 # Installing and updating
 
-The download, the current beta, is **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)** ([`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot-advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip)). It is a pre-release, still being tested on the device. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download, the current beta, is **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)** ([`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip)). It is a pre-release, still being tested on the device. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
-The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
+The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
 ### New install
 
@@ -183,7 +183,7 @@ The slot.advance **boot logo** appears from the second power-on: on the first st
 
 ### Going back
 
-Copy `System/slot` from an earlier download, such as [0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
+Copy `System/slot` from an earlier download, such as [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
 
 ---
 
@@ -310,7 +310,7 @@ On 0.4.0-beta.1 and beta.2, after rapid lid flicks, opening the lid could leave 
 
 1. **Don't power on again yet.** `slot.log` and `slot.log.1` are replaced each time slot.advance starts, so the record of the problem is on the card only until the next start or two.
 2. Power off, take the games card (SD2) out and put it in your computer. Copy `slot.log` and `slot.log.1` from the top of the card somewhere safe.
-3. [Open an issue](https://github.com/suprsomething/slot-advance/issues/new/choose) and choose **Bug report**. Say which version you're on (the first line of `slot.log`), what you were doing and what you saw, then drag both log files into the issue.
+3. [Open an issue](https://github.com/suprsomething/slot.advance/issues/new/choose) and choose **Bug report**. Say which version you're on (the first line of `slot.log`), what you were doing and what you saw, then drag both log files into the issue.
 
 ---
 
@@ -324,6 +324,7 @@ From 0.4.0, slot.advance uses [semantic versioning](https://semver.org): `MAJOR.
 - Once a beta is approved on the RG SP (2026), the same code is released as `0.4.0`.
 - A **fix** to a release raises the last number (`0.4.1`); **new features** raise the middle one (`0.5.0`).
 - Releases on GitHub are tagged with an `advance-` prefix, such as `advance-0.4.0`, to keep them apart from upstream slot's tags in this repository. 0.3.0 keeps its original tag, `advance-v3`.
+- From the stable 0.4.0 release, downloads are named `slot.advance-<version>-rg-sp.zip`, such as `slot.advance-0.4.0-rg-sp.zip`. Earlier downloads, including the 0.4.0 betas, keep their original `slot-advance-…` names.
 
 The version and Git commit a build came from are written as the first line of `slot.log`. slot.advance's own release notes are in [documentation/release-notes.md](documentation/release-notes.md). [CHANGELOG.md](CHANGELOG.md) is upstream slot's changelog, inherited unchanged.
 
