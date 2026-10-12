@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Ubuntu+Mono&display=swap">
 <style>
-/* Layout: one narrow left-aligned column on the dark ground of the hero image; the six logo stripes carry all the colour. */
+/* Layout: one narrow centred column on the dark ground of the hero image; the six logo stripes carry all the colour. */
 :root {
   --ink: #15141b;
   --panel: #1c1b24;
@@ -52,9 +52,9 @@ a { color: inherit; }
 a:focus-visible, .button:focus-visible { outline: 2px solid var(--s3); outline-offset: 3px; border-radius: 4px; }
 
 /* Hero */
-.hero { display: grid; gap: 1.5rem; }
+.hero { display: grid; gap: 1.5rem; justify-items: center; text-align: center; }
 .hero h1 { margin: 0; line-height: 0; }
-.hero h1 img { width: min(100%, 27rem); height: auto; display: block; }
+.hero h1 img { width: min(100%, 27rem); height: auto; display: block; margin-inline: auto; }
 .tagline {
   margin: 0;
   font-weight: 700;
@@ -105,14 +105,14 @@ h2 .stripes { gap: 0.08rem; }
 h2 .stripes .mark { width: 0.85rem; height: 0.7rem; }
 
 /* Features */
-section { display: grid; gap: 0.5rem; }
+section { display: grid; gap: 0.5rem; justify-items: center; text-align: center; }
 h2 {
   margin: 0;
   font-size: 1.3rem; font-weight: 700; line-height: 1.25;
-  display: flex; align-items: center; gap: 0.7rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.7rem;
   text-wrap: balance;
 }
-section > p { margin: 0; color: var(--muted); max-width: 36rem; }
+section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
@@ -132,12 +132,12 @@ section > p { margin: 0; color: var(--muted); max-width: 36rem; }
   border: 1px solid var(--line);
   border-radius: 10px;
 }
-.row { display: grid; gap: 0.55rem; min-width: 0; }
-.row-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.15rem 1rem; }
+.row { display: grid; gap: 0.55rem; min-width: 0; justify-items: center; text-align: center; }
+.row-top { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0.15rem 1rem; }
 .row-name { font-weight: 500; }
 .row-name small { color: var(--muted); font-weight: 400; font-size: 0.85rem; margin-left: 0.4rem; }
 .row-obs { font-family: var(--mono); font-size: 0.95rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.row-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+.row-bar { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.75rem; }
 .blocks { display: flex; gap: 0.25rem; }
 .blocks i {
   display: block; width: clamp(1.5rem, 5.5vw, 2.25rem); height: 1.6rem;
@@ -145,11 +145,11 @@ section > p { margin: 0; color: var(--muted); max-width: 36rem; }
   background: var(--c);
 }
 .rate { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.note { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+.note { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; text-align: center; }
 
 /* Close */
 .close {
-  display: grid; gap: 1.25rem; justify-items: start;
+  display: grid; gap: 1.25rem; justify-items: center; text-align: center;
   padding-top: 2.5rem;
   border-top: 1px solid var(--line);
 }
