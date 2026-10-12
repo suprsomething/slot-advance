@@ -18,8 +18,8 @@
 
 | | |
 |---|---|
-| **Download** | **[slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/latest)**, the current release (`slot-advance-v3-rg-sp.zip`). See [Installing and updating](#installing-and-updating). |
-| **Beta for testers** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2)**, a pre-release (`slot-advance-0.4.0-beta.2-rg-sp.zip`). This page describes it. It becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. |
+| **Download** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, the latest release (`slot-advance-0.4.0-beta.2-rg-sp.zip`). It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
+| **Previous release** | [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), without hardware sleep or game titles. |
 | **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
 
 The release previously named v3 is now displayed as 0.3.0; its contents are unchanged. Version numbers on this page are slot advance's own, not upstream slot's ([release notes](documentation/release-notes.md)).
@@ -56,7 +56,7 @@ slot advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
 
-<sub>Rows marked *(0.4.0)* are in the 0.4.0 beta and not in the 0.3.0 download. Everything else is in both.</sub>
+<sub>Rows marked *(0.4.0)* are new in the 0.4.0 beta and not in 0.3.0. Everything else is in both.</sub>
 
 ### What it looks like
 
@@ -153,15 +153,15 @@ Your game is always saved to its suspend slot before the RG SP (2026) goes to sl
 
 # Installing and updating
 
-The download, **[slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/latest)**, is `slot-advance-v3-rg-sp.zip` (its original filename, kept so existing links work). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download, **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, is `slot-advance-0.4.0-beta.2-rg-sp.zip`. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
-**To try the beta**, download `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [0.4.0-beta.2 pre-release](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2) instead and follow the same steps, using its folder name in place of `slot-advance-v3-rg-sp`. To go back, follow **Going back** with the 0.3.0 download.
+The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
 ### New install
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot-advance-v3-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-v3-rg-sp`.
+3. Unzip `slot-advance-0.4.0-beta.2-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.2-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
@@ -183,7 +183,7 @@ The slot advance **boot logo** appears from the second power-on: on the first st
 
 ### Going back
 
-Copy `System/slot` from an earlier download (or your `slot.previous`) over `System/slot` on the card. Your saves and settings work with either.
+Copy `System/slot` from an earlier download, such as [0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
 
 ---
 
@@ -304,7 +304,13 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
 
-A possible glitch when opening and closing the lid rapidly has been reported on 0.4.0-beta.1 and is being investigated. If something goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again, and include them in your report.
+A possible glitch when opening and closing the lid rapidly has been reported on 0.4.0-beta.1 and is being investigated.
+
+### Reporting a problem
+
+1. **Don't power on again yet.** `slot.log` and `slot.log.1` are replaced each time slot advance starts, so the record of the problem is on the card only until the next start or two.
+2. Power off, take the games card (SD2) out and put it in your computer. Copy `slot.log` and `slot.log.1` from the top of the card somewhere safe.
+3. [Open an issue](https://github.com/suprsomething/slot-advance/issues/new/choose) and choose **Bug report**. Say which version you're on (the first line of `slot.log`), what you were doing and what you saw, then drag both log files into the issue.
 
 ---
 

@@ -1,4 +1,4 @@
-**Pre-release for testers.** slot advance 0.4.0-beta.2 for the Anbernic RG SP (2026) (720 x 480). It is not for the RG35XX SP. The current stable release is still [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3); this beta becomes 0.4.0 once it has been validated on the device.
+**Beta.** slot advance 0.4.0-beta.2 for the Anbernic RG SP (2026) (720 x 480). It is not for the RG35XX SP. It becomes 0.4.0 once it has been validated on the device; the previous release is [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3).
 
 Download `slot-advance-0.4.0-beta.2-rg-sp.zip`, unzip it, and copy the contents of its `System` folder into `System` on your games card (SD2), as in the README's [upgrade steps](https://github.com/suprsomething/slot-advance#installing-and-updating). Your games, saves, states and settings are not touched. To go back, copy `System/slot` from the 0.3.0 download over it.
 
@@ -13,6 +13,6 @@ Download `slot-advance-0.4.0-beta.2-rg-sp.zip`, unzip it, and copy the contents 
 - A running game whose emulator core failed to provide its state when the lid closed was counted as saved, so the sleep timer could shut down and lose progress. It is now treated as unsaved, and the device keeps sleeping and retries the save.
 
 ### Still being validated
-Repeated sleep and resume from inside a game (with sound and controls afterwards), plugging in or unplugging the charger while asleep, and a timed shutdown followed by the game restoring at boot. A possible glitch when opening and closing the lid rapidly was reported on beta.1 and is being investigated. If anything goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again.
+Repeated sleep and resume from inside a game (with sound and controls afterwards), plugging in or unplugging the charger while asleep, and a timed shutdown followed by the game restoring at boot. A possible glitch when opening and closing the lid rapidly was reported on beta.1 and is being investigated. If anything goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again, and [open a bug report](https://github.com/suprsomething/slot-advance/issues/new/choose) with both files attached.
 
 Emulation by mGBA (MPL-2.0) and gpSP (GPL-2.0). Their licences, patches and gpSP's source are in `System/licenses/`. slot advance is GPL-3.0, based on [slot](https://github.com/BrandonKowalski/slot) by Brandon T. Kowalski. [Full release notes](https://github.com/suprsomething/slot-advance/blob/main/documentation/release-notes.md).

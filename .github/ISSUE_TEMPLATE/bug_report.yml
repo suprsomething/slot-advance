@@ -1,0 +1,43 @@
+name: Bug report
+description: Something went wrong with slot advance on the Anbernic RG SP (2026)
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Before you power the RG SP (2026) on again, take the games card (SD2) out and copy `slot.log` and `slot.log.1` from the top of the card: they are replaced each time slot advance starts.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The first line of slot.log, e.g. "slot advance 0.4.0-beta.2 (cc0616b, built 2026-10-12)".
+    validations:
+      required: true
+  - type: textarea
+    id: doing
+    attributes:
+      label: What were you doing?
+      description: For example, in a game or on the carousel, which game and emulator, closing or opening the lid, how long it slept, whether the charger was plugged in.
+    validations:
+      required: true
+  - type: textarea
+    id: saw
+    attributes:
+      label: What happened, and what did you expect?
+      description: For example, a black screen, frozen picture, no sound, the wrong game, or it switched off. Did it recover by itself, or did you hold POWER?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Drag slot.log and slot.log.1 from the games card into this box. A photo of the screen helps too.
+    validations:
+      required: true
+  - type: checkboxes
+    id: device
+    attributes:
+      label: Device
+      options:
+        - label: This is an Anbernic RG SP (2026), not an RG35XX SP or another model.
+          required: true

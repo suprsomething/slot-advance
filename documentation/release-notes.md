@@ -8,9 +8,9 @@ The release previously named v3 is now displayed as 0.3.0; its contents are unch
 
 ---
 
-## 0.4.0-beta.2 (pre-release)
+## 0.4.0-beta.2 (beta, the latest release)
 
-Tag `advance-0.4.0-beta.2`. Download: `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [pre-release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2). A beta for testing on the RG SP (2026); it becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. 0.3.0 remains the default download until then.
+Tag `advance-0.4.0-beta.2`. Download: `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2). It is published as the latest release, labelled beta; it becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. [Report problems](https://github.com/suprsomething/slot-advance/issues/new/choose) with `slot.log` and `slot.log.1` attached.
 
 **Fixed since 0.4.0-beta.1**
 - A running game whose emulator core failed to provide its state when the lid closed was counted as saved, so the sleep timer could shut down and lose progress since the last autosave. It is now treated as unsaved: the device keeps sleeping and retries the save instead of shutting down (commit `dbbadae`).
