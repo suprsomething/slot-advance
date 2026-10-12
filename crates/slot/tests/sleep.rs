@@ -585,6 +585,74 @@ fn an_unsaved_game_is_never_shut_down_by_the_timer() {
     );
 }
 
+/// A core that only gives up its state once `give` is set, and reports whether a game is
+/// running at all.
+struct SilentCore {
+    give: Arc<std::sync::atomic::AtomicBool>,
+    running: bool,
+}
+
+impl slot::persist::Snapshot for SilentCore {
+    fn state(&self) -> Option<Vec<u8>> {
+        self.give
+            .load(std::sync::atomic::Ordering::Relaxed)
+            .then(|| b"state".to_vec())
+    }
+
+    fn save_ram(&self) -> Option<Vec<u8>> {
+        None
+    }
+
+    fn thumb(&self) -> Option<Vec<u8>> {
+        None
+    }
+
+    fn load(&self, _state: Vec<u8>) {}
+
+    fn running(&self) -> bool {
+        self.running
+    }
+}
+
+fn silent_core(t: &mut Test, running: bool) -> Arc<std::sync::atomic::AtomicBool> {
+    let give = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    t.app.set_snapshot(Box::new(SilentCore {
+        give: give.clone(),
+        running,
+    }));
+    give
+}
+
+#[test]
+fn a_running_game_whose_core_gives_no_state_is_never_shut_down_by_the_timer() {
+    let mut t = playing();
+    let give = silent_core(&mut t, true);
+    t.close_lid();
+    assert!(!t.resume_on_card());
+    t.device.then(Wake::Alarm);
+    t.sleep_once();
+    assert!(
+        !t.app.powering_off(),
+        "treated a game the core could not save as saved"
+    );
+    assert!(t.dozing());
+    give.store(true, std::sync::atomic::Ordering::Relaxed);
+    t.device.then(Wake::Alarm);
+    t.sleep_once();
+    assert!(t.resume_on_card(), "the save was not retried");
+    assert!(t.app.powering_off(), "once saved, the timer shuts down");
+}
+
+#[test]
+fn a_core_still_loading_has_nothing_to_save_and_the_timer_works_as_normal() {
+    let mut t = playing();
+    silent_core(&mut t, false);
+    t.close_lid();
+    t.device.then(Wake::Alarm);
+    t.sleep_once();
+    assert!(t.app.powering_off());
+}
+
 #[test]
 fn an_unsaved_game_still_resumes_when_the_lid_opens() {
     let mut t = playing();

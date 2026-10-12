@@ -8,6 +8,12 @@ pub trait Snapshot {
     fn thumb(&self) -> Option<Vec<u8>>;
     fn load(&self, state: Vec<u8>);
 
+    /// Whether a game is running whose progress a save protects. A core still loading, or
+    /// one that failed to start, has nothing new to lose.
+    fn running(&self) -> bool {
+        true
+    }
+
     fn resume_trusted(&self) -> bool {
         true
     }

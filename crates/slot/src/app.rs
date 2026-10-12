@@ -3735,8 +3735,22 @@ impl App {
             return true;
         };
         let Some(state) = snapshot.state() else {
-            eprintln!("slot: flush: the core gave up no state");
-            return true;
+            if !snapshot.running() {
+                // Still loading, or failed to start: no progress to lose.
+                eprintln!("slot: flush: no game running, nothing to save");
+                return true;
+            }
+            // A running game whose core gave no state is NOT saved: the caller must not
+            // treat it as safe (a timed shutdown would discard the game in RAM). The
+            // battery save is still written if the core offers one.
+            eprintln!("slot: flush: the core gave up no state; the game is not saved");
+            let sav = snapshot.save_ram().filter(|_| snapshot.save_ram_trusted());
+            if let Err(e) =
+                persist::flush(root, self.platform, self.core, cart, None, sav.as_deref())
+            {
+                eprintln!("slot: flush: {e}");
+            }
+            return false;
         };
         let (state, sav) = trusted_write(snapshot.as_ref(), state, "flush");
         let written = persist::flush(
