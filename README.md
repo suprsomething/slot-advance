@@ -16,8 +16,8 @@
 
 | | |
 |---|---|
-| **Download** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, the latest release (`slot-advance-0.4.0-beta.2-rg-sp.zip`). It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
-| **Pre-release** | **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)** (`slot-advance-0.4.0-beta.3-rg-sp.zip`), for testing. It is beta.2 plus a fix for the screen staying dark for a few seconds after rapid lid flicks. It installs the same way. |
+| **Current beta** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)** (`slot-advance-0.4.0-beta.2-rg-sp.zip`). This is the one to download. It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
+| **Newer test build** | [slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3) (`slot-advance-0.4.0-beta.3-rg-sp.zip`). It is beta.2 plus a fix for the screen staying dark for a few seconds after rapid lid flicks. It installs the same way. |
 | **Previous release** | [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), without hardware sleep or game titles. |
 | **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
 
@@ -118,7 +118,7 @@ The current-draw chart, the long-sleep projection, the raw logs and the uncertai
 | **Wake from RAM** | You open the lid before the sleep time runs out | The RG SP (2026) wakes and the game **carries on from the same moment**. It never stopped, so nothing is reloaded. |
 | **Boot and restore** | The sleep time runs out with the lid still closed | The clock wakes it briefly and it **shuts down cleanly**. At the next power-on it boots and **restores the game from its suspend slot** (`resume.state`). This takes a few seconds longer, but you lose nothing. |
 
-Your game is always saved to its suspend slot before the RG SP (2026) goes to sleep. This is separate from your five save states and never touches them.
+Before sleeping, slot advance attempts to save your game to its separate suspend slot. It never touches your five save states. If that save fails, the timer won't switch the RG SP (2026) off: see **Safety nets** below.
 
 ### Safety nets
 
@@ -152,7 +152,7 @@ Your game is always saved to its suspend slot before the RG SP (2026) goes to sl
 
 # Installing and updating
 
-These steps use the pre-release, **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)** (`slot-advance-0.4.0-beta.3-rg-sp.zip`). The latest release, [0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest) (`slot-advance-0.4.0-beta.2-rg-sp.zip`), installs the same way: use its file name instead. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download, the current beta, is **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)** (`slot-advance-0.4.0-beta.2-rg-sp.zip`). The newer test build, [0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3) (`slot-advance-0.4.0-beta.3-rg-sp.zip`), installs the same way: use its file name instead. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
 The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
@@ -160,7 +160,7 @@ The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot-advance-0.4.0-beta.3-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.3-rg-sp`.
+3. Unzip `slot-advance-0.4.0-beta.2-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.2-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
