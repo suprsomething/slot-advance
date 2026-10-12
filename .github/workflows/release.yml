@@ -4,9 +4,20 @@ on:
   push:
     tags: ['v*', 'advance-*']
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: >-
+          To publish a release, the tag to create from this branch, e.g. advance-0.4.0-beta.2.
+          Leave empty for a test build that publishes nothing.
+        required: false
+        default: ''
 
 permissions:
   contents: read
+
+env:
+  # The release's tag: the pushed tag, or the one typed when running the workflow by hand.
+  TAG: ${{ inputs.release_tag || github.ref_name }}
 
 jobs:
   build:
@@ -24,9 +35,9 @@ jobs:
         id: name
         run: |
           set -eu
-          case "$GITHUB_REF_NAME" in
-            advance-*) out="slot-advance-${GITHUB_REF_NAME#advance-}-rg-sp"; zip="$out.zip" ;;
-            *) out="slot-${GITHUB_REF_NAME}"; zip="$out-h700.zip" ;;
+          case "$TAG" in
+            advance-*) out="slot-advance-${TAG#advance-}-rg-sp"; zip="$out.zip" ;;
+            *) out="slot-${TAG}"; zip="$out-h700.zip" ;;
           esac
           echo "out=$out" >> "$GITHUB_OUTPUT"
           echo "zip=$zip" >> "$GITHUB_OUTPUT"
@@ -80,7 +91,7 @@ jobs:
   publish:
     name: release
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') || inputs.release_tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -99,12 +110,12 @@ jobs:
           ZIP: ${{ needs.build.outputs.zip }}
         run: |
           set -eu
-          title="$GITHUB_REF_NAME"
-          case "$GITHUB_REF_NAME" in
-            advance-*) title="slot advance ${GITHUB_REF_NAME#advance-}" ;;
+          title="$TAG"
+          case "$TAG" in
+            advance-*) title="slot advance ${TAG#advance-}" ;;
           esac
-          if [ -f "documentation/releases/$GITHUB_REF_NAME.md" ]; then
-            cp "documentation/releases/$GITHUB_REF_NAME.md" notes.md
+          if [ -f "documentation/releases/$TAG.md" ]; then
+            cp "documentation/releases/$TAG.md" notes.md
           else
             cat > notes.md <<NOTES
           Unzip and copy the contents of \`${ZIP%.zip}/\` onto SD2.
@@ -114,8 +125,9 @@ jobs:
           fi
           # A version with a pre-release suffix (0.4.0-beta.2) is published as a pre-release
           # and never becomes "latest", so the README's download link stays on the stable one.
-          set -- --title "$title" --notes-file notes.md
-          case "${GITHUB_REF_NAME#advance-}" in
+          # Run by hand with a release_tag, the tag is created here, on the commit just built.
+          set -- --title "$title" --notes-file notes.md --target "$GITHUB_SHA"
+          case "${TAG#advance-}" in
             *-*) set -- "$@" --prerelease --latest=false ;;
           esac
-          gh release create "$GITHUB_REF_NAME" "$ZIP" --repo "$GITHUB_REPOSITORY" "$@"
+          gh release create "$TAG" "$ZIP" --repo "$GITHUB_REPOSITORY" "$@"
