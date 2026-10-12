@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src=".github/resources/slot-advance-hero-sleep.png" width="100%" alt="The striped slot advance logo beside an open Anbernic RG SP (2026) showing the same logo, with the lines: Real Sleep. Instant Resume. 72% Less Standby Current.">
+<img src=".github/resources/slot-advance-hero-sleep.png" width="100%" alt="The striped slot.advance logo beside an open Anbernic RG SP (2026) showing the same logo, with the lines: Real Sleep. Instant Resume. 72% Less Standby Current.">
 
-# slot advance
+# slot.advance
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP (2026).**
 
@@ -14,20 +14,21 @@
 
 </div>
 
-| | |
-|---|---|
-| **Current beta** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)** (`slot-advance-0.4.0-beta.2-rg-sp.zip`). This is the one to download. It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
-| **Newer test build** | [slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3) (`slot-advance-0.4.0-beta.3-rg-sp.zip`). Candidate fix awaiting device confirmation. It is beta.2 plus a fix for the screen staying dark for a few seconds after rapid lid flicks. It installs the same way. |
-| **Previous release** | [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), without hardware sleep or game titles. |
-| **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
+| Release | Version | Description |
+|---|---|---|
+| **Current beta** | **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)**<br>[`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot-advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip) | Latest build with hardware sleep, improved standby efficiency, configurable sleep settings and optional game-title display. |
+| **Previous release** | [slot.advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3)<br>[`slot-advance-v3-rg-sp.zip`](https://github.com/suprsomething/slot-advance/releases/download/advance-v3/slot-advance-v3-rg-sp.zip) | Earlier version without hardware sleep or game-title display. |
 
-The release previously named v3 is now displayed as 0.3.0; its contents are unchanged. Version numbers on this page are slot advance's own, not upstream slot's ([release notes](documentation/release-notes.md)).
+**Beta status:** Version 0.4.0-beta.3 is a pre-release undergoing real-world testing. Once [validated](documentation/sleep-and-battery.md#validation-status), it will form the basis of the stable 0.4.0 release. See [Installing and updating](#installing-and-updating).
+
+> [!IMPORTANT]
+> **Supported device: Anbernic RG SP (2026) only**: the clamshell model with the 720 x 480 display. Not compatible with the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot).
 
 ---
 
-# What slot advance does
+# What slot.advance does
 
-slot advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the lid and your game waits in memory, drawing a fraction of the power of the old standby. Open it, and you carry on from the same moment.
+slot.advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the lid and your game waits in memory, drawing a fraction of the power of the old standby. Open it, and you carry on from the same moment.
 
 - **Real hardware sleep** with automatic **lid wake**. The running game stays in RAM, and nothing is reloaded. *(0.4.0)*
 - **Six sleep durations**, from 3 minutes to 8 hours, then a **clean automatic shutdown**. The game is restored at the next power-on. *(0.4.0)*
@@ -35,11 +36,11 @@ slot advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the 
 - **Optional game titles** above the selected cartridge. *(0.4.0)*
 - **All, Recents and Favourites** categories, **five save states** per game with an Up / Down switcher, **per-game settings**, and a carousel that reopens on the last game played.
 
-slot advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by **Brandon T. Kowalski**. The carousel, the cart shelf, the save-state switcher, link play and nearly everything else you see is his work. This fork adds features for one way of playing: GBA games on the 720 x 480 RG SP (2026).
+slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by **Brandon T. Kowalski**. The carousel, the cart shelf, the save-state switcher, link play and nearly everything else you see is his work. This fork adds features for one way of playing: GBA games on the 720 x 480 RG SP (2026).
 
 ### Compared with slot
 
-| | slot | slot advance |
+| | slot | slot.advance |
 |---|---|---|
 | Lid closed | Keeps running and drawing a black screen; powers off after 3 minutes | **Suspends to RAM**; opening the lid carries on; shuts down after the time set in **Settings > Sleep** *(0.4.0)* |
 | Wi-Fi | On whenever BaseOS starts it | **Off** unless you need link play. See [Wi-Fi and link play](#wi-fi-and-link-play) *(0.4.0)* |
@@ -76,7 +77,7 @@ slot advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 <br><sub>The <b>save-state switcher</b> (left), and the <b>delete question</b> it asks first (right)</sub>
 </p>
 
-<sub>Screenshots are rendered from slot advance's own drawing code at the RG SP (2026)'s 720 x 480, with user-supplied Pokémon Unbound artwork and labels from the [starter pack](artwork/gba-originals).</sub>
+<sub>Screenshots are rendered from slot.advance's own drawing code at the RG SP (2026)'s 720 x 480, with user-supplied Pokémon Unbound artwork and labels from the [starter pack](artwork/gba-originals).</sub>
 
 ---
 
@@ -118,7 +119,7 @@ The current-draw chart, the long-sleep projection, the raw logs and the uncertai
 | **Wake from RAM** | You open the lid before the sleep time runs out | The RG SP (2026) wakes and the game **carries on from the same moment**. It never stopped, so nothing is reloaded. |
 | **Boot and restore** | The sleep time runs out with the lid still closed | The clock wakes it briefly and it **shuts down cleanly**. At the next power-on it boots and **restores the game from its suspend slot** (`resume.state`). This takes a few seconds longer, but you lose nothing. |
 
-Before sleeping, slot advance attempts to save your game to its separate suspend slot. It never touches your five save states. If that save fails, the timer won't switch the RG SP (2026) off: see **Safety nets** below.
+Before sleeping, slot.advance attempts to save your game to its separate suspend slot. It never touches your five save states. If that save fails, the timer won't switch the RG SP (2026) off: see **Safety nets** below.
 
 ### Safety nets
 
@@ -146,21 +147,21 @@ Before sleeping, slot advance attempts to save your game to its separate suspend
 - **The title comes from the file name**, minus naming tags such as `(USA)`, `(Rev 1)`, `(V1.1)` or `[!]`. Your files are never renamed: `Pokemon - Fire Red Version (U) (V1.1).gba` shows as **POKEMON - FIRE RED VERSION**.
 - **Long titles** show cut short with "…" for 2 seconds, then scroll slowly to their end, pause, and start again. Scrolling stops while Settings is open or the device is asleep.
 
-<sub>Rendered by slot advance's own drawing code with labels from the [starter pack](artwork/gba-originals); regenerate with `cargo run -p slot --no-default-features --example readme_titles`.</sub>
+<sub>Rendered by slot.advance's own drawing code with labels from the [starter pack](artwork/gba-originals); regenerate with `cargo run -p slot --no-default-features --example readme_titles`.</sub>
 
 ---
 
 # Installing and updating
 
-The download, the current beta, is **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)** (`slot-advance-0.4.0-beta.2-rg-sp.zip`). The newer test build, [0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3) (`slot-advance-0.4.0-beta.3-rg-sp.zip`), installs the same way: use its file name instead. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download, the current beta, is **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)** ([`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot-advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip)). It is a pre-release, still being tested on the device. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
-The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
+The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
 ### New install
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot-advance-0.4.0-beta.2-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.2-rg-sp`.
+3. Unzip `slot-advance-0.4.0-beta.3-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.3-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
@@ -168,7 +169,7 @@ The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot
 > [!IMPORTANT]
 > ROMs must be unzipped. slot does not read `.zip` or `.7z` files.
 
-### Upgrading from slot or an earlier slot advance
+### Upgrading from slot or an earlier slot.advance
 
 1. Power off the RG SP (2026), then put the games card (SD2) in your computer.
 2. *Optional:* to keep a way back, rename `System/slot` on the card to `slot.previous`.
@@ -178,7 +179,7 @@ The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot
 > [!WARNING]
 > On a Mac, don't drag the download's top-level folders (`Games`, `Saves`, `States` and so on) onto the card's folders of the same name. They are empty, and Finder's **Replace** swaps a whole folder for the empty one, deleting what was in it. When upgrading, only the contents of `System` need copying.
 
-The slot advance **boot logo** appears from the second power-on: on the first start, slot writes it to the system card for the next boot, keeping the stock picture as a backup.
+The slot.advance **boot logo** appears from the second power-on: on the first start, slot writes it to the system card for the next boot, keeping the stock picture as a backup.
 
 ### Going back
 
@@ -201,7 +202,7 @@ Press `MENU` on the carousel.
 
 ### Wi-Fi and link play
 
-From 0.4.0, slot advance switches Wi-Fi off about 20 seconds after starting, because only link play uses it. It also switches off six USB host controllers the RG SP (2026) has no ports for; the USB-C port has its own controller and still works for charging. BaseOS turns both back on at the next boot.
+From 0.4.0, slot.advance switches Wi-Fi off about 20 seconds after starting, because only link play uses it. It also switches off six USB host controllers the RG SP (2026) has no ports for; the USB-C port has its own controller and still works for charging. BaseOS turns both back on at the next boot.
 
 Link play (the link cable and the wireless adapter) runs over Wi-Fi between two devices, so with Wi-Fi off the link shortcut shows **Link Off**. To use link play, add this line to `Config/slot.state` on the games card and restart:
 
@@ -286,11 +287,11 @@ Shader, colour correction and fast-forward changes made in game are saved **for 
 | `Config/favourites.txt` | Your favourites, one per line, e.g. `GBA/Mother 3 (Japan)`. Safe to edit on a computer. |
 | `Config/recents.txt` | Recently played games, newest first. |
 | `Config/game_profiles.txt` | Each game's own shader, colour correction and fast-forward choices. Delete a game's lines to put it back on the defaults. |
-| `System/bootlogo.bmp` | The slot advance boot logo. Put your own 24-bit `.bmp` at `Config/bootlogo.bmp` to use that instead. See [artwork/bootlogo](artwork/bootlogo). |
+| `System/bootlogo.bmp` | The slot.advance boot logo. Put your own 24-bit `.bmp` at `Config/bootlogo.bmp` to use that instead. See [artwork/bootlogo](artwork/bootlogo). |
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state`, the suspend slot used when the lid closes. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
-| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.3 (` followed by the commit and build date. |
+| `slot.log`, `slot.log.1` | What slot.advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.3 (` followed by the commit and build date. |
 
 The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on an update leaves them alone.
 
@@ -307,7 +308,7 @@ On 0.4.0-beta.1 and beta.2, after rapid lid flicks, opening the lid could leave 
 
 ### Reporting a problem
 
-1. **Don't power on again yet.** `slot.log` and `slot.log.1` are replaced each time slot advance starts, so the record of the problem is on the card only until the next start or two.
+1. **Don't power on again yet.** `slot.log` and `slot.log.1` are replaced each time slot.advance starts, so the record of the problem is on the card only until the next start or two.
 2. Power off, take the games card (SD2) out and put it in your computer. Copy `slot.log` and `slot.log.1` from the top of the card somewhere safe.
 3. [Open an issue](https://github.com/suprsomething/slot-advance/issues/new/choose) and choose **Bug report**. Say which version you're on (the first line of `slot.log`), what you were doing and what you saw, then drag both log files into the issue.
 
@@ -317,14 +318,14 @@ On 0.4.0-beta.1 and beta.2, after rapid lid flicks, opening the lid could leave 
 
 This build: **0.4.0-beta.3**
 
-From 0.4.0, slot advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
+From 0.4.0, slot.advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
 
 - A **test build** has a pre-release suffix, such as `0.4.0-beta.1`. If a beta needs fixing, the next one is `0.4.0-beta.2`.
 - Once a beta is approved on the RG SP (2026), the same code is released as `0.4.0`.
 - A **fix** to a release raises the last number (`0.4.1`); **new features** raise the middle one (`0.5.0`).
 - Releases on GitHub are tagged with an `advance-` prefix, such as `advance-0.4.0`, to keep them apart from upstream slot's tags in this repository. 0.3.0 keeps its original tag, `advance-v3`.
 
-The version and Git commit a build came from are written as the first line of `slot.log`. slot advance's own release notes are in [documentation/release-notes.md](documentation/release-notes.md). [CHANGELOG.md](CHANGELOG.md) is upstream slot's changelog, inherited unchanged.
+The version and Git commit a build came from are written as the first line of `slot.log`. slot.advance's own release notes are in [documentation/release-notes.md](documentation/release-notes.md). [CHANGELOG.md](CHANGELOG.md) is upstream slot's changelog, inherited unchanged.
 
 ---
 
@@ -338,9 +339,9 @@ The version and Git commit a build came from are written as the first line of `s
 - The LCD3x screen shader's panel mask is derived from **gigaherz's LCD3x**.
 - The cart sounds are recordings of Brandon T. Kowalski's childhood Game Boy.
 - The cartridge-label photographs in the [starter pack](artwork/gba-originals) are credited to their photographers in its README.
-- Both slot and slot advance were built with **Claude** (see [AI disclosure](#ai-disclosure)).
+- Both slot and slot.advance were built with **Claude** (see [AI disclosure](#ai-disclosure)).
 
-slot advance is released under the same licence as slot, the [GNU GPL v3 or later](LICENSE).
+slot.advance is released under the same licence as slot, the [GNU GPL v3 or later](LICENSE).
 
 ---
 
@@ -348,4 +349,4 @@ slot advance is released under the same licence as slot, the [GNU GPL v3 or late
 
 slot's Rust frontend was put together with Claude Opus and reviewed by its author.
 
-The changes in this fork were also written with Claude (Anthropic), at my direction, and checked with slot's own automated test suite plus new tests for each feature. The battery charts and README screenshots were generated from the development test results and slot advance's own drawing code.
+The changes in this fork were also written with Claude (Anthropic), at my direction, and checked with slot's own automated test suite plus new tests for each feature. The battery charts and README screenshots were generated from the development test results and slot.advance's own drawing code.
