@@ -19,7 +19,7 @@
 | | |
 |---|---|
 | **Download** | **[slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/latest)**, the current release (`slot-advance-v3-rg-sp.zip`). See [Installing and updating](#installing-and-updating). |
-| **This page describes** | **0.4.0-beta.1**, now on `main` and being validated on the RG SP (2026). It is **not** in the download yet, and becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. |
+| **Beta for testers** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2)**, a pre-release (`slot-advance-0.4.0-beta.2-rg-sp.zip`). This page describes it. It becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. |
 | **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
 
 The release previously named v3 is now displayed as 0.3.0; its contents are unchanged. Version numbers on this page are slot advance's own, not upstream slot's ([release notes](documentation/release-notes.md)).
@@ -56,7 +56,7 @@ slot advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
 
-<sub>Rows marked *(0.4.0)* are in 0.4.0-beta.1 and not in the 0.3.0 download. Everything else is in both.</sub>
+<sub>Rows marked *(0.4.0)* are in the 0.4.0 beta and not in the 0.3.0 download. Everything else is in both.</sub>
 
 ### What it looks like
 
@@ -154,6 +154,8 @@ Your game is always saved to its suspend slot before the RG SP (2026) goes to sl
 # Installing and updating
 
 The download, **[slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/latest)**, is `slot-advance-v3-rg-sp.zip` (its original filename, kept so existing links work). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+
+**To try the beta**, download `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [0.4.0-beta.2 pre-release](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2) instead and follow the same steps, using its folder name in place of `slot-advance-v3-rg-sp`. To go back, follow **Going back** with the 0.3.0 download.
 
 ### New install
 
@@ -289,7 +291,7 @@ Shader, colour correction and fast-forward changes made in game are saved **for 
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state`, the suspend slot used when the lid closes. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
-| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.1 (6b17f46, built 2026-10-11)`. |
+| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.2 (` followed by the commit and build date. |
 
 The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on an update leaves them alone.
 
@@ -302,13 +304,13 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
 
-There are no known bugs in 0.4.0-beta.1 at the time of writing. If something goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again, and include them in your report.
+A possible glitch when opening and closing the lid rapidly has been reported on 0.4.0-beta.1 and is being investigated. If something goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again, and include them in your report.
 
 ---
 
 # Versions
 
-This build: **0.4.0-beta.1**
+This build: **0.4.0-beta.2**
 
 From 0.4.0, slot advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
 

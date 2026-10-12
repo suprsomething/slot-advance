@@ -2,7 +2,7 @@
 
 This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what still has to be checked on the device.
 
-Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), and **0.4.0-beta.1** is the build now being validated.
+Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), and **0.4.0-beta.2** is the current beta, published as a pre-release while it is validated.
 
 ## Contents
 
@@ -169,4 +169,4 @@ The earlier experiments that established suspend, lid wake, timed wake and `POWE
 - A timed shutdown, followed by the game restoring at the next boot.
 - A fresh battery measurement of the release build. This is desirable but not required: until it exists, the figures above stay labelled as preliminary.
 
-Until those checks pass, the build stays **0.4.0-beta.1**.
+Until those checks pass, 0.4.0 stays a beta (currently **0.4.0-beta.2**).

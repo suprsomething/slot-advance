@@ -2,7 +2,7 @@ name: release
 
 on:
   push:
-    tags: ['v*']
+    tags: ['v*', 'advance-*']
   workflow_dispatch:
 
 permissions:
@@ -18,6 +18,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # slot advance tags (advance-0.4.0-beta.2) ship as slot-advance-<version>-rg-sp.zip,
+      # the layout of the earlier slot advance downloads. Upstream tags keep their own names.
+      - name: Name the build
+        id: name
+        run: |
+          set -eu
+          case "$GITHUB_REF_NAME" in
+            advance-*) out="slot-advance-${GITHUB_REF_NAME#advance-}-rg-sp"; zip="$out.zip" ;;
+            *) out="slot-${GITHUB_REF_NAME}"; zip="$out-h700.zip" ;;
+          esac
+          echo "out=$out" >> "$GITHUB_OUTPUT"
+          echo "zip=$zip" >> "$GITHUB_OUTPUT"
+
       - name: Install zip, cmake and Task
         run: |
           set -eu
@@ -27,12 +40,12 @@ jobs:
           curl -fsSL https://taskfile.dev/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Build the tree
-        run: task dist:device OUT="slot-${GITHUB_REF_NAME}"
+        run: task dist:device OUT="${{ steps.name.outputs.out }}"
 
       - name: Check what is about to ship
         run: |
           set -eu
-          out="slot-${GITHUB_REF_NAME}"
+          out="${{ steps.name.outputs.out }}"
           file "$out/System/slot" | grep -q aarch64
           file "$out/System/mgba_libretro.so" | grep -q aarch64
           file "$out/System/gpsp_libretro.so" | grep -q aarch64
@@ -53,8 +66,8 @@ jobs:
         id: package
         run: |
           set -eu
-          out="slot-${GITHUB_REF_NAME}"
-          zip="$out-h700.zip"
+          out="${{ steps.name.outputs.out }}"
+          zip="${{ steps.name.outputs.zip }}"
           zip -qry "$zip" "$out"
           echo "zip=$zip" >> "$GITHUB_OUTPUT"
 
@@ -72,6 +85,10 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: documentation/releases
+
       - uses: actions/download-artifact@v8
         with:
           name: ${{ needs.build.outputs.zip }}
@@ -82,10 +99,23 @@ jobs:
           ZIP: ${{ needs.build.outputs.zip }}
         run: |
           set -eu
-          cat > notes.md <<NOTES
-          Unzip and copy the contents of \`slot-${GITHUB_REF_NAME}/\` onto SD2.
+          title="$GITHUB_REF_NAME"
+          case "$GITHUB_REF_NAME" in
+            advance-*) title="slot advance ${GITHUB_REF_NAME#advance-}" ;;
+          esac
+          if [ -f "documentation/releases/$GITHUB_REF_NAME.md" ]; then
+            cp "documentation/releases/$GITHUB_REF_NAME.md" notes.md
+          else
+            cat > notes.md <<NOTES
+          Unzip and copy the contents of \`${ZIP%.zip}/\` onto SD2.
 
           Emulation by mGBA (MPL-2.0) and gpSP (GPL-2.0). Their licences, patches and gpSP's source are in \`System/licenses/\`.
           NOTES
-          gh release create "$GITHUB_REF_NAME" "$ZIP" --repo "$GITHUB_REPOSITORY" \
-            --title "$GITHUB_REF_NAME" --notes-file notes.md
+          fi
+          # A version with a pre-release suffix (0.4.0-beta.2) is published as a pre-release
+          # and never becomes "latest", so the README's download link stays on the stable one.
+          set -- --title "$title" --notes-file notes.md
+          case "${GITHUB_REF_NAME#advance-}" in
+            *-*) set -- "$@" --prerelease --latest=false ;;
+          esac
+          gh release create "$GITHUB_REF_NAME" "$ZIP" --repo "$GITHUB_REPOSITORY" "$@"

@@ -8,16 +8,24 @@ The release previously named v3 is now displayed as 0.3.0; its contents are unch
 
 ---
 
-## 0.4.0-beta.1 (in testing, not yet released)
+## 0.4.0-beta.2 (pre-release)
 
-On `main`, being validated on the RG SP (2026). No download is published yet; it becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass.
+Tag `advance-0.4.0-beta.2`. Download: `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [pre-release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2). A beta for testing on the RG SP (2026); it becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. 0.3.0 remains the default download until then.
+
+**Fixed since 0.4.0-beta.1**
+- A running game whose emulator core failed to provide its state when the lid closed was counted as saved, so the sleep timer could shut down and lose progress since the last autosave. It is now treated as unsaved: the device keeps sleeping and retries the save instead of shutting down (commit `dbbadae`).
+
+**Known issue**
+- A possible glitch when opening and closing the lid rapidly was reported on 0.4.0-beta.1 and is being investigated.
+
+Everything below was introduced in 0.4.0-beta.1, which was only installed for on-device testing and never published.
 
 **Sleep**
 - Closing the lid (or tapping `POWER` with it open) saves the game, then suspends the RG SP (2026) to RAM. Opening the lid carries on from memory, with nothing reloaded.
 - New setting **Settings > Sleep**: `3 min`, `15 min`, `30 min` (default), `1 hr`, `2 hr`, `8 hr`. When the time runs out, it shuts down cleanly, and the next power-on restores the game from its suspend slot.
 - `POWER` with the lid shut no longer lights the screen. Chargers and other stray wakes go straight back to sleep.
 - On a low battery, sleep is planned to aim to preserve approximately 10%. At 10% or less it sleeps for 3 minutes, as 0.3.0 did.
-- A game that could not be saved is never shut down by the timer. This now includes a running game whose emulator core fails to provide its state (commit `dbbadae`).
+- A game that could not be written to the card when the lid closed is never shut down by the timer.
 - If hardware sleep isn't available or fails, that sleep falls back to 0.3.0's software standby.
 
 **Battery**
