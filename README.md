@@ -1,13 +1,10 @@
 <div align="center">
 
-<img src=".github/resources/slot-advance-hero-stripes.png" width="100%" alt="The striped slot advance logo beside an Anbernic RG SP (2026), with the line: A refined, GBA-focused fork of Slot for the Anbernic RG SP (2026)">
+<img src=".github/resources/slot-advance-hero-sleep.png" width="100%" alt="The striped slot advance logo beside an open Anbernic RG SP (2026) showing the same logo, with the lines: Real Sleep. Instant Resume. 72% Less Standby Current.">
 
 # slot advance
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP (2026).**
-
-## Real Sleep. Instant Resume.
-### 72% Less Standby Current.
 
 <sub>Approximately 72% lower estimated standby current than continuous software standby, in preliminary development testing. The optimised result came from an experiment reproducing 0.4.0's configuration, not a battery measurement of the integrated release build. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
 
@@ -18,7 +15,8 @@
 
 | | |
 |---|---|
-| **Download** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, the latest release (`slot-advance-0.4.0-beta.3-rg-sp.zip`). It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
+| **Download** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, the latest release (`slot-advance-0.4.0-beta.2-rg-sp.zip`). It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
+| **Pre-release** | **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)** (`slot-advance-0.4.0-beta.3-rg-sp.zip`), for testing. It is beta.2 plus a fix for the screen staying dark for a few seconds after rapid lid flicks. It installs the same way. |
 | **Previous release** | [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), without hardware sleep or game titles. |
 | **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
 
@@ -153,7 +151,7 @@ Your game is always saved to its suspend slot before the RG SP (2026) goes to sl
 
 # Installing and updating
 
-The download, **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/latest)**, is `slot-advance-0.4.0-beta.3-rg-sp.zip`. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+These steps use the pre-release, **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3)** (`slot-advance-0.4.0-beta.3-rg-sp.zip`). The latest release, [0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest) (`slot-advance-0.4.0-beta.2-rg-sp.zip`), installs the same way: use its file name instead. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
 The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 

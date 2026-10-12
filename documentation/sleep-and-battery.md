@@ -2,7 +2,7 @@
 
 This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what still has to be checked on the device.
 
-Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), and **0.4.0-beta.3** is the current beta and the latest release, still being validated.
+Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), **0.4.0-beta.2** is the latest release, and **0.4.0-beta.3** is a pre-release with the lid fix; both are still being validated.
 
 ## Contents
 

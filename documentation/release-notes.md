@@ -8,7 +8,7 @@ The release previously named v3 is now displayed as 0.3.0; its contents are unch
 
 ---
 
-## 0.4.0-beta.3 (beta, the latest release)
+## 0.4.0-beta.3 (pre-release)
 
 Tag `advance-0.4.0-beta.3`. Download: `slot-advance-0.4.0-beta.3-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3). It becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. [Report problems](https://github.com/suprsomething/slot-advance/issues/new/choose) with `slot.log` and `slot.log.1` attached.
 
@@ -20,7 +20,7 @@ Tag `advance-0.4.0-beta.3`. Download: `slot-advance-0.4.0-beta.3-rg-sp.zip` from
 
 ---
 
-## 0.4.0-beta.2 (beta)
+## 0.4.0-beta.2 (beta, the latest release)
 
 Tag `advance-0.4.0-beta.2`. Download: `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2). It is published as the latest release, labelled beta; it becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. [Report problems](https://github.com/suprsomething/slot-advance/issues/new/choose) with `slot.log` and `slot.log.1` attached.
 
