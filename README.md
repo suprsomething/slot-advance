@@ -17,7 +17,7 @@
 | | |
 |---|---|
 | **Current beta** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)** (`slot-advance-0.4.0-beta.2-rg-sp.zip`). This is the one to download. It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
-| **Newer test build** | [slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3) (`slot-advance-0.4.0-beta.3-rg-sp.zip`). It is beta.2 plus a fix for the screen staying dark for a few seconds after rapid lid flicks. It installs the same way. |
+| **Newer test build** | [slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3) (`slot-advance-0.4.0-beta.3-rg-sp.zip`). Candidate fix awaiting device confirmation. It is beta.2 plus a fix for the screen staying dark for a few seconds after rapid lid flicks. It installs the same way. |
 | **Previous release** | [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), without hardware sleep or game titles. |
 | **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
 
