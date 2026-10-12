@@ -68,8 +68,10 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--s3); outline-o
 /* Video */
 .video {
   position: relative;
-  width: 100%;
-  max-width: 100%;
+  /* Wider than the text column on large screens, so YouTube starts at a higher quality. */
+  width: max(100%, min(64rem, 100vw - 4rem));
+  max-width: none;
+  justify-self: center;
   aspect-ratio: 16 / 9;
   border-radius: 10px;
   overflow: hidden;
