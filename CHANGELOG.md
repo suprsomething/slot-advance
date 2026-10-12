@@ -1,4 +1,7 @@
-# Changelog
+# Changelog (upstream slot)
+
+> [!NOTE]
+> This is the changelog of upstream [slot](https://github.com/BrandonKowalski/slot) by Brandon T. Kowalski, inherited by this fork and left as it was. Its version numbers (1.5.0 and earlier) are slot's, not slot advance's, and it lists support for devices slot advance does not target. For slot advance's own releases, see [documentation/release-notes.md](documentation/release-notes.md).
 
 ## [1.5.0](https://github.com/BrandonKowalski/slot/releases/tag/v1.5.0)
 

@@ -1,0 +1,167 @@
+slot advance Experiment 5: where the deep-sleep current goes (4 segments of 5400s, lid closed)
+Started: 2026-10-11 11:38:47 +0000
+Times in [brackets] are uptime in seconds; uptime keeps counting during suspend.
+[12.88 s] Preconditions met: lid open, carousel, battery 90%, status Discharging, no cable, rtc1 ready, USB switches present.
+[12.90 s] Segment length: 5400s. Expected total: about 443 minutes.
+[13.91 s] os_sleep set to 0; the lid is armed.
+[13.92 s]   [start] os_sleep target 0; lid wake: enabled
+[13.95 s]   [start] USB controllers (1 = on): ohci1=1 ohci2=1 ohci3=1 ehci1=1 ehci2=1 ehci3=1 
+[13.96 s]   [start] USB clocks (enable counts): usbphy3=2 usbphy2=2 usbphy1=2 usbehci3=1 usbehci2=1 usbehci1=1 usbohci3=1 usbohci2=1 usbohci1=1 
+[13.97 s]   [start] PE19: gpio-147 ( |? ) out hi 
+[13.99 s]   [start] Wi-Fi: driver loaded yes, wlan0 present, rf-ctrl power_state 1, WLAN rail (cldo4) enabled
+[14.00 s] Waiting up to 120s for the lid to close.
+[23.04 s] Lid closed.
+[30.06 s] Slot advance is dark (GPU idle).
+[30.07 s] Waiting for the first 1% tick before segment 1 (up to 1500s).
+[517.59 s] Tick: 90% -> 89% between uptime 515.56 and 517.57. capacity=89%, charge_counter=3115000 uAh, voltage=4019000 uV
+
+[517.60 s] === Segment 1: Normal Standby, lid armed ===
+[517.60 s]   [before suspend] os_sleep target 0; lid wake: enabled
+[517.64 s]   [before suspend] USB controllers (1 = on): ohci1=1 ohci2=1 ohci3=1 ehci1=1 ehci2=1 ehci3=1 
+[517.65 s]   [before suspend] USB clocks (enable counts): usbphy3=2 usbphy2=2 usbphy1=2 usbehci3=1 usbehci2=1 usbehci1=1 usbohci3=1 usbohci2=1 usbohci1=1 
+[517.66 s]   [before suspend] PE19: gpio-147 ( |? ) out hi 
+[517.67 s]   [before suspend] Wi-Fi: driver loaded yes, wlan0 present, rf-ctrl power_state 1, WLAN rail (cldo4) enabled
+[517.69 s] Suspending for 5400s at capacity=89%, charge_counter=3115000 uAh, voltage=4005000 uV
+[5918.76 s]   suspend 1: status 0, path mem, suspended 5398.726s, alarm diff 1s, lid 0, wake IRQ 320, changed: rtc(275)+1 axp2202_irq_chip(320)+4 
+[5918.90 s]   kernel log for this suspend: 12 USB-host 'not suspend'/'is disable' lines, 11 Wi-Fi driver lines
+[5918.92 s] rtc1 alarm cleared (wakealarm now: 'empty')
+[5918.94 s] Woke: ended by rtc1 alarm. capacity=84%, charge_counter=2940000 uAh, voltage=3965000 uV
+[5918.95 s]   [after wake] os_sleep target 0; lid wake: enabled
+[5918.98 s]   [after wake] USB controllers (1 = on): ohci1=1 ohci2=1 ohci3=1 ehci1=1 ehci2=1 ehci3=1 
+[5918.99 s]   [after wake] USB clocks (enable counts): usbphy3=2 usbphy2=2 usbphy1=2 usbehci3=1 usbehci2=1 usbehci1=1 usbohci3=1 usbohci2=1 usbohci1=1 
+[5919.00 s]   [after wake] PE19: gpio-147 ( |? ) out hi 
+[5919.01 s]   [after wake] Wi-Fi: driver loaded yes, wlan0 present, rf-ctrl power_state 1, WLAN rail (cldo4) enabled
+[5979.37 s]   gauge after the wake: 84% at once, 84% after 60s
+[6063.99 s]   closing tick: 84% -> 83% at uptime 6063.99
+[6442.71 s]   next tick: 83% -> 82% at uptime 6442.71
+[6442.72 s]   GPU interrupts while awake after this wake: 0 (0 = slot stayed dark)
+
+[6442.74 s] === Segment 2: + USB host controllers off ===
+[6442.74 s] Switching off the idle USB host controllers (OHCI first, then EHCI).
+[6442.75 s]   PE19 before: gpio-147 ( |? ) out hi 
+[6444.27 s]   PE19 after the three OHCI controllers: gpio-147 ( |? ) out hi 
+[6445.79 s]   PE19 after all six: gpio-147 ( |? ) out lo 
+[6445.82 s]   [before suspend] os_sleep target 0; lid wake: enabled
+[6445.85 s]   [before suspend] USB controllers (1 = on): ohci1=0 ohci2=0 ohci3=0 ehci1=0 ehci2=0 ehci3=0 
+[6445.86 s]   [before suspend] USB clocks (enable counts): usbphy3=0 usbphy2=0 usbphy1=0 usbehci3=0 usbehci2=0 usbehci1=0 usbohci3=0 usbohci2=0 usbohci1=0 
+[6445.87 s]   [before suspend] PE19: gpio-147 ( |? ) out lo 
+[6445.89 s]   [before suspend] Wi-Fi: driver loaded yes, wlan0 present, rf-ctrl power_state 1, WLAN rail (cldo4) enabled
+[6445.90 s] Suspending for 5400s at capacity=82%, charge_counter=2870000 uAh, voltage=3942000 uV
+[11847.77 s]   suspend 1: status 0, path mem, suspended 5399.577s, alarm diff 1s, lid 0, wake IRQ 320, changed: rtc(275)+1 axp2202_irq_chip(320)+3 
+[11847.88 s]   kernel log for this suspend: 12 USB-host 'not suspend'/'is disable' lines, 13 Wi-Fi driver lines
+[11847.90 s] rtc1 alarm cleared (wakealarm now: 'empty')
+[11847.92 s] Woke: ended by rtc1 alarm. capacity=79%, charge_counter=2765000 uAh, voltage=3942000 uV
+[11847.93 s]   [after wake] os_sleep target 0; lid wake: enabled
+[11847.96 s]   [after wake] USB controllers (1 = on): ohci1=0 ohci2=0 ohci3=0 ehci1=0 ehci2=0 ehci3=0 
+[11847.97 s]   [after wake] USB clocks (enable counts): usbphy3=0 usbphy2=0 usbphy1=0 usbehci3=0 usbehci2=0 usbehci1=0 usbohci3=0 usbohci2=0 usbohci1=0 
+[11847.98 s]   [after wake] PE19: gpio-147 ( |? ) out lo 
+[11847.99 s]   [after wake] Wi-Fi: driver loaded yes, wlan0 present, rf-ctrl power_state 1, WLAN rail (cldo4) enabled
+[11908.35 s]   gauge after the wake: 79% at once, 79% after 60s
+[12152.09 s]   closing tick: 79% -> 78% at uptime 12152.09
+[12599.27 s]   next tick: 78% -> 77% at uptime 12599.27
+[12599.28 s]   GPU interrupts while awake after this wake: 0 (0 = slot stayed dark)
+
+[12599.30 s] === Segment 3: + Wi-Fi powered off ===
+[12599.30 s] Unloading the Wi-Fi driver (8821cs) to power the radio off.
+[12600.54 s]   Wi-Fi is off: driver loaded no, wlan0 absent, rf-ctrl power_state 0, WLAN rail (cldo4) disabled
+[12600.55 s]   [before suspend] os_sleep target 0; lid wake: enabled
+[12600.58 s]   [before suspend] USB controllers (1 = on): ohci1=0 ohci2=0 ohci3=0 ehci1=0 ehci2=0 ehci3=0 
+[12600.59 s]   [before suspend] USB clocks (enable counts): usbphy3=0 usbphy2=0 usbphy1=0 usbehci3=0 usbehci2=0 usbehci1=0 usbohci3=0 usbohci2=0 usbohci1=0 
+[12600.60 s]   [before suspend] PE19: gpio-147 ( |? ) out lo 
+[12600.62 s]   [before suspend] Wi-Fi: driver loaded no, wlan0 absent, rf-ctrl power_state 0, WLAN rail (cldo4) disabled
+[12600.64 s] Suspending for 5400s at capacity=77%, charge_counter=2695000 uAh, voltage=3901000 uV
+[18001.21 s]   suspend 1: status 0, path mem, suspended 5397.859s, alarm diff 2s, lid 0, wake IRQ 320, changed: rtc(275)+1 axp2202_irq_chip(320)+3 
+[18001.30 s]   kernel log for this suspend: 12 USB-host 'not suspend'/'is disable' lines, 0 Wi-Fi driver lines
+  unexpected error lines:
+    [ 1804.975648] mmc2: error -110 during resume (card was removed?)
+[18001.32 s] rtc1 alarm cleared (wakealarm now: 'empty')
+[18001.34 s] Woke: ended by rtc1 alarm. capacity=74%, charge_counter=2590000 uAh, voltage=3873000 uV
+[18001.35 s]   [after wake] os_sleep target 0; lid wake: enabled
+[18001.38 s]   [after wake] USB controllers (1 = on): ohci1=0 ohci2=0 ohci3=0 ehci1=0 ehci2=0 ehci3=0 
+[18001.39 s]   [after wake] USB clocks (enable counts): usbphy3=0 usbphy2=0 usbphy1=0 usbehci3=0 usbehci2=0 usbehci1=0 usbohci3=0 usbohci2=0 usbohci1=0 
+[18001.40 s]   [after wake] PE19: gpio-147 ( |? ) out lo 
+[18001.42 s]   [after wake] Wi-Fi: driver loaded no, wlan0 absent, rf-ctrl power_state 0, WLAN rail (cldo4) disabled
+[18061.78 s]   gauge after the wake: 74% at once, 74% after 60s
+[18527.10 s]   closing tick: 74% -> 73% at uptime 18527.10
+[19050.84 s]   next tick: 73% -> 72% at uptime 19050.84
+[19050.86 s]   GPU interrupts while awake after this wake: 0 (0 = slot stayed dark)
+
+[19050.87 s] === Segment 4: Super Standby (os_sleep=16), lid not armed ===
+[19051.88 s] os_sleep set to 16 (Super Standby); the lid is no longer armed.
+[19051.89 s]   [before suspend] os_sleep target 16; lid wake: not armed
+[19051.92 s]   [before suspend] USB controllers (1 = on): ohci1=0 ohci2=0 ohci3=0 ehci1=0 ehci2=0 ehci3=0 
+[19051.93 s]   [before suspend] USB clocks (enable counts): usbphy3=0 usbphy2=0 usbphy1=0 usbehci3=0 usbehci2=0 usbehci1=0 usbohci3=0 usbohci2=0 usbohci1=0 
+[19051.94 s]   [before suspend] PE19: gpio-147 ( |? ) out lo 
+[19051.96 s]   [before suspend] Wi-Fi: driver loaded no, wlan0 absent, rf-ctrl power_state 0, WLAN rail (cldo4) disabled
+[19051.98 s] Suspending for 5400s at capacity=72%, charge_counter=2520000 uAh, voltage=3856000 uV
+[24454.21 s]   suspend 1: status 0, path mem, suspended 5399.549s, alarm diff 2s, lid 0, wake IRQ 320, changed: rtc(275)+1 axp2202_irq_chip(320)+3 
+[24454.34 s]   kernel log for this suspend: 12 USB-host 'not suspend'/'is disable' lines, 0 Wi-Fi driver lines
+  unexpected error lines:
+    [ 2858.425583] mmc2: error -110 during resume (card was removed?)
+[24454.36 s] rtc1 alarm cleared (wakealarm now: 'empty')
+[24454.38 s] Woke: ended by rtc1 alarm. capacity=70%, charge_counter=2450000 uAh, voltage=3831000 uV
+[24454.39 s]   [after wake] os_sleep target 16; lid wake: not armed
+[24454.42 s]   [after wake] USB controllers (1 = on): ohci1=0 ohci2=0 ohci3=0 ehci1=0 ehci2=0 ehci3=0 
+[24454.43 s]   [after wake] USB clocks (enable counts): usbphy3=0 usbphy2=0 usbphy1=0 usbehci3=0 usbehci2=0 usbehci1=0 usbohci3=0 usbohci2=0 usbohci1=0 
+[24454.44 s]   [after wake] PE19: gpio-147 ( |? ) out lo 
+[24454.45 s]   [after wake] Wi-Fi: driver loaded no, wlan0 absent, rf-ctrl power_state 0, WLAN rail (cldo4) disabled
+[24514.81 s]   gauge after the wake: 70% at once, 70% after 60s
+[24613.53 s]   closing tick: 70% -> 69% at uptime 24613.53
+[25127.19 s]   next tick: 69% -> 68% at uptime 25127.19
+[25127.20 s]   GPU interrupts while awake after this wake: 0 (0 = slot stayed dark)
+[25130.57 s] USB host controllers switched back on: ohci1=1 ohci2=1 ohci3=1 ehci1=1 ehci2=1 ehci3=1 
+[25130.58 s] PE19 now: gpio-147 ( |? ) out hi 
+
+=== RESULTS: Experiment 5 ===
+Method: each segment runs from one 1% tick (start) to the first tick after waking (close).
+Charge used = steps x 35 mAh. The awake part (entry, resume, settling and waiting for the
+tick) is charged at the awake current measured between the close tick and the next tick.
+Uncertainty shown covers tick timing (+/- one reading) and the awake-current estimate.
+Sensitivity: how much the deep-sleep figure moves if the awake current is 10% off.
+
+Segment 1: Normal Standby, lid armed
+  ended by: rtc1 alarm; unexpected wakes: 0; Wi-Fi stayed off: n/a
+  start tick 517.6 s, close tick 6064.0 s, next tick 6442.7 s
+  whole interval 5546 s (1.541 h): suspended 5398.7 s, awake 147.7 s
+  charge: 6 step(s) = 210 mAh
+  awake current in this configuration: 332.7 mA (+/- 5.3)
+  awake charge subtracted: 13.65 mAh
+  AVERAGE CURRENT WHILE SUSPENDED: 130.9 mA (+/- 0.5; +/- 0.9 more if the awake current is 10% off)
+  average over the whole interval (entry and resume included): 136.3 mA
+
+Segment 2: + USB host controllers off
+  ended by: rtc1 alarm; unexpected wakes: 0; Wi-Fi stayed off: n/a
+  start tick 6442.7 s, close tick 12152.1 s, next tick 12599.3 s
+  whole interval 5709 s (1.586 h): suspended 5399.6 s, awake 309.8 s
+  charge: 4 step(s) = 140 mAh
+  awake current in this configuration: 281.8 mA (+/- 3.8)
+  awake charge subtracted: 24.25 mAh
+  AVERAGE CURRENT WHILE SUSPENDED: 77.2 mA (+/- 0.5; +/- 1.6 more if the awake current is 10% off)
+  average over the whole interval (entry and resume included): 88.3 mA
+
+Segment 3: + Wi-Fi powered off
+  ended by: rtc1 alarm; unexpected wakes: 0; Wi-Fi stayed off: yes
+  start tick 12599.3 s, close tick 18527.1 s, next tick 19050.8 s
+  whole interval 5928 s (1.647 h): suspended 5397.9 s, awake 530.0 s
+  charge: 4 step(s) = 140 mAh
+  awake current in this configuration: 240.6 mA (+/- 2.8)
+  awake charge subtracted: 35.42 mAh
+  AVERAGE CURRENT WHILE SUSPENDED: 69.8 mA (+/- 0.5; +/- 2.4 more if the awake current is 10% off)
+  average over the whole interval (entry and resume included): 85.0 mA
+
+Segment 4: Super Standby, lid not armed
+  ended by: rtc1 alarm; unexpected wakes: 0; Wi-Fi stayed off: yes
+  start tick 19050.8 s, close tick 24613.5 s, next tick 25127.2 s
+  whole interval 5563 s (1.545 h): suspended 5399.6 s, awake 163.1 s
+  charge: 3 step(s) = 105 mAh
+  awake current in this configuration: 245.3 mA (+/- 2.9)
+  awake charge subtracted: 11.12 mAh
+  AVERAGE CURRENT WHILE SUSPENDED: 62.6 mA (+/- 0.4; +/- 0.7 more if the awake current is 10% off)
+  average over the whole interval (entry and resume included): 68.0 mA
+
+USB host controllers cost: 53.8 mA (+/- 1.0)
+Wi-Fi radio (powered, idle) cost: 7.4 mA (+/- 1.1)
+Lid wake / Normal vs Super Standby cost: 7.2 mA (+/- 0.9)
+Baseline to Super Standby with everything off: 130.9 -> 62.6 mA
+[25130.61 s] Wi-Fi: driver loaded no, wlan0 absent, rf-ctrl power_state 0, WLAN rail (cldo4) disabled. If the driver was unloaded, power the RG SP off and on to bring Wi-Fi back.
+[25130.62 s] Test ended: complete. Finished: 2026-10-11 18:37:25 +0000

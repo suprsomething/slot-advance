@@ -1,0 +1,31 @@
+slot advance battery Test A: deep sleep (mem), lid closed, rtc1 alarm after 7200s
+Started: 2026-10-10 12:31:57 +0000
+Times in [brackets] are uptime in seconds; uptime keeps counting during suspend.
+[12.86 s] Preconditions met: lid open, carousel, battery 68%, status Discharging, no cable, rtc1 ready.
+[12.87 s] Battery design info: charge_full=3500000 energy_full_design=3500000
+[13.88 s] os_sleep set to 0; the lid is armed (opening it ends the test early).
+[13.89 s] Waiting up to 120s for the lid to close.
+[28.95 s] Lid closed.
+[35.97 s] Slot advance is dark (GPU idle).
+[36.01 s] START: charge_counter=2380000 uAh, voltage=3848000 uV, capacity=68%; rtc1 634303; alarm for 641503
+[7236.82 s] segment 1: status 0, path mem, suspended 7198.609s, rtc1 641504 (alarm diff 1s), lid 0, wake IRQ 320, changed: rtc(275)+1 axp2202_irq_chip(320)+4 
+[7236.96 s] END: charge_counter=2170000 uAh, voltage=3810000 uV, capacity=62%; ended by: rtc1 alarm (as planned)
+[7236.97 s] rtc1 alarm cleared (wakealarm now: 'empty')
+[7257.05 s] Slot check: lid closed and GPU idle for 20s: slot stayed dark.
+[7257.07 s] 20 s after the end: charge_counter=2170000 uAh, voltage=3780000 uV, capacity=62%
+
+=== RESULTS: Test A (deep sleep, mem) ===
+Ended by: rtc1 alarm (as planned)
+Whole test interval (uptime): 7200.96 s = 2.00027 h; wall clock: 7201 s
+Time actually suspended (sum of the kernel's 'Suspended for'): 7198.61 s in 1 segment(s)
+Awake within the interval (entry, resume and any unexpected wakes): 2.35 s
+Unexpected wakes: 0
+charge_counter: 2380000 -> 2170000 uAh (drop 210000 uAh = 210 mAh)
+voltage: 3848000 -> 3810000 uV; capacity: 68% -> 62%
+Average current over the whole interval: 104.986 mA
+  Resolution: charge_counter moves in steps of about 5 mAh (Test B measures the step), so the
+  measured drop can be out by up to one step. Uncertainty of the average: +/- 2.49967 mA.
+  Longer tests shrink this (an 8-hour run: +/- 0.625 mA).
+Per-hour drain as battery percentage: 2.9996 %/h (1% steps, coarse).
+[7257.09 s] os_sleep restored to 16 (the BaseOS value)
+[7257.10 s] Test ended: complete. Finished: 2026-10-10 14:32:41 +0000

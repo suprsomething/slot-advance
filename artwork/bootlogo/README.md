@@ -5,7 +5,7 @@ slot shows its boot logo through the device's own bootloader, not through slot's
 | File | What it is |
 |---|---|
 | `slot-advance-logo-source.png` | The striped slot. advance design as supplied (1536 x 1024, eight flat colours). |
-| `slot-advance-bootlogo-720x480.png` / `.bmp` | The full RG SP screen as the bootloader will show it: 720 x 480, black, logo centred, at the design's own scale. |
+| `slot-advance-bootlogo-720x480.png` / `.bmp` | The full RG SP (2026) screen as the bootloader will show it: 720 x 480, black, logo centred, at the design's own scale. |
 | `slot-original-bootlogo.bmp` | Backup of upstream slot's `card/System/bootlogo.bmp`. |
 
 `card/System/bootlogo.bmp` is the striped slot. advance logo cut to its own size (560 x 280, 24-bit BMP on black) so that slot's existing code places it. On a 720 x 480 screen the result is identical, pixel for pixel, to `slot-advance-bootlogo-720x480.png`. Cut to size, it also still fits every other panel BaseOS supports.
