@@ -6,6 +6,7 @@ use crate::cart::{cart_box, gb_shell_of, label_colour, label_text, CART_H, CART_
 use crate::hud::Millis;
 use crate::silhouette::GbShell;
 use crate::slot_chrome::{draw_empty_slot, MOUTH_H};
+use crate::title::{ShownTitle, TITLE_FACE_H, TITLE_GAP};
 
 const SIDE_SCALE: f32 = 0.78;
 const SIDE_ALPHA: f32 = 0.55;
@@ -61,6 +62,11 @@ pub struct Shelf {
     held: Option<(i32, Millis, usize)>,
     marks: Vec<bool>,
     star: Option<(TexId, f32, f32)>,
+    /// The selected cart's title (Settings > Screen > Show Game Titles): which cart it
+    /// was made for, and how far into its marquee it is.
+    show_titles: bool,
+    title: Option<(usize, ShownTitle)>,
+    marquee: f32,
 }
 
 impl Shelf {
@@ -79,6 +85,9 @@ impl Shelf {
             held: None,
             marks: Vec::new(),
             star: None,
+            show_titles: false,
+            title: None,
+            marquee: 0.0,
         }
     }
 
@@ -144,6 +153,63 @@ impl Shelf {
 
     pub fn take_face(&mut self, i: usize) -> Option<TexId> {
         self.faces.get_mut(i).and_then(Option::take)
+    }
+
+    pub fn set_show_titles(&mut self, on: bool) {
+        self.show_titles = on;
+    }
+
+    pub fn shows_titles(&self) -> bool {
+        self.show_titles
+    }
+
+    /// The title drawn, if it belongs to the selected cart. One made for a cart that is no
+    /// longer selected is never drawn, so fast scrolling cannot show a stale name.
+    pub fn title(&self) -> Option<ShownTitle> {
+        self.title
+            .filter(|(i, _)| *i == self.index && self.show_titles)
+            .map(|(_, t)| t)
+    }
+
+    /// The selected cart, when titles are on and its title is not ready yet.
+    pub fn wants_title(&self) -> Option<usize> {
+        (self.show_titles && !self.carts.is_empty() && self.title().is_none()).then_some(self.index)
+    }
+
+    /// Places cart `i`'s title, handing back the textures of the one it replaces (or this
+    /// one's, if `i` is no longer selected).
+    pub fn set_title(&mut self, i: usize, title: ShownTitle) -> Vec<TexId> {
+        if i != self.index || i >= self.carts.len() || !self.show_titles {
+            return title.textures().collect();
+        }
+        self.marquee = 0.0;
+        self.title
+            .replace((i, title))
+            .map(|(_, old)| old.textures().collect())
+            .unwrap_or_default()
+    }
+
+    /// The title's textures, emptied out for reuse.
+    pub fn take_titles(&mut self) -> Vec<TexId> {
+        self.title
+            .take()
+            .map(|(_, t)| t.textures().collect())
+            .unwrap_or_default()
+    }
+
+    /// Whether the title held belongs to a cart that is no longer selected.
+    pub fn title_is_stale(&self) -> bool {
+        self.title.is_some_and(|(i, _)| i != self.index)
+            || (self.title.is_some() && !self.show_titles)
+    }
+
+    /// Seconds into the selected title's marquee, set by the app each frame.
+    pub fn set_marquee(&mut self, t: f32) {
+        self.marquee = t;
+    }
+
+    pub fn marquee(&self) -> f32 {
+        self.marquee
     }
 
     pub fn on_screen(&self) -> Vec<usize> {
@@ -384,11 +450,22 @@ impl Shelf {
                     });
                 }
             }
+            // With titles on, the selected cart's title sits just above it, and every star
+            // sits above the title's space, so stars stay level and never jump.
+            let mut top = y;
+            if self.show_titles {
+                top = y - (TITLE_GAP + TITLE_FACE_H as f32) * scale;
+                if i == self.index {
+                    if let Some(title) = self.title() {
+                        title.draw(x + w / 2.0, y, scale, alpha * dim, self.marquee, out);
+                    }
+                }
+            }
             if let (true, Some((tex, sw, sh))) = (self.is_marked(i), self.star) {
                 let (sw, sh) = (sw * scale, sh * scale);
                 out.push(Draw::Tex {
                     x: x + (w - sw) / 2.0,
-                    y: y - STAR_GAP * scale - sh,
+                    y: top - STAR_GAP * scale - sh,
                     w: sw,
                     h: sh,
                     tex,

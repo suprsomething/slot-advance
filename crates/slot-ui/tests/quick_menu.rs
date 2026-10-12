@@ -79,7 +79,7 @@ fn the_fast_forward_row_offers_the_four_ceilings_the_card_can_hold() {
 fn the_rows_run_in_the_order_the_user_chose() {
     assert_eq!(
         QuickRow::MAIN.map(QuickRow::label),
-        ["Screen", "Gameplay", "Date & Time", "About"]
+        ["Screen", "Gameplay", "Sleep", "Date & Time", "About"]
     );
     assert_eq!(
         QuickRow::SCREEN.map(QuickRow::label),
@@ -87,7 +87,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
             "GBA Shader",
             "GB / GBC Shader",
             "Color Correction",
-            "GB Palettes"
+            "GB Palettes",
+            "Show Game Titles"
         ]
     );
     assert_eq!(
@@ -136,7 +137,13 @@ fn the_values_read_as_the_menu_prints_them() {
             "LCD3x",
             "Grid",
             "Dot",
-            "Simpletex"
+            "Simpletex",
+            "3 min",
+            "15 min",
+            "30 min",
+            "1 hr",
+            "2 hr",
+            "8 hr"
         ]
     );
     assert_eq!(QuickValue::flag(true), QuickValue::On);
@@ -205,4 +212,14 @@ fn the_favourite_star_is_in_the_symbols_font() {
         star.w > 0 && star.rgba.chunks(4).any(|p| p[3] > 200),
         "the star glyph is missing from the trimmed symbols font"
     );
+}
+
+#[test]
+fn every_offered_sleep_duration_has_a_value_and_nothing_else_does() {
+    for m in slot_store::SLEEP_MINUTES {
+        assert!(QuickValue::sleep(m).is_some(), "{m} min has no value face");
+    }
+    for m in [0, 1, 5, 45, 90, 240, 600] {
+        assert_eq!(QuickValue::sleep(m), None, "{m} min is not offered");
+    }
 }

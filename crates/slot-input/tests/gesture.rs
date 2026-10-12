@@ -549,3 +549,13 @@ fn x_on_its_own_still_reaches_the_game() {
     assert_eq!(g.feed(Down(X), 0), vec![GbaDown(X)]);
     assert_eq!(g.feed(Up(X), 50), vec![GbaUp(X)]);
 }
+
+#[test]
+fn a_power_release_with_no_press_means_nothing() {
+    // The press that wakes the device from sleep is dropped before it reaches the
+    // gestures; its release on its own must not count as a tap that sleeps it again.
+    let mut g = Gestures::new();
+    assert_eq!(g.feed(Up(Btn::Power), 50), vec![]);
+    assert_eq!(g.feed(Down(Btn::Power), 100), vec![PowerPress]);
+    assert_eq!(g.feed(Up(Btn::Power), 180), vec![PowerTap]);
+}

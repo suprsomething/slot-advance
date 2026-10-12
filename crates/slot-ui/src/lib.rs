@@ -23,6 +23,7 @@ mod silhouette;
 mod slot_chrome;
 mod sticker;
 pub mod text;
+mod title;
 mod toast;
 
 pub use backdrop::{bezel_face, draw_backdrop, wallpaper_face};
@@ -85,5 +86,10 @@ pub use slot_chrome::{
 pub use sticker::{
     draw_sticker, head_rows, sticker_face, sticker_lines, StickerFields, COPYRIGHT, CREDITS, DC,
     HOME, ORIGIN, STICKER_H, STICKER_W,
+};
+pub use title::{
+    display_title, fitted_title, marquee, title_faces, visible_spans, Marquee, ShownTitle,
+    TitleFaces, TitleTex, MARQUEE_DELAY_S, MARQUEE_END_S, MARQUEE_SPEED, TITLE_FACE_H, TITLE_GAP,
+    TITLE_VIEW_W,
 };
 pub use toast::{toast_box, toast_face, toast_rect, Toast};

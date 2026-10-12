@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="500" viewBox="0 0 720 500" role="img" aria-labelledby="t d">
+<title id="t">Lid-closed current draw: about 250, 105 and 70 milliamps</title>
+<desc id="d">Horizontal bar chart. v3 software standby about 250 mA (248 to 253). First suspend-to-RAM about 105 mA (plus or minus 17.5). 0.4.0 configuration about 70 mA (about 60 to 82). About 72 percent less than software standby.</desc>
+<rect x="0.5" y="0.5" width="719" height="499" rx="14" fill="#17161D" stroke="#2E2C38"/>
+<g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<text x="32" y="50" font-size="24" fill="#EEECF4" font-weight="650" text-anchor="start">Lid-closed current draw</text>
+<text x="32" y="80" font-size="16" fill="#B4B1C2" font-weight="400" text-anchor="start">Calculated from battery-gauge readings, lower is better</text>
+<line x1="32.0" y1="104" x2="32.0" y2="400" stroke="#2E2C38" stroke-width="1"/>
+<text x="32.0" y="424" font-size="14" fill="#8A8799" font-weight="400" text-anchor="start">0 mA</text>
+<line x1="234.9" y1="104" x2="234.9" y2="400" stroke="#2E2C38" stroke-width="1"/>
+<text x="234.85714285714283" y="424" font-size="14" fill="#8A8799" font-weight="400" text-anchor="middle">100 mA</text>
+<line x1="437.7" y1="104" x2="437.7" y2="400" stroke="#2E2C38" stroke-width="1"/>
+<text x="437.71428571428567" y="424" font-size="14" fill="#8A8799" font-weight="400" text-anchor="middle">200 mA</text>
+<text x="32" y="132" font-size="18" fill="#EEECF4" font-weight="600">v3 software standby<tspan dx="10" font-size="15" font-weight="400" fill="#8A8799">CPU running, nothing drawn</tspan></text>
+<rect x="32" y="146" width="507.1" height="30" rx="4" fill="#5C596C"/>
+<path d="M535.1 161H545.2M535.1 154V168M545.2 154V168" stroke="#B4B1C2" stroke-width="1.5" fill="none" opacity="0.85"/>
+<text x="557.2285714285714" y="167" font-size="18" fill="#EEECF4" font-weight="650" text-anchor="start">~250 mA</text>
+<text x="32" y="228" font-size="18" fill="#EEECF4" font-weight="600">First suspend-to-RAM<tspan dx="10" font-size="15" font-weight="400" fill="#8A8799">Lid wake, USB and Wi-Fi on</tspan></text>
+<rect x="32" y="242" width="213.0" height="30" rx="4" fill="#7A7690"/>
+<path d="M209.5 257H280.5M209.5 250V264M280.5 250V264" stroke="#B4B1C2" stroke-width="1.5" fill="none" opacity="0.85"/>
+<text x="292.5" y="263" font-size="18" fill="#EEECF4" font-weight="650" text-anchor="start">~105 mA</text>
+<text x="32" y="324" font-size="18" fill="#EEECF4" font-weight="600">0.4.0 configuration<tspan dx="10" font-size="15" font-weight="400" fill="#8A8799">Lid wake, USB and Wi-Fi off</tspan></text>
+<rect x="32" y="338" width="142.0" height="30" rx="4" fill="#8B7CF6"/>
+<path d="M153.7 353H198.3M153.7 346V360M198.3 346V360" stroke="#B4B1C2" stroke-width="1.5" fill="none" opacity="0.85"/>
+<text x="210.34285714285713" y="359" font-size="18" fill="#EEECF4" font-weight="650" text-anchor="start">~70 mA</text>
+<rect x="452" y="290" width="236" height="90" rx="10" fill="#221F33" stroke="#8B7CF6" stroke-width="1.5"/>
+<text x="570" y="336" font-size="30" fill="#EEECF4" font-weight="750" text-anchor="middle">72% less</text>
+<text x="570" y="362" font-size="15" fill="#B4B1C2" font-weight="400" text-anchor="middle">than software standby</text>
+<text x="32" y="456" font-size="13" fill="#8A8799" font-weight="400" text-anchor="start">Whiskers show each figure's measurement uncertainty. One development run per configuration;</text>
+<text x="32" y="476" font-size="13" fill="#8A8799" font-weight="400" text-anchor="start">the 0.4.0 figure was measured with the same settings, not on the release build itself.</text>
+</g>
+</svg>

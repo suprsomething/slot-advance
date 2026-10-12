@@ -490,6 +490,7 @@ impl RadioJobs for RadioLog {
 #[test]
 fn a_shut_lid_cools_the_radio() {
     let d = tmp_root_with_carts(&["Emerald"]);
+    common::wifi_on(d.path());
     let mut a = app_playing_in(d.path(), "Emerald");
     let log = RadioLog::default();
     a.set_radio_jobs(Box::new(log.clone()));
@@ -503,6 +504,7 @@ fn a_shut_lid_cools_the_radio() {
 #[test]
 fn a_shut_lid_over_a_session_takes_its_network_down_too() {
     let d = tmp_root_with_carts(&["Emerald"]);
+    common::wifi_on(d.path());
     let mut a = app_playing_in(d.path(), "Emerald");
     let log = RadioLog::default();
     a.set_radio_jobs(Box::new(log.clone()));

@@ -202,6 +202,9 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             gb_palettes: false,
             gb_palette: GbPalette::DEFAULT,
             last_category: slot_store::Category::All,
+            sleep_minutes: slot_store::SLEEP_MINUTES_DEFAULT,
+            wifi: false,
+            show_titles: false,
         }
     );
 }
@@ -402,4 +405,79 @@ fn a_missing_or_unknown_palette_falls_back_to_dmg_green() {
         assert!(!s.gb_palettes, "{bad:?} turned palettes on");
         assert_eq!(s.gb_palette, GbPalette::DEFAULT, "{bad:?}");
     }
+}
+
+#[test]
+fn sleep_and_wifi_round_trip_and_an_older_file_gets_the_defaults() {
+    let d = tmp_root();
+    let s = SlotState {
+        clock_set: true,
+        sleep_minutes: 120,
+        wifi: true,
+        ..SlotState::default()
+    };
+    write_slot_state(d.path(), &s).unwrap();
+    assert_eq!(read_slot_state(d.path()), s);
+    let path = d.path().join("Config/slot.state");
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.lines().any(|l| l == "sleep_minutes=120"), "{text}");
+    assert!(text.lines().any(|l| l == "wifi=on"), "{text}");
+
+    let older: String = text
+        .lines()
+        .filter(|l| !l.starts_with("sleep_minutes=") && !l.starts_with("wifi="))
+        .map(|l| format!("{l}\n"))
+        .collect();
+    std::fs::write(&path, older).unwrap();
+    let read = read_slot_state(d.path());
+    assert_eq!(read.sleep_minutes, slot_store::SLEEP_MINUTES_DEFAULT);
+    assert!(!read.wifi, "Wi-Fi must default to off");
+    assert!(read.clock_set, "the rest of an older file still loads");
+}
+
+#[test]
+fn a_sleep_duration_that_is_not_offered_falls_back_to_the_default() {
+    let d = tmp_root();
+    write_slot_state(
+        d.path(),
+        &SlotState {
+            clock_set: true,
+            ..SlotState::default()
+        },
+    )
+    .unwrap();
+    let path = d.path().join("Config/slot.state");
+    let text = std::fs::read_to_string(&path)
+        .unwrap()
+        .replace("sleep_minutes=30", "sleep_minutes=7")
+        .replace("wifi=off", "wifi=ON");
+    std::fs::write(&path, text).unwrap();
+    let read = read_slot_state(d.path());
+    assert_eq!(read.sleep_minutes, slot_store::SLEEP_MINUTES_DEFAULT);
+    assert!(read.wifi, "wifi=ON is read as on");
+}
+
+#[test]
+fn show_titles_round_trips_and_defaults_to_off() {
+    let d = tmp_root();
+    let on = SlotState {
+        clock_set: true,
+        show_titles: true,
+        ..SlotState::default()
+    };
+    write_slot_state(d.path(), &on).unwrap();
+    assert_eq!(read_slot_state(d.path()), on);
+    let path = d.path().join("Config/slot.state");
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.lines().any(|l| l == "show_titles=1"), "{text}");
+    let older: String = text
+        .lines()
+        .filter(|l| !l.starts_with("show_titles="))
+        .map(|l| format!("{l}\n"))
+        .collect();
+    std::fs::write(&path, older).unwrap();
+    assert!(
+        !read_slot_state(d.path()).show_titles,
+        "titles must default to off"
+    );
 }

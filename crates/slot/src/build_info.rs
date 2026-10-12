@@ -16,6 +16,17 @@ impl Build {
         }
     }
 
+    /// One line naming this build exactly, for the top of slot.log: the version, the
+    /// short Git commit it was built from (marked if built with uncommitted changes) and
+    /// the build date.
+    pub fn describe(&self) -> String {
+        let dirty = if self.dirty { "+changes" } else { "" };
+        format!(
+            "slot advance {} ({}{dirty}, built {})",
+            self.version, self.hash, self.date
+        )
+    }
+
     pub fn serial(&self) -> String {
         self.hash.to_uppercase()
     }

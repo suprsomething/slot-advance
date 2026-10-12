@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{Battery, Charge, LedState, LidPolicy, Platform};
+use crate::{Battery, Charge, LedState, LidPolicy, Platform, Woke};
 
 pub struct Power {
     platform: Box<dyn Platform>,
@@ -68,6 +68,22 @@ impl Power {
 
     pub fn set_clock(&mut self, secs: i64) {
         self.platform.set_clock(secs);
+    }
+
+    pub fn sleep_ready(&self) -> bool {
+        self.platform.sleep_ready()
+    }
+
+    pub fn suspend(&mut self, secs: u32) -> Woke {
+        self.platform.suspend(secs)
+    }
+
+    pub fn uptime(&self) -> Option<f64> {
+        self.platform.uptime()
+    }
+
+    pub fn lid_open(&self) -> Option<bool> {
+        self.platform.lid_open()
     }
 }
 

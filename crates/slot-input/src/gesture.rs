@@ -305,6 +305,11 @@ impl Gestures {
     }
 
     fn power_up(&mut self) -> Vec<Action> {
+        if self.power_down_at.is_none() {
+            // A release with no press: the press was the one that woke the device from
+            // sleep and was dropped, so this release means nothing on its own.
+            return Vec::new();
+        }
         let held = self.power_hold_fired;
         self.power_down_at = None;
         self.power_hold_fired = false;

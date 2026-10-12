@@ -464,6 +464,20 @@ pub fn boot(root: &Path) -> App {
     App::boot(root)
 }
 
+/// Sets `wifi=on`, as a player who wants SlotLink would. Wi-Fi is off by default.
+pub fn wifi_on(root: &Path) {
+    let mut s = slot_store::read_slot_state(root);
+    s.clock_set = true;
+    s.wifi = true;
+    write_slot_state(root, &s).expect("write slot.state");
+}
+
+/// Boots with Wi-Fi left on, for the SlotLink tests.
+pub fn boot_with_wifi(root: &Path) -> App {
+    wifi_on(root);
+    App::boot(root)
+}
+
 pub fn app_playing_in(root: &Path, stem: &str) -> App {
     app_playing_with(root, stem, StubSnapshot::boxed())
 }
@@ -563,6 +577,12 @@ pub fn app_playing_with(root: &Path, stem: &str, snapshot: Box<dyn Snapshot>) ->
 }
 
 fn seated(root: &Path, snapshot: Box<dyn Snapshot>, state: SlotState) -> App {
+    let kept = slot_store::read_slot_state(root);
+    let state = SlotState {
+        wifi: kept.wifi,
+        sleep_minutes: kept.sleep_minutes,
+        ..state
+    };
     write_slot_state(root, &state).expect("write slot.state");
     let mut a = App::boot(root);
     a.set_snapshot(snapshot);

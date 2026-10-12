@@ -24,15 +24,23 @@ fn a_cart_gpsp_cannot_link_says_there_is_no_link() {
 }
 
 #[test]
+fn the_link_shortcut_with_wifi_off_says_the_link_is_off() {
+    assert_eq!(Toast::LinkOff.text(), "Link Off");
+    let f = toast_face(Toast::LinkOff);
+    assert!(f.rgba.chunks(4).any(|p| p[3] > 0), "the banner is blank");
+}
+
+#[test]
 fn the_banner_says_what_happened_and_never_what_is_on_screen() {
     let all = Toast::all();
     assert_eq!(
-        all[..23],
+        all[..24],
         [
             Toast::StateSaved,
             Toast::StateLoaded,
             Toast::NeedsGpsp,
             Toast::NoLink,
+            Toast::LinkOff,
             Toast::LinkEnded,
             Toast::PeerEnded,
             Toast::BiosMismatch,
@@ -56,7 +64,7 @@ fn the_banner_says_what_happened_and_never_what_is_on_screen() {
         "a banner was added or dropped: every face is uploaded by its place in this list"
     );
     assert_eq!(
-        all[23..],
+        all[24..],
         GbPalette::all().map(Toast::Palette).collect::<Vec<_>>()[..],
         "the palette banners do not follow the fixed ones in palette order"
     );

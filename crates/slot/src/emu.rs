@@ -419,6 +419,10 @@ impl Snapshot for EmuSnapshot {
         request(&self.cmds, &self.shared, Cmd::Load(state));
     }
 
+    fn running(&self) -> bool {
+        self.shared.state.load(Ordering::Acquire) == CoreState::Ready as u8
+    }
+
     fn resume_trusted(&self) -> bool {
         !self.shared.resume_refused.load(Ordering::Acquire)
     }

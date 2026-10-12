@@ -40,6 +40,7 @@ pub struct Frontend {
     title_tex: Option<TexId>,
     faces: FaceBuilder,
     cart_faces: CartFaces,
+    title_faces: crate::title_faces::TitleFaces,
     rebuild: Option<Rebuild>,
     stale_check: Option<std::sync::mpsc::Receiver<Vec<slot_store::Cart>>>,
     ui_faces: Option<std::sync::mpsc::Receiver<UiFaces>>,
@@ -121,6 +122,7 @@ impl Frontend {
             title_tex: None,
             faces: FaceBuilder::spawn(),
             cart_faces,
+            title_faces: Default::default(),
             rebuild: None,
             stale_check,
             ui_faces: None,
@@ -356,6 +358,7 @@ impl Frontend {
             crate::latency::taken();
         }
         self.cart_faces.sync(self.session.app_mut(), compositor);
+        self.title_faces.sync(self.session.app_mut(), compositor);
         sync_clock(self.session.app_mut(), compositor, &mut self.clocks);
         sync_about(self.session.app_mut(), compositor, &mut self.about);
         sync_quick_clock(self.session.app_mut(), compositor, &mut self.quick_clock);
@@ -533,6 +536,17 @@ impl Frontend {
 
     pub fn powering_off(&self) -> bool {
         self.session.app().ready_to_power_off()
+    }
+
+    /// Whether the device should suspend to RAM now (see `App::sleep_due`).
+    pub fn sleep_due(&self) -> bool {
+        self.rebuild.is_none() && self.session.app().sleep_due()
+    }
+
+    /// Suspends until woken, then acts on the wake. Blocks while asleep.
+    pub fn sleep_now(&mut self) {
+        self.session.app_mut().sleep_now();
+        self.last = Instant::now();
     }
 
     pub fn restarting(&self) -> bool {

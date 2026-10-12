@@ -20,10 +20,12 @@ pub enum QuickRow {
     Turbo,
     Rewind,
     GbPalettes,
+    Sleep,
+    Titles,
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 14] = [
+    pub const ALL: [QuickRow; 16] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -38,20 +40,24 @@ impl QuickRow {
         QuickRow::Turbo,
         QuickRow::Rewind,
         QuickRow::GbPalettes,
+        QuickRow::Sleep,
+        QuickRow::Titles,
     ];
 
-    pub const MAIN: [QuickRow; 4] = [
+    pub const MAIN: [QuickRow; 5] = [
         QuickRow::Screen,
         QuickRow::Game,
+        QuickRow::Sleep,
         QuickRow::DateTime,
         QuickRow::About,
     ];
 
-    pub const SCREEN: [QuickRow; 4] = [
+    pub const SCREEN: [QuickRow; 5] = [
         QuickRow::GbaShader,
         QuickRow::GbShader,
         QuickRow::ColourCorrection,
         QuickRow::GbPalettes,
+        QuickRow::Titles,
     ];
 
     pub const GAME: [QuickRow; 6] = [
@@ -72,7 +78,8 @@ impl QuickRow {
             QuickRow::GbaShader
             | QuickRow::GbShader
             | QuickRow::ColourCorrection
-            | QuickRow::GbPalettes => &QuickRow::SCREEN,
+            | QuickRow::GbPalettes
+            | QuickRow::Titles => &QuickRow::SCREEN,
             QuickRow::FastForward
             | QuickRow::FastForwardSound
             | QuickRow::Rewind
@@ -119,6 +126,8 @@ impl QuickRow {
             QuickRow::Turbo => "Turbo Buttons",
             QuickRow::Rewind => "Rewind",
             QuickRow::GbPalettes => "GB Palettes",
+            QuickRow::Sleep => "Sleep",
+            QuickRow::Titles => "Show Game Titles",
         }
     }
 
@@ -152,10 +161,16 @@ pub enum QuickValue {
     Grid,
     Dot,
     Simpletex,
+    Min3,
+    Min15,
+    Min30,
+    Hr1,
+    Hr2,
+    Hr8,
 }
 
 impl QuickValue {
-    pub const ALL: [QuickValue; 10] = [
+    pub const ALL: [QuickValue; 16] = [
         QuickValue::Speed2,
         QuickValue::Speed3,
         QuickValue::Speed4,
@@ -166,6 +181,12 @@ impl QuickValue {
         QuickValue::Grid,
         QuickValue::Dot,
         QuickValue::Simpletex,
+        QuickValue::Min3,
+        QuickValue::Min15,
+        QuickValue::Min30,
+        QuickValue::Hr1,
+        QuickValue::Hr2,
+        QuickValue::Hr8,
     ];
 
     pub fn index(self) -> usize {
@@ -184,6 +205,25 @@ impl QuickValue {
             QuickValue::Grid => "Grid",
             QuickValue::Dot => "Dot",
             QuickValue::Simpletex => "Simpletex",
+            QuickValue::Min3 => "3 min",
+            QuickValue::Min15 => "15 min",
+            QuickValue::Min30 => "30 min",
+            QuickValue::Hr1 => "1 hr",
+            QuickValue::Hr2 => "2 hr",
+            QuickValue::Hr8 => "8 hr",
+        }
+    }
+
+    /// A sleep duration in minutes, as shown in settings.
+    pub fn sleep(minutes: u16) -> Option<QuickValue> {
+        match minutes {
+            3 => Some(QuickValue::Min3),
+            15 => Some(QuickValue::Min15),
+            30 => Some(QuickValue::Min30),
+            60 => Some(QuickValue::Hr1),
+            120 => Some(QuickValue::Hr2),
+            480 => Some(QuickValue::Hr8),
+            _ => None,
         }
     }
 

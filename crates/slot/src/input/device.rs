@@ -171,6 +171,15 @@ impl Trace {
 }
 
 impl DeviceInput {
+    /// After a hardware wake: drops any POWER press or release queued from the wake (the
+    /// press that woke the device must not count again), and reads the lid on the next
+    /// poll instead of waiting out the poll interval.
+    pub fn after_wake(&mut self) {
+        let mut pending = self.pending.lock().unwrap_or_else(|e| e.into_inner());
+        pending.retain(|e| !matches!(e, RawEvent::Down(Btn::Power) | RawEvent::Up(Btn::Power)));
+        self.next_lid_poll = 0;
+    }
+
     fn read_lid(&self) -> Option<bool> {
         let raw = std::fs::read_to_string(self.hall.as_ref()?).ok()?;
         match raw.trim() {

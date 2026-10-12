@@ -27,7 +27,7 @@ const BAIL: Duration = Duration::from_secs(5);
 fn playing_on(core: Core) -> (App, TempDir) {
     let d = common::tmp_root_with_carts(&["Emerald", "Zzz"]);
     common::write_retail_header(&d, "Emerald", "POKEMON RUBY", "AXVE");
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::Insert);
     app.set_core(core);
     app.on_core_ready();
@@ -134,7 +134,7 @@ fn b_on_pick_hands_the_game_back() {
 #[test]
 fn the_game_menu_does_not_open_on_the_shelf() {
     let d = common::tmp_root_with_carts(&["Emerald", "Zzz"]);
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::GameMenu);
     assert!(!app.game_menu_open(), "the shelf raised the in-game menu");
     assert!(matches!(app.phase(), Phase::Shelf));
@@ -505,6 +505,7 @@ fn session_playing_on_gpsp() -> (Session, TempDir, Millis) {
             cart: Some("Emerald".into()),
             clock_set: true,
             utc_offset_min: 0,
+            wifi: true,
             ..Default::default()
         },
     )
@@ -761,7 +762,7 @@ fn seated_on(d: &TempDir, core: Core) -> App {
 }
 
 fn seated_on_platform(d: &TempDir, core: Core, platform: Platform) -> App {
-    let mut app = common::boot(d.path());
+    let mut app = common::boot_with_wifi(d.path());
     app.apply(Action::Insert);
     app.set_core(core);
     app.set_platform(platform);
