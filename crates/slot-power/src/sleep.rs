@@ -14,6 +14,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
+use crate::lid::LidSensor;
+
 /// What happened when the device was asked to sleep.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Woke {
@@ -54,7 +56,7 @@ pub struct SleepPaths {
     state: PathBuf,
     stats: PathBuf,
     uptime: PathBuf,
-    hall: PathBuf,
+    lid: LidSensor,
     enter: Enter,
 }
 
@@ -86,6 +88,10 @@ impl SleepPaths {
             return Err("sunxi-rtc has no wakealarm".into());
         }
         let pek = find_pek(sys).ok_or("no axp2101-pek.0 power-key device")?;
+        // The raw sensor level beside hallkey, so a stale "shut" after a wake is caught
+        // (see lid.rs). Read once now, with the lid normally open, to learn its polarity.
+        let lid = LidSensor::new(hall, Some(sys.join("kernel/debug/gpio")));
+        let _ = lid.open();
         Ok(SleepPaths {
             os_sleep,
             pek_wakeup: pek.join("power/wakeup"),
@@ -93,7 +99,7 @@ impl SleepPaths {
             state,
             stats: sys.join("kernel/debug/suspend_stats"),
             uptime: proc.join("uptime"),
-            hall,
+            lid,
             enter: Box::new(|state| fs::write(state, "mem")),
         })
     }
@@ -130,11 +136,14 @@ impl SleepPaths {
     }
 
     pub fn lid_open(&self) -> Option<bool> {
-        match read_trim(&self.hall)?.as_str() {
-            "1" => Some(true),
-            "0" => Some(false),
-            _ => None,
+        let r = self.lid.read();
+        if r.hallkey == Some(false) && r.open == Some(true) {
+            eprintln!(
+                "slot: lid: {}: the sensor shows the lid open, so it is",
+                r.describe()
+            );
         }
+        r.open
     }
 
     /// Suspends to RAM with the rtc1 alarm `secs` ahead and returns once awake. Refuses,
@@ -469,6 +478,24 @@ mod tests {
         let w = p.suspend(1800);
         assert!(!w.slept);
         assert!(w.detail.contains("busy"), "{}", w.detail);
+    }
+
+    #[test]
+    fn a_stale_shut_hallkey_after_a_wake_is_overruled_by_the_sensor() {
+        let m = mock();
+        let bat = m.sys.join("class/power_supply/axp2202-battery");
+        let table = |level: &str| {
+            format!(" gpio-135 (                    |hall switch         ) in  {level}    \n")
+        };
+        fs::create_dir_all(m.sys.join("kernel/debug")).unwrap();
+        fs::write(bat.join("hallkey"), "1\n").unwrap();
+        fs::write(m.sys.join("kernel/debug/gpio"), table("hi")).unwrap();
+        let p = SleepPaths::probe(&m.sys, &m.proc).unwrap();
+        // Woken by the lid, but the driver only recorded "released".
+        fs::write(bat.join("hallkey"), "0\n").unwrap();
+        assert_eq!(p.lid_open(), Some(true), "the sensor still shows it open");
+        fs::write(m.sys.join("kernel/debug/gpio"), table("lo")).unwrap();
+        assert_eq!(p.lid_open(), Some(false), "a real close is still a close");
     }
 
     #[test]

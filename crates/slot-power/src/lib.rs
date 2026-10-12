@@ -1,4 +1,5 @@
 mod device;
+mod lid;
 mod motor;
 mod power;
 mod quiet;
@@ -9,6 +10,7 @@ pub use device::{
     has_bit, motor_change, read_only, read_only_in, record_first_frame, rumble_node,
     trace_first_frame, uptime_seconds, DevicePlatform,
 };
+pub use lid::{raw_level, LidReading, LidSensor};
 pub use motor::Motor;
 pub use power::Power;
 pub use quiet::{quiet_hardware, Quiet, QuietReport, WifiResult};
