@@ -2,4 +2,4 @@ blank_issues_enabled: true
 contact_links:
   - name: Upstream slot (other Anbernic devices)
     url: https://github.com/BrandonKowalski/slot
-    about: slot advance is for the RG SP (2026) only. For other devices, use the original slot.
+    about: slot.advance is for the RG SP (2026) only. For other devices, use the original slot.

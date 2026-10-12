@@ -1,16 +1,16 @@
 name: Bug report
-description: Something went wrong with slot advance on the Anbernic RG SP (2026)
+description: Something went wrong with slot.advance on the Anbernic RG SP (2026)
 title: "[Bug] "
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting. Before you power the RG SP (2026) on again, take the games card (SD2) out and copy `slot.log` and `slot.log.1` from the top of the card: they are replaced each time slot advance starts.
+        Thanks for reporting. If you can, before you power the RG SP (2026) on again, take the games card (SD2) out and copy `slot.log` and `slot.log.1` from the top of the card: they are replaced each time slot.advance starts. If you can't get the logs (for example, it won't start), please report the problem anyway.
   - type: input
     id: version
     attributes:
       label: Version
-      description: The first line of slot.log, e.g. "slot advance 0.4.0-beta.2 (cc0616b, built 2026-10-12)".
+      description: The first line of slot.log, e.g. "slot advance 0.4.0-beta.3 (2ca327a, built 2026-10-12)". Without the log, the name of the file you installed, e.g. slot-advance-0.4.0-beta.3-rg-sp.zip.
     validations:
       required: true
   - type: textarea
@@ -31,9 +31,9 @@ body:
     id: logs
     attributes:
       label: Logs
-      description: Drag slot.log and slot.log.1 from the games card into this box. A photo of the screen helps too.
+      description: Optional, but very helpful. Drag slot.log and slot.log.1 from the games card into this box. A photo of the screen helps too.
     validations:
-      required: true
+      required: false
   - type: checkboxes
     id: device
     attributes:

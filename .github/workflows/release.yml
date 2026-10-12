@@ -123,11 +123,13 @@ jobs:
           Emulation by mGBA (MPL-2.0) and gpSP (GPL-2.0). Their licences, patches and gpSP's source are in \`System/licenses/\`.
           NOTES
           fi
-          # A version with a pre-release suffix (0.4.0-beta.2) is published as a pre-release
-          # and never becomes "latest", so the README's download link stays on the stable one.
+          # slot.advance tags, betas included (advance-0.4.0-beta.3), are published as ordinary
+          # releases, so a recommended beta can be marked Latest. Other tags with a pre-release
+          # suffix are published as pre-releases and never become Latest.
           # Run by hand with a release_tag, the tag is created here, on the commit just built.
           set -- --title "$title" --notes-file notes.md --target "$GITHUB_SHA"
-          case "${TAG#advance-}" in
+          case "$TAG" in
+            advance-*) ;;
             *-*) set -- "$@" --prerelease --latest=false ;;
           esac
           gh release create "$TAG" "$ZIP" --repo "$GITHUB_REPOSITORY" "$@"

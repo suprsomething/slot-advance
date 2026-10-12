@@ -1,8 +1,8 @@
 # Sleep and battery: how it works and how it was measured
 
-This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what still has to be checked on the device.
+This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what still has to be checked on the device.
 
-Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), **0.4.0-beta.2** is the latest release, and **0.4.0-beta.3** is a pre-release with the lid fix; both are still being validated.
+Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot.advance** versions, not upstream slot's. **0.4.0-beta.3** is the current recommended beta and is undergoing hardware validation; stable 0.4.0 will follow once the checks under [Validation status](#validation-status) pass. **0.3.0** (tag `advance-v3`) is the previous stable release.
 
 ## Contents
 
@@ -34,7 +34,7 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 
 ## The evolution of sleep
 
-| | Upstream slot | slot advance 0.3.0 | slot advance 0.4.0 |
+| | Upstream slot | slot.advance 0.3.0 | slot.advance 0.4.0 |
 |---|---|---|---|
 | CPU | Running | Running, mostly idle | Suspended |
 | Drawing | A black frame every display refresh (~60 a second) | Two black frames, then none | None |
@@ -47,24 +47,24 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 
 **Upstream slot** (verified in its source, `crates/slot/src/device_app.rs` at the fork point): closing the lid turns off the backlight and pauses the game, but the main loop keeps running at the display's refresh rate (about 60 Hz). Each pass draws a full-screen black rectangle and swaps buffers. After 3 minutes it powers off, and the next boot restores the game from its suspend slot. Its standby current was never measured.
 
-**slot advance 0.3.0** (`crates/slot/src/standby.rs`): once the screen is dark, it draws two black frames and then stops drawing and stops ticking the emulator. It wakes every 50 ms to read input, poll the lid (every 150 ms) and run its timers. The CPU, memory and display hardware stay powered. Test B logged zero GPU interrupts a minute in this state, with the CPU governor at `performance`, 1.512 GHz. The 3-minute power-off is unchanged.
+**slot.advance 0.3.0** (`crates/slot/src/standby.rs`): once the screen is dark, it draws two black frames and then stops drawing and stops ticking the emulator. It wakes every 50 ms to read input, poll the lid (every 150 ms) and run its timers. The CPU, memory and display hardware stay powered. Test B logged zero GPU interrupts a minute in this state, with the CPU governor at `performance`, 1.512 GHz. The 3-minute power-off is unchanged.
 
-**slot advance 0.4.0**: real Linux suspend-to-RAM, described next.
+**slot.advance 0.4.0**: real Linux suspend-to-RAM, described next.
 
 ---
 
 ## What 0.4.0 does when the lid closes
 
 1. **Save first.** The game's suspend slot (`resume.state`) and battery save are written and flushed to the card before anything else (`App::doze`). If the write fails, it is retried once. A game that still can't be saved is marked unsaved (see below).
-2. **Settle.** Drawing stops as in 0.3.0. After a 400 ms pause, so a quick flick of the lid never reaches the kernel, slot advance arms a wake alarm and suspends.
-3. **Suspend to RAM.** slot advance writes `mem` to `/sys/power/state` (`crates/slot-power/src/sleep.rs`). This is suspend-to-RAM, not the lighter `freeze` (suspend-to-idle). The kernel freezes all processes, suspends device drivers (the display among them), takes the secondary CPU cores offline and hands the last one to the platform firmware. Memory stays powered. Which power rails stay on is decided by the firmware, not Linux.
+2. **Settle.** Drawing stops as in 0.3.0. After a 400 ms pause, so a quick flick of the lid never reaches the kernel, slot.advance arms a wake alarm and suspends.
+3. **Suspend to RAM.** slot.advance writes `mem` to `/sys/power/state` (`crates/slot-power/src/sleep.rs`). This is suspend-to-RAM, not the lighter `freeze` (suspend-to-idle). The kernel freezes all processes, suspends device drivers (the display among them), takes the secondary CPU cores offline and hands the last one to the platform firmware. Memory stays powered. Which power rails stay on is decided by the firmware, not Linux.
 4. **Wake sources.**
-   - **Lid:** the power chip's driver has an `os_sleep` setting. BaseOS writes `16` ("Super Standby") at every boot, in which the lid is not a wake source. slot advance writes `0` ("Normal Standby") at startup, which makes the hall sensor a wake source through the power-key device. It refuses to suspend if the lid isn't armed.
+   - **Lid:** the power chip's driver has an `os_sleep` setting. BaseOS writes `16` ("Super Standby") at every boot, in which the lid is not a wake source. slot.advance writes `0` ("Normal Standby") at startup, which makes the hall sensor a wake source through the power-key device. It refuses to suspend if the lid isn't armed.
    - **Timer:** the SoC's real-time clock (`sunxi-rtc`, found by name, never by number) with a relative alarm. The deadline is counted on the kernel's uptime clock, which keeps counting through suspend, so it always runs from the lid closing.
    - **`POWER`**, and incidental events from the power chip such as a charger.
 5. **Classify every wake** (`crates/slot/src/sleep.rs`). Lid open: carry on playing, nothing reloaded. Deadline reached: shut down cleanly; the next boot restores the game from `resume.state`. Anything else (`POWER` with the lid shut, a charger, a stray event): back to sleep with the screen dark and the same deadline. More than 20 unexpected wakes in one sleep, or a suspend that fails twice, falls back to 0.3.0's software standby for that sleep.
 
-**Unused hardware** (`crates/slot-power/src/quiet.rs`). At startup, slot advance switches off the six USB host controllers `ohci1-3` and `ehci1-3` through their sysfs switches. The RG SP (2026)'s USB-C port uses a separate controller (`5100000.udc`, with `ehci0`/`ohci0`) and is not touched. Once BaseOS has finished starting Wi-Fi (uptime 20 s), slot advance unloads the `8821cs` driver, which cuts the radio's supply rail, unless `wifi=on` is set. Both are logged and optional, hardware sleep never depends on either, and both last only until the next boot. They stay off during gameplay too; no gameplay battery effect has been measured.
+**Unused hardware** (`crates/slot-power/src/quiet.rs`). At startup, slot.advance switches off the six USB host controllers `ohci1-3` and `ehci1-3` through their sysfs switches. The RG SP (2026)'s USB-C port uses a separate controller (`5100000.udc`, with `ehci0`/`ohci0`) and is not touched. Once BaseOS has finished starting Wi-Fi (uptime 20 s), slot.advance unloads the `8821cs` driver, which cuts the radio's supply rail, unless `wifi=on` is set. Both are logged and optional, hardware sleep never depends on either, and both last only until the next boot. They stay off during gameplay too; no gameplay battery effect has been measured.
 
 **Battery cap.** Sleep is planned to aim to preserve approximately 10% of the battery. It assumes a deliberately pessimistic 100 mA, so the device wakes and shuts down early if the chosen time would go below about 10%. This is a plan based on the gauge, not a guarantee. At 10% or less it sleeps for 3 minutes, as 0.3.0 did. The 5% shutdown from slot still applies.
 
@@ -72,7 +72,7 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 
 ### The lid-wake trade-off
 
-Experiment 5 compared the same hardware with lid wake armed (Normal Standby, segment 3, ~70 mA) and with the firmware's deeper Super Standby (segment 4, ~64 mA, lid not armed). Lid wake costs roughly 7 to 9 mA, about 10%. slot advance keeps it, because waking by opening the lid is the point of sleeping instead of switching off.
+Experiment 5 compared the same hardware with lid wake armed (Normal Standby, segment 3, ~70 mA) and with the firmware's deeper Super Standby (segment 4, ~64 mA, lid not armed). Lid wake costs roughly 7 to 9 mA, about 10%. slot.advance keeps it, because waking by opening the lid is the point of sleeping instead of switching off.
 
 ---
 
@@ -174,4 +174,4 @@ The earlier experiments that established suspend, lid wake, timed wake and `POWE
 - Rumble, headphones and all controls after many sleeps.
 - A fresh battery measurement of the release build. This is desirable but not required: until it exists, the figures above stay labelled as preliminary.
 
-Until those checks pass, 0.4.0 stays a beta (currently **0.4.0-beta.3**).
+Until those checks pass, 0.4.0 stays a beta (currently **0.4.0-beta.3**, the recommended download). Stable 0.4.0 will follow successful testing.

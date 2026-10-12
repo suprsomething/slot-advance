@@ -19,7 +19,7 @@
 | **Current beta** | **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)**<br>[`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip) | Latest build with hardware sleep, improved standby efficiency, configurable sleep settings and optional game-title display. |
 | **Previous release** | [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3)<br>[`slot-advance-v3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-v3/slot-advance-v3-rg-sp.zip) | Earlier version without hardware sleep or game-title display. |
 
-**Beta status:** Version 0.4.0-beta.3 is a pre-release undergoing real-world testing. Once [validated](documentation/sleep-and-battery.md#validation-status), it will form the basis of the stable 0.4.0 release. See [Installing and updating](#installing-and-updating).
+**Beta status:** Version 0.4.0-beta.3 is a beta undergoing real-world testing. Once [validated](documentation/sleep-and-battery.md#validation-status), it will form the basis of the stable 0.4.0 release. See [Installing and updating](#installing-and-updating).
 
 > [!IMPORTANT]
 > **Supported device: Anbernic RG SP (2026) only**: the clamshell model with the 720 x 480 display. Not compatible with the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot).
@@ -153,7 +153,7 @@ Before sleeping, slot.advance attempts to save your game to its separate suspend
 
 # Installing and updating
 
-The download, the current beta, is **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)** ([`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip)). It is a pre-release, still being tested on the device. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download, the current beta, is **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)** ([`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip)). It is a beta, still being tested on the device. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
 The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
