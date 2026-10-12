@@ -18,7 +18,7 @@
 
 | | |
 |---|---|
-| **Download** | **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, the latest release (`slot-advance-0.4.0-beta.2-rg-sp.zip`). It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
+| **Download** | **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/latest)**, the latest release (`slot-advance-0.4.0-beta.3-rg-sp.zip`). It's a beta: it becomes `0.4.0` once [device validation](documentation/sleep-and-battery.md#validation-status) passes. See [Installing and updating](#installing-and-updating). |
 | **Previous release** | [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), without hardware sleep or game titles. |
 | **Device** | The **Anbernic RG SP (2026)** only: the clamshell model with the 720 x 480 screen. Not the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot). |
 
@@ -153,7 +153,7 @@ Your game is always saved to its suspend slot before the RG SP (2026) goes to sl
 
 # Installing and updating
 
-The download, **[slot advance 0.4.0-beta.2](https://github.com/suprsomething/slot-advance/releases/latest)**, is `slot-advance-0.4.0-beta.2-rg-sp.zip`. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download, **[slot advance 0.4.0-beta.3](https://github.com/suprsomething/slot-advance/releases/latest)**, is `slot-advance-0.4.0-beta.3-rg-sp.zip`. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
 The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot-advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
@@ -161,7 +161,7 @@ The previous release, [slot advance 0.3.0](https://github.com/suprsomething/slot
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot-advance-0.4.0-beta.2-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.2-rg-sp`.
+3. Unzip `slot-advance-0.4.0-beta.3-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.3-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
@@ -291,7 +291,7 @@ Shader, colour correction and fast-forward changes made in game are saved **for 
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state`, the suspend slot used when the lid closes. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
-| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.2 (` followed by the commit and build date. |
+| `slot.log`, `slot.log.1` | What slot advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.3 (` followed by the commit and build date. |
 
 The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on an update leaves them alone.
 
@@ -299,12 +299,12 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 
 # Known limitations
 
-- **0.4.0 is a beta.** Hardware sleep, lid wake, timed wake and `POWER` wake were each proven on the RG SP (2026) with development scripts. These are still being confirmed on the integrated build: repeated sleep and resume from inside a game, with sound and controls afterwards; plugging in or unplugging the charger while asleep; and a timed shutdown followed by the game restoring at boot. See [Validation status](documentation/sleep-and-battery.md#validation-status).
+- **0.4.0 is a beta.** On the device, sleep and resume from inside a game and the timed shutdown have worked. Still being confirmed: plugging in or unplugging the charger while asleep, rumble and headphones after many sleeps, and rapid lid flicks with the beta.3 fix. See [Validation status](documentation/sleep-and-battery.md#validation-status).
 - **Battery figures are preliminary**, from single development runs with the battery gauge.
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
 
-A possible glitch when opening and closing the lid rapidly has been reported on 0.4.0-beta.1 and is being investigated.
+On 0.4.0-beta.1 and beta.2, after rapid lid flicks, opening the lid could leave the screen dark for a few seconds before the game came back. 0.4.0-beta.3 fixes the likely cause; it is waiting to be confirmed on the device.
 
 ### Reporting a problem
 
@@ -316,7 +316,7 @@ A possible glitch when opening and closing the lid rapidly has been reported on 
 
 # Versions
 
-This build: **0.4.0-beta.2**
+This build: **0.4.0-beta.3**
 
 From 0.4.0, slot advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
 

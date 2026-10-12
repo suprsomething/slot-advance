@@ -2,7 +2,7 @@
 
 This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what still has to be checked on the device.
 
-Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), and **0.4.0-beta.2** is the current beta and the latest release, still being validated.
+Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot advance** versions, not upstream slot's: slot advance **0.3.0** is the release previously named v3 (tag `advance-v3`), and **0.4.0-beta.3** is the current beta and the latest release, still being validated.
 
 ## Contents
 
@@ -163,10 +163,15 @@ The earlier experiments that established suspend, lid wake, timed wake and `POWE
 - The SD card reads and writes straight after resume.
 - `POWER` wake with the lid shut (Experiment 4). The device woke early as expected, but the script could not confirm the cause from its interrupt counts.
 
-**Still to verify on the integrated 0.4.0 build before 0.4.0 is released as stable:**
-- Repeated sleep and resume from inside a running game, with audio, rumble, headphones and controls working afterwards.
+**Shown on the device with 0.4.0-beta.1 (`slot.log`, 12 October 2026):**
+- Sleep and resume from inside a running game: five sleeps of 13 seconds to 27 minutes, each resuming straight into the game, with sound reported normal.
+- A timed shutdown: with Sleep at `3 min`, the device woke at 179 seconds and shut down cleanly, and the next session loaded the game at boot.
+- Rapid lid flicks: the kernel's refusals to suspend mid-flick were handled, but after some flicks the screen stayed dark for 4 to 5 seconds with the lid open. The lid driver had recorded "shut" after the wake. 0.4.0-beta.3 checks the sensor's raw level in that case (see `crates/slot-power/src/lid.rs`).
+
+**Still to verify before 0.4.0 is released as stable:**
+- Rapid lid flicks on 0.4.0-beta.3: the screen should come back as soon as the lid opens. `slot.log` notes each time the sensor overrules the driver.
 - Connecting and disconnecting the charger while asleep.
-- A timed shutdown, followed by the game restoring at the next boot.
+- Rumble, headphones and all controls after many sleeps.
 - A fresh battery measurement of the release build. This is desirable but not required: until it exists, the figures above stay labelled as preliminary.
 
-Until those checks pass, 0.4.0 stays a beta (currently **0.4.0-beta.2**).
+Until those checks pass, 0.4.0 stays a beta (currently **0.4.0-beta.3**).

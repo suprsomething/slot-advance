@@ -8,15 +8,27 @@ The release previously named v3 is now displayed as 0.3.0; its contents are unch
 
 ---
 
-## 0.4.0-beta.2 (beta, the latest release)
+## 0.4.0-beta.3 (beta, the latest release)
+
+Tag `advance-0.4.0-beta.3`. Download: `slot-advance-0.4.0-beta.3-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.3). It becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. [Report problems](https://github.com/suprsomething/slot-advance/issues/new/choose) with `slot.log` and `slot.log.1` attached.
+
+**Fixed since 0.4.0-beta.2**
+- After rapid lid flicks, opening the lid could leave the screen dark for 4 to 5 seconds before the game came back. The lid driver sometimes records "shut" after a wake even though the lid is open, so slot advance put the device back to sleep. It now checks the lid sensor's raw level whenever the driver says "shut", and the raw level wins. It learns which level means "open" at start-up. `slot.log` notes each time it overrules the driver.
+
+**Shown on the device**
+- From 0.4.0-beta.1's logs: sleep and resume from inside a game, and the timed shutdown with the game restored at the next boot.
+
+---
+
+## 0.4.0-beta.2 (beta)
 
 Tag `advance-0.4.0-beta.2`. Download: `slot-advance-0.4.0-beta.2-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot-advance/releases/tag/advance-0.4.0-beta.2). It is published as the latest release, labelled beta; it becomes `0.4.0` once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. [Report problems](https://github.com/suprsomething/slot-advance/issues/new/choose) with `slot.log` and `slot.log.1` attached.
 
 **Fixed since 0.4.0-beta.1**
 - A running game whose emulator core failed to provide its state when the lid closed was counted as saved, so the sleep timer could shut down and lose progress since the last autosave. It is now treated as unsaved: the device keeps sleeping and retries the save instead of shutting down (commit `dbbadae`).
 
-**Known issue**
-- A possible glitch when opening and closing the lid rapidly was reported on 0.4.0-beta.1 and is being investigated.
+**Known issue** (fixed in beta.3)
+- After rapid lid flicks, opening the lid could leave the screen dark for a few seconds.
 
 Everything below was introduced in 0.4.0-beta.1, which was only installed for on-device testing and never published.
 
