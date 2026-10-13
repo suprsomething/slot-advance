@@ -23,7 +23,7 @@ Tag `advance-0.4.0`. Download: `slot.advance-0.4.0-rg-sp.zip` from the [release 
 **Known limitation**
 - Flicking the lid very quickly can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost.
 
-**Not yet measured:** a battery test of this build. The battery figures stay labelled as preliminary.
+**Battery:** an 8-hour overnight sleep used 16% of the battery, about 2% an hour, confirming the earlier estimate of about 70 mA.
 
 ---
 
@@ -62,7 +62,7 @@ Everything below was introduced in 0.4.0-beta.1, which was only installed for on
 **Battery**
 - Six USB host controllers the RG SP (2026) has no ports for are switched off at startup. The USB-C port is unaffected.
 - Wi-Fi is switched off about 20 seconds after starting. Link play needs `wifi=on` in `Config/slot.state`, and the link shortcut shows **Link Off** without it.
-- In preliminary development testing, the lid-closed current fell from about 250 mA (0.3.0 software standby, held awake by a test build) to about 70 mA, around 72% less. That figure comes from an experiment reproducing this configuration, not a battery test of this build. See [Sleep and battery](sleep-and-battery.md).
+- In development testing, the lid-closed current fell from about 250 mA (0.3.0 software standby, held awake by a test build) to about 70 mA, around 72% less. An 8-hour overnight sleep later confirmed it: 16% of the battery, about 2% an hour. See [Sleep and battery](sleep-and-battery.md).
 
 **Carousel**
 - Optional game titles: **Settings > Screen > Show Game Titles** (off by default) shows the selected game's title above its cartridge.

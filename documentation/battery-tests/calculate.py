@@ -90,15 +90,27 @@ S = 70.0
 print(f"  figure used: ~{S:.0f} mA (raw {seg3[0]:.1f}; corrected {min(seg3[1].values()):.1f} to {max(seg3[1].values()):.1f})")
 
 print("=" * 72)
+print("Overnight sleep: 8 hours asleep on a 0.4.0 beta (same sleep configuration as 0.4.0)")
+# Read by the tester from the battery percentage before and after; no log file.
+drop, hours = 16, 8
+lo_drop, hi_drop = drop - 1, drop + 1   # each whole-percent reading hides up to 1 point
+print(f"  battery fell {drop}% over {hours} h: {drop / hours:.1f} %/h observed")
+print(f"  whole-percent readings: anything from {lo_drop / hours:.3f} to {hi_drop / hours:.3f} %/h is consistent")
+print(f"  at 35 mAh per percent: {drop * STEP_MAH / hours:.0f} mA "
+      f"({lo_drop * STEP_MAH / hours:.1f} to {hi_drop * STEP_MAH / hours:.1f} mA)")
+print("  (above about 80% the gauge's steps are smaller, so if the sleep began there, the current was lower)")
+print("  agrees with Experiment 5's segment 3 (~70 mA, 2 %/h)")
+
+print("=" * 72)
 print("Comparisons and projections")
 print(f"  reduction: (250 - 70) / 250 = {(B - S) / B:.0%}")
-for s in (60, 80):
-    print(f"    with {s} mA instead of 70: {(B - s) / B:.0%}")
+for s in (lo_drop * STEP_MAH / hours, hi_drop * STEP_MAH / hours):
+    print(f"    with {s:.1f} mA instead of 70 (the overnight sleep's range): {(B - s) / B:.0%}")
 rate = S / STEP_MAH
 print(f"  0.4.0 rate: 70 mA / 35 mAh per percent = {rate:.1f} %/h")
-band = 0.15
-print(f"  illustrative range on the projection chart: +/-{band:.0%} of the rate = "
-      f"{rate * (1 - band):.1f} to {rate * (1 + band):.1f} %/h "
-      f"({S * (1 - band):.0f} to {S * (1 + band):.0f} mA)")
+band = 1 / drop
+print(f"  range on the projection chart, from the overnight sleep's whole-percent readings: +/-{band:.1%} = "
+      f"{rate * (1 - band):.2f} to {rate * (1 + band):.2f} %/h "
+      f"({S * (1 - band):.1f} to {S * (1 + band):.1f} mA)")
 for h in (0.5, 1, 2, 4, 8):
-    print(f"    {h:>4} h asleep: ~{rate * h:.0f}%  (illustrative {rate * (1 - band) * h:.1f} to {rate * (1 + band) * h:.1f}%)")
+    print(f"    {h:>4} h asleep: ~{rate * h:.0f}%  ({rate * (1 - band) * h:.1f} to {rate * (1 + band) * h:.1f}%)")

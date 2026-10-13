@@ -22,7 +22,7 @@ CONTEXT = "#5C596C"  # earlier generations
 MID = "#7A7690"
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
 W = 720
-BAND = 0.15          # illustrative range: +/-15% of the 0.4.0 estimate (see calculate.py)
+BAND = 1 / 16        # 0.4.0 range: whole-percent readings of the 16% overnight drop (see calculate.py)
 
 
 def esc(s):
@@ -65,7 +65,7 @@ def hourly():
     rows = [
         ("0.3.0 software standby", "test build held awake", 7, "61% to 47% in 2 hours", CONTEXT),
         ("First suspend-to-RAM", "development test", 3, "68% to 62% in 2 hours", MID),
-        ("0.4.0 configuration", "development experiment", 2, "77% to 74% in 1.5 hours", ACCENT),
+        ("0.4.0", "8-hour overnight sleep", 2, "16% in 8 hours", ACCENT),
     ]
     body = [header("Battery used per hour, lid closed",
                    "Each block is 1% of the battery, as shown by the battery gauge")]
@@ -80,17 +80,17 @@ def hourly():
         body.append(text(688, y + 18, seen, 15, INK3, anchor="end"))
         y += 100
     body.append(notes(434, [
-        "Observed battery-percentage drops in development tests (whole 1% steps).",
+        "Observed battery-percentage drops (whole 1% steps).",
         "Ordinary 0.3.0 shuts down 3 minutes after the lid closes; its hourly rate",
         "comes from a test build deliberately held in standby.",
-        "The 0.4.0 figure comes from an experiment reproducing its settings,",
-        "not from a battery test of the release build.",
+        "0.4.0: an 8-hour overnight sleep on a 0.4.0 beta, matching an earlier",
+        "1.5-hour experiment (77% to 74%).",
     ]))
     return card(566, "\n".join(body),
-                "Battery used per hour with the lid closed: about 7% for 0.3.0 software standby, 3% for the first suspend-to-RAM test, 2% for the 0.4.0 configuration",
-                "Blocks of 1 percent, from observed battery-gauge drops in development tests. 0.3.0 software standby (a test build held awake; ordinary 0.3.0 shuts down after 3 minutes): "
+                "Battery used per hour with the lid closed: about 7% for 0.3.0 software standby, 3% for the first suspend-to-RAM test, 2% for 0.4.0",
+                "Blocks of 1 percent, from observed battery-gauge drops. 0.3.0 software standby (a test build held awake; ordinary 0.3.0 shuts down after 3 minutes): "
                 "61% to 47% in 2 hours, about 7% an hour. First suspend-to-RAM test: 68% to 62% in 2 hours, about 3% an hour. "
-                "0.4.0 configuration, reproduced in a development experiment: 77% to 74% in 1.5 hours, about 2% an hour.")
+                "0.4.0: 16% over an 8-hour overnight sleep, about 2% an hour, matching an earlier 1.5-hour experiment (77% to 74%).")
 
 
 # ---------------------------------------------------------------- current draw (doc)
@@ -98,7 +98,7 @@ def current():
     rows = [
         ("0.3.0 software standby", "test build held awake", 250, 248, 253, CONTEXT),
         ("First suspend-to-RAM", "USB and Wi-Fi on", 105, 87.5, 122.5, MID),
-        ("0.4.0 configuration", "USB and Wi-Fi off", 70, 70 * (1 - BAND), 70 * (1 + BAND), ACCENT),
+        ("0.4.0", "8-hour overnight sleep", 70, 70 * (1 - BAND), 70 * (1 + BAND), ACCENT),
     ]
     x0, x1 = 32, 600
     scale = (x1 - x0) / 280
@@ -123,16 +123,15 @@ def current():
     body.append(text(570, 336, "~72% less", 30, INK, 750, "middle"))
     body.append(text(570, 362, "than software standby", 15, INK2, anchor="middle"))
     body.append(notes(458, [
-        "Whiskers: the gauge's resolution for 0.3.0 and the first test; for 0.4.0, an",
-        "illustrative +/-15% range around the estimate. One development run each.",
-        "0.4.0's settings were reproduced in an experiment; the release build itself",
-        "has not had a battery test yet.",
+        "Whiskers: the battery gauge's 1% resolution over each run.",
+        "0.4.0: 16% over an 8-hour overnight sleep on a 0.4.0 beta, which has the",
+        "same sleep configuration as 0.4.0. One run per configuration.",
     ]))
     return card(566, "\n".join(body),
-                "Estimated lid-closed current draw: about 250 mA for 0.3.0 software standby, 105 mA for the first suspend-to-RAM test, 70 mA for the 0.4.0 configuration",
+                "Estimated lid-closed current draw: about 250 mA for 0.3.0 software standby, 105 mA for the first suspend-to-RAM test, 70 mA for 0.4.0",
                 "Horizontal bar chart of currents calculated from battery-gauge readings. 0.3.0 software standby, a test build held awake: about 250 mA (248 to 253). "
-                "First suspend-to-RAM with USB and Wi-Fi on: about 105 mA (87.5 to 122.5). 0.4.0 configuration with USB and Wi-Fi off, reproduced in a development "
-                "experiment: about 70 mA, with an illustrative range of 60 to 80 mA. About 72% less than software standby.")
+                "First suspend-to-RAM with USB and Wi-Fi on: about 105 mA (87.5 to 122.5). 0.4.0, from an 8-hour overnight sleep that used 16% of the battery: "
+                "about 70 mA (66 to 74). About 72% less than software standby.")
 
 
 # ---------------------------------------------------------------- projection (doc)
@@ -141,8 +140,8 @@ def projection():
     def px(h): return x0 + (x1 - x0) * h / 8
     def py(p): return y0 - (y0 - y1) * p / 20
     rate = 2.0
-    body = [header("Projected battery use while asleep",
-                   "0.4.0 configuration at about 2% an hour: a projection, not a measurement")]
+    body = [header("Battery used while asleep",
+                   "0.4.0 at about 2% an hour, as measured over an 8-hour overnight sleep")]
     for p in (0, 5, 10, 15, 20):
         body.append(f'<line x1="{x0}" y1="{py(p):.1f}" x2="{x1}" y2="{py(p):.1f}" stroke="{GRID}"/>')
         body.append(text(x0 - 12, py(p) + 5, f"{p}%", 14, INK3, anchor="end"))
@@ -161,24 +160,25 @@ def projection():
     body.append(text(px(1) - 10, py(2) - 10, "1 hr: ~2%", 15, INK, 600, "end"))
     for h in (2, 4):
         body.append(text(px(h) - 10, py(h * rate) - 12, f"{h} hr: ~{h * rate:.0f}%", 15, INK, 600, "end"))
-    body.append(text(px(8) - 8, py(16) - 16, "8 hr: ~16%", 15, INK, 600, "end"))
+    body.append(f'<circle cx="{px(8):.1f}" cy="{py(16):.1f}" r="7" fill="{INK}"/>')
+    body.append(text(px(8) - 12, py(16) - 16, "Observed: 16% in 8 hr", 15, INK, 600, "end"))
     body.append(f'<circle cx="{px(1.5):.1f}" cy="{py(3):.1f}" r="7" fill="{INK}"/>')
     body.append(text(px(1.5) + 14, py(3) + 26, "Observed: 3% in 1.5 hr", 14, INK, 600))
     lx, ly = x0 + 6, 138
     body.append(f'<rect x="{lx-6}" y="{ly-20}" width="330" height="62" rx="8" fill="{BG}" opacity="0.9"/>')
     body.append(f'<line x1="{lx}" y1="{ly-6}" x2="{lx+28}" y2="{ly-6}" stroke="{ACCENT}" stroke-width="2.5" stroke-dasharray="8 6"/>')
-    body.append(text(lx + 38, ly - 1, "Projection at ~2% an hour", 14, INK2))
+    body.append(text(lx + 38, ly - 1, "~2% an hour", 14, INK2))
     body.append(f'<rect x="{lx}" y="{ly+8}" width="28" height="12" fill="{ACCENT}" opacity="0.3"/>')
-    body.append(text(lx + 38, ly + 19, f"Illustrative +/-15% range ({lo:.1f} to {hi:.1f}%/hr)", 14, INK2))
+    body.append(text(lx + 38, ly + 19, f"Range from 1% readings ({lo:.2f} to {hi:.2f}%/hr)", 14, INK2))
     body.append(notes(512, [
-        "The range is illustrative, not a statistical interval. Real use varies with battery",
-        "age, temperature and charge level. The RG SP (2026) only sleeps this long if",
+        "The range is the gauge's 1% resolution over the 8-hour sleep. Real use varies with",
+        "battery age, temperature and charge level. The RG SP (2026) only sleeps this long if",
         "Settings > Sleep is set long enough; then it shuts down cleanly.",
     ]))
     return card(590, "\n".join(body),
-                "Projected battery use while asleep in the 0.4.0 configuration: about 2% an hour, 16% over 8 hours",
-                "A dashed projection line rises from 0% at 0 hours to about 16% at 8 hours, at about 2% an hour, with an illustrative shaded range of plus or minus 15% "
-                "(1.7 to 2.3% an hour). One observed point: the battery fell 3% over 1.5 hours asleep in a development experiment.")
+                "Battery used while asleep on 0.4.0: about 2% an hour, 16% over 8 hours, as measured overnight",
+                "A dashed line rises from 0% at 0 hours to about 16% at 8 hours, at about 2% an hour, with a shaded range of 1.88 to 2.12% an hour from the gauge's "
+                "1% resolution. Two observed points: 16% over an 8-hour overnight sleep on a 0.4.0 beta, and 3% over 1.5 hours in an earlier experiment.")
 
 
 (OUT / "battery-drain-hourly.svg").write_text(hourly())
