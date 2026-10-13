@@ -5,7 +5,7 @@ slot.advance 0.4.0 for the Anbernic RG SP (2026) (720 x 480). It is not for the 
 ### New in 0.4.0
 - **Real hardware sleep.** Closing the lid saves the game, then suspends the RG SP (2026) to RAM. Opening the lid carries on from the same moment, with nothing reloaded.
 - **Settings > Sleep:** `3 min`, `15 min`, `30 min` (default), `1 hr`, `2 hr`, `8 hr`. When the time runs out with the lid shut, it shuts down cleanly and the next power-on restores the game.
-- **Battery:** six unused USB host controllers and Wi-Fi are switched off. Link play needs `wifi=on` in `Config/slot.state`. In preliminary development testing, lid-closed standby current fell by about 72% (about 250 mA to about 70 mA). That figure comes from an experiment reproducing this configuration, not a battery test of this build. [How it was measured](https://github.com/suprsomething/slot.advance/blob/main/documentation/sleep-and-battery.md).
+- **Battery:** six unused USB host controllers and Wi-Fi are switched off. Link play needs `wifi=on` in `Config/slot.state`. Lid-closed standby current fell by about 72% (about 250 mA to about 70 mA). An 8-hour overnight sleep used 16% of the battery, about 2% an hour. [How it was measured](https://github.com/suprsomething/slot.advance/blob/main/documentation/sleep-and-battery.md).
 - **Optional game titles:** Settings > Screen > Show Game Titles (off by default).
 - **About screen** with the version, the number of games, free space on the games card, the battery, slotadvance.com and the credits.
 - A game that could not be saved when the lid closed is never shut down by the sleep timer.

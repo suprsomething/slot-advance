@@ -22,11 +22,12 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 |---|---|---|---|
 | 0.3.0 software standby, test build held awake | ~250 mA (248 to 253) | 61% to 47% in 2 hours (~7% an hour) | Test B |
 | First suspend-to-RAM, USB and Wi-Fi on | ~105 mA (87.5 to 122.5) | 68% to 62% in 2 hours (~3% an hour) | Test A |
-| 0.4.0 configuration, USB and Wi-Fi off | ~70 mA (illustrative 60 to 80) | 77% to 74% in 1.5 hours (~2% an hour) | Experiment 5, segment 3 |
+| 0.4.0, USB and Wi-Fi off | ~70 mA (66 to 74) | 16% in 8 hours (~2% an hour) | Overnight sleep on a 0.4.0 beta |
+| 0.4.0 configuration, reproduced | ~70 mA | 77% to 74% in 1.5 hours (~2% an hour) | Experiment 5, segment 3 |
 
 - All currents are **estimates calculated from the battery gauge**, not measured with electrical test equipment.
-- **About 72% less** standby current: (250 - 70) / 250. Taking the 0.4.0 figure anywhere in 60 to 80 mA gives 68% to 76%.
-- **The 0.4.0 figure comes from an experiment reproducing 0.4.0's settings**, not from a battery test of the integrated release build.
+- **About 72% less** standby current: (250 - 70) / 250. Taking the 0.4.0 figure anywhere in its range of 66 to 74 mA gives 70% to 74%.
+- **The 0.4.0 figure was measured over an 8-hour overnight sleep** on a 0.4.0 beta, which has the same sleep configuration as 0.4.0. It used 16% of the battery, about 2% an hour, matching Experiment 5's earlier 1.5-hour reproduction of the same settings.
 - **Ordinary 0.3.0 shuts down 3 minutes after the lid closes.** Its hourly figure describes a test build deliberately held in standby. A switched-off device draws only a negligible amount compared with any standby, so 0.4.0's benefit is staying asleep efficiently for hours with instant lid wake, not lower consumption than switching off.
 - No change to battery use **during gameplay** has been measured, and none is claimed.
 
@@ -43,7 +44,7 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 | Unused USB host controllers and Wi-Fi | On | On | Off from startup |
 | Emulator | Paused | Paused, no longer ticked | Paused, then frozen with the whole system |
 | After the lid closes | Powers off after 3 minutes | Powers off after 3 minutes | Sleeps for the chosen time (3 min to 8 hr), then shuts down cleanly |
-| Estimated lid-closed current | Not measured | ~250 mA (test build held awake) | ~70 mA (development configuration) |
+| Estimated lid-closed current | Not measured | ~250 mA (test build held awake) | ~70 mA |
 
 **Upstream slot** (verified in its source, `crates/slot/src/device_app.rs` at the fork point): closing the lid turns off the backlight and pauses the game, but the main loop keeps running at the display's refresh rate (about 60 Hz). Each pass draws a full-screen black rectangle and swaps buffers. After 3 minutes it powers off, and the next boot restores the game from its suspend slot. Its standby current was never measured.
 
@@ -79,28 +80,28 @@ Experiment 5 compared the same hardware with lid wake armed (Normal Standby, seg
 ## Battery results
 
 <p align="center">
-<img src="../.github/resources/battery/battery-current-draw.svg" width="100%" alt="Estimated lid-closed current draw from battery-gauge readings: about 250 mA for 0.3.0 software standby held awake by a test build, about 105 mA for the first suspend-to-RAM test, and about 70 mA for the 0.4.0 configuration, about 72% less">
+<img src="../.github/resources/battery/battery-current-draw.svg" width="100%" alt="Estimated lid-closed current draw from battery-gauge readings: about 250 mA for 0.3.0 software standby held awake by a test build, about 105 mA for the first suspend-to-RAM test, and about 70 mA for 0.4.0 from an 8-hour overnight sleep, about 72% less">
 </p>
 
-<sub>Bars are estimates calculated from battery-gauge readings. Whiskers show the gauge's resolution for 0.3.0 (tick-timed) and the first suspend test, and an illustrative ±15% range for 0.4.0. One development run per configuration.</sub>
+<sub>Bars are estimates calculated from battery-gauge readings. Whiskers show the gauge's 1% resolution over each run (tick-timed for 0.3.0). One run per configuration.</sub>
 
-### Projected battery use while asleep
+### Battery used while asleep
 
 <p align="center">
-<img src="../.github/resources/battery/battery-drain-projection.svg" width="100%" alt="Projection of battery used while asleep in the 0.4.0 configuration at about 2% an hour: about 1% at 30 minutes, 2% at 1 hour, 4% at 2 hours, 8% at 4 hours and 16% at 8 hours, with an illustrative plus or minus 15% range and one observed point of 3% over 1.5 hours">
+<img src="../.github/resources/battery/battery-drain-projection.svg" width="100%" alt="Battery used while asleep on 0.4.0 at about 2% an hour: about 1% at 30 minutes, 2% at 1 hour, 4% at 2 hours, 8% at 4 hours and 16% at 8 hours, with a range from the gauge's 1% resolution and two observed points: 16% over an 8-hour overnight sleep and 3% over 1.5 hours">
 </p>
 
-<sub>A projection at ~2% an hour. Only the white point (3% over 1.5 hours) was observed. The shaded band is an illustrative ±15%, explained below. Real use varies with battery age, temperature and charge level.</sub>
+<sub>~2% an hour. The white points were observed: 16% over an 8-hour overnight sleep on a 0.4.0 beta, and 3% over 1.5 hours in Experiment 5. The shaded band is the 8-hour result's 1% resolution, explained below. Real use varies with battery age, temperature and charge level.</sub>
 
-| Asleep for | Projected battery used | Illustrative range |
+| Asleep for | Battery used | Range |
 |---|---|---|
-| 30 min | ~1% | 0.8 to 1.1% |
-| 1 hr | ~2% | 1.7 to 2.3% |
-| 2 hr | ~4% | 3.4 to 4.6% |
-| 4 hr | ~8% | 6.8 to 9.2% |
-| 8 hr | ~16% | 13.6 to 18.4% |
+| 30 min | ~1% | 0.9 to 1.1% |
+| 1 hr | ~2% | 1.9 to 2.1% |
+| 2 hr | ~4% | 3.8 to 4.2% |
+| 4 hr | ~8% | 7.5 to 8.5% |
+| 8 hr | ~16% (measured) | 15 to 17% |
 
-The longest single sleep tested so far lasted 2 hours (Test A). Nothing longer has been run in the 0.4.0 configuration.
+The longest sleep tested is the 8-hour overnight sleep. The shorter durations are worked out from its rate.
 
 ---
 
@@ -129,7 +130,7 @@ The longest single sleep tested so far lasted 2 hours (Test A). Nothing longer h
 - Wi-Fi off showed no saving that could be separated from noise while asleep.
 - The direction of the overall improvement is confirmed by two independent comparisons (Test A against segment 3, and segment 1 against segments 2 and 3). The size, about 105 to about 70 mA, rests on single runs.
 
-**The illustrative range.** The 0.4.0 estimate is drawn with a ±15% band: 60 to 80 mA, or 1.7 to 2.3% an hour. **It is not a statistical confidence interval.** It was chosen to cover the spread of the segment 3 calculations (69.6 to 75.4 mA across the awake-current assumptions) and the variation in gauge step size seen below 80% (35 to 36.4 mAh), with some margin, because the configuration was run only once. The observed drop, 3 whole percent in 1.5 hours, is consistent with anything from 1.3 to 2.7% an hour.
+**The 8-hour overnight sleep.** The 0.4.0 figure was measured by noting the battery percentage before closing the lid on a 0.4.0 beta with Sleep set to `8 hr`, and again the next morning: it fell 16%. 0.4.0's sleep configuration is the same as the betas', since later changes touched only save safety, the lid reading and the About screen. Because each reading is a whole percent, the true drop lies between 15% and 17%: 1.88 to 2.12% an hour, or 66 to 74 mA at 35 mAh per percent. That band is what the charts show. It is a resolution limit, not a statistical interval, and it rests on one run. If the sleep began above about 80%, where the gauge's steps are smaller, the real current was somewhat lower. The result matches Experiment 5's segment 3 (3% in 1.5 hours, about 70 mA), measured independently with development scripts. No log file was kept for this test; `calculate.py` records the figures.
 
 ---
 
@@ -140,7 +141,8 @@ The longest single sleep tested so far lasted 2 hours (Test A). Nothing longer h
 | [`battery-tests/test-b-software-standby.txt`](battery-tests/test-b-software-standby.txt) | Test B, 10 October 2026 (UTC): 0.3.0 software standby held awake for 2 hours, with the minute-by-minute log |
 | [`battery-tests/test-a-suspend-usb-wifi-on.txt`](battery-tests/test-a-suspend-usb-wifi-on.txt) | Test A, 10 October 2026 (UTC): one 2-hour `mem` suspend with lid wake, USB and Wi-Fi on |
 | [`battery-tests/experiment-5-suspend-segments.txt`](battery-tests/experiment-5-suspend-segments.txt) | Experiment 5, 11 October 2026 (UTC): four 90-minute suspends, with USB, Wi-Fi and PE19 states logged around every sleep |
-| [`battery-tests/calculate.py`](battery-tests/calculate.py) | Recalculates every figure on this page from the three reports |
+| (no file) | The 8-hour overnight sleep on a 0.4.0 beta: two battery percentages noted by the tester, 16% apart, recorded in `calculate.py` |
+| [`battery-tests/calculate.py`](battery-tests/calculate.py) | Recalculates every figure on this page from the three reports and the overnight sleep |
 | [`battery-tests/charts.py`](battery-tests/charts.py) | Regenerates the three battery charts |
 
 The reports are unedited device output. Their own summary lines contain the two errors noted above (Test A's ±2.5 mA and Experiment 5's ±0.5 mA). `calculate.py` shows the corrected working. Run it from the repository root:
@@ -177,6 +179,6 @@ The earlier experiments that established suspend, lid wake, timed wake and `POWE
 
 **Known limitation.** Once, while flicking the lid far faster than in normal use, the device woke and read the lid as shut (from both the driver and the raw sensor), so it went back to sleep while the lid came to rest open. With no further lid movement to wake it, the screen stayed dark until the lid was closed and opened again, which brought the game straight back with nothing lost. The lid was most likely still moving when it was read. It was accepted for 0.4.0 rather than fixed, because it needs unrealistic flicking, it cannot be reproduced on demand to prove a fix, and recovery is simply closing and opening the lid.
 
-**Not yet measured:** a battery test of the 0.4.0 build itself. The battery figures on this page come from the development experiments above and stay labelled as preliminary until one exists.
+**Battery:** an 8-hour overnight sleep on a 0.4.0 beta used 16% of the battery, about 2% an hour (see [Methodology and uncertainty](#methodology-and-uncertainty)).
 
 0.4.0 was released on the strength of these checks, built from the same code as 0.4.0-beta.3 plus a new About screen, which was checked on the device before release.

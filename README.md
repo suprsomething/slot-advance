@@ -6,7 +6,7 @@
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP (2026).**
 
-<sub>Approximately 72% lower estimated standby current than continuous software standby, in preliminary development testing. The optimised result came from an experiment reproducing 0.4.0's configuration, not a battery measurement of the integrated release build. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
+<sub>Approximately 72% lower estimated standby current than continuous software standby. An 8-hour overnight sleep used 16% of the battery, about 2% an hour. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
 
 <a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot.advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License: GPL-3.0"></a>
 <a href="https://github.com/BrandonKowalski/slot"><img src="https://img.shields.io/badge/Based_on-slot-4d4d57?style=for-the-badge&labelColor=242429" height="32" alt="Based on slot"></a>
@@ -32,7 +32,7 @@ slot.advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the 
 
 - **Real hardware sleep** with automatic **lid wake**. The running game stays in RAM, and nothing is reloaded. *(0.4.0)*
 - **Six sleep durations**, from 3 minutes to 8 hours, then a **clean automatic shutdown**. The game is restored at the next power-on. *(0.4.0)*
-- **About 2% of the battery per hour** while asleep in the optimised configuration, against about 7% for software standby held awake. *(0.4.0, preliminary)*
+- **About 2% of the battery per hour** while asleep in the optimised configuration, against about 7% for software standby held awake. An 8-hour overnight sleep used 16%. *(0.4.0)*
 - **Optional game titles** above the selected cartridge. *(0.4.0)*
 - **An About screen** with the version, the number of games, free space on the games card and the battery. *(0.4.0)*
 - **All, Recents and Favourites** categories, **five save states** per game with an Up / Down switcher, **per-game settings**, and a carousel that reopens on the last game played.
@@ -88,12 +88,12 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 ### Battery used with the lid closed
 
 <p align="center">
-<img src=".github/resources/battery/battery-drain-hourly.svg" width="100%" alt="Battery used per hour with the lid closed, as 1% blocks from observed battery-gauge drops: about 7% for 0.3.0 software standby held awake by a test build (61% to 47% in 2 hours), about 3% for the first suspend-to-RAM test (68% to 62% in 2 hours), and about 2% for the 0.4.0 configuration (77% to 74% in 1.5 hours)">
+<img src=".github/resources/battery/battery-drain-hourly.svg" width="100%" alt="Battery used per hour with the lid closed, as 1% blocks from observed battery-gauge drops: about 7% for 0.3.0 software standby held awake by a test build (61% to 47% in 2 hours), about 3% for the first suspend-to-RAM test (68% to 62% in 2 hours), and about 2% for 0.4.0 (16% over an 8-hour overnight sleep)">
 </p>
 
-- **Preliminary development figures**, read from the battery gauge in whole 1% steps. The estimated current fell from about **250 mA** to about **70 mA**, around **72% less**.
+- **Read from the battery gauge** in whole 1% steps. The estimated current fell from about **250 mA** to about **70 mA**, around **72% less**.
 - **0.3.0 software standby, test build held awake.** Ordinary 0.3.0 shuts down 3 minutes after the lid closes. Its hourly figure comes from a test build deliberately held in standby.
-- **The 2% figure** comes from an experiment reproducing 0.4.0's settings, not from a battery test of the 0.4.0 build.
+- **The 2% figure** comes from an **8-hour overnight sleep** on a 0.4.0 beta, which has the same sleep configuration as 0.4.0: it used **16%** of the battery. An earlier 1.5-hour experiment gave the same rate.
 - **The point of 0.4.0 isn't to beat switching off.** A switched-off RG SP (2026) draws only a negligible amount compared with any standby. 0.4.0 lets it stay asleep efficiently for hours and wake the moment you open the lid.
 - No change to battery use **during gameplay** has been measured or claimed.
 
@@ -112,7 +112,7 @@ The current-draw chart, the long-sleep projection, the raw logs and the uncertai
 | `2 hr` | 2 hours | ~4% |
 | `8 hr` | 8 hours | ~16% |
 
-<sub>Projected at ~2% an hour from the preliminary figure; real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
+<sub>Projected at ~2% an hour, as measured over the 8-hour overnight sleep; real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
 
 ### Waking up: two kinds of resume
 
@@ -302,7 +302,7 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 # Known limitations
 
 - **Flicking the lid very quickly** can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost. It happened once in testing, only when flicking far faster than in normal use. See [Validation status](documentation/sleep-and-battery.md#validation-status).
-- **Battery figures are preliminary**, from single development runs with the battery gauge.
+- **Battery figures come from the battery gauge**, which reads in whole 1% steps, with one run per configuration.
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
 

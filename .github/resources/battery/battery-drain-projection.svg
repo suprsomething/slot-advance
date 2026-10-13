@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="590" viewBox="0 0 720 590" role="img" aria-labelledby="t d">
-<title id="t">Projected battery use while asleep in the 0.4.0 configuration: about 2% an hour, 16% over 8 hours</title>
-<desc id="d">A dashed projection line rises from 0% at 0 hours to about 16% at 8 hours, at about 2% an hour, with an illustrative shaded range of plus or minus 15% (1.7 to 2.3% an hour). One observed point: the battery fell 3% over 1.5 hours asleep in a development experiment.</desc>
+<title id="t">Battery used while asleep on 0.4.0: about 2% an hour, 16% over 8 hours, as measured overnight</title>
+<desc id="d">A dashed line rises from 0% at 0 hours to about 16% at 8 hours, at about 2% an hour, with a shaded range of 1.88 to 2.12% an hour from the gauge's 1% resolution. Two observed points: 16% over an 8-hour overnight sleep on a 0.4.0 beta, and 3% over 1.5 hours in an earlier experiment.</desc>
 <rect x="0.5" y="0.5" width="719" height="589" rx="14" fill="#17161D" stroke="#2E2C38"/>
 <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
-<text x="32" y="50" font-size="24" fill="#EEECF4" font-weight="650" text-anchor="start">Projected battery use while asleep</text>
-<text x="32" y="80" font-size="16" fill="#C2BFD0" font-weight="400" text-anchor="start">0.4.0 configuration at about 2% an hour: a projection, not a measurement</text>
+<text x="32" y="50" font-size="24" fill="#EEECF4" font-weight="650" text-anchor="start">Battery used while asleep</text>
+<text x="32" y="80" font-size="16" fill="#C2BFD0" font-weight="400" text-anchor="start">0.4.0 at about 2% an hour, as measured over an 8-hour overnight sleep</text>
 <line x1="84" y1="420.0" x2="680" y2="420.0" stroke="#2E2C38"/>
 <text x="72" y="425.0" font-size="14" fill="#A3A0B3" font-weight="400" text-anchor="end">0%</text>
 <line x1="84" y1="345.0" x2="680" y2="345.0" stroke="#2E2C38"/>
@@ -26,7 +26,7 @@
 <text x="680.0" y="446" font-size="14" fill="#A3A0B3" font-weight="400" text-anchor="middle">8</text>
 <text x="382.0" y="472" font-size="15" fill="#C2BFD0" font-weight="400" text-anchor="middle">Hours asleep</text>
 <text x="26" y="270.0" font-size="15" fill="#C2BFD0" font-weight="400" text-anchor="middle" transform="rotate(-90 26 270.0)">Battery used</text>
-<path d="M84.0 420.0 L680.0 144.0 L680.0 216.0 Z" fill="#8B7CF6" opacity="0.16"/>
+<path d="M84.0 420.0 L680.0 165.0 L680.0 195.0 Z" fill="#8B7CF6" opacity="0.16"/>
 <line x1="84.0" y1="420.0" x2="680.0" y2="180.0" stroke="#8B7CF6" stroke-width="2.5" stroke-dasharray="8 6"/>
 <circle cx="121.2" cy="405.0" r="5" fill="#17161D" stroke="#8B7CF6" stroke-width="2.5"/>
 <circle cx="158.5" cy="390.0" r="5" fill="#17161D" stroke="#8B7CF6" stroke-width="2.5"/>
@@ -36,16 +36,17 @@
 <text x="148.5" y="380.0" font-size="15" fill="#EEECF4" font-weight="600" text-anchor="end">1 hr: ~2%</text>
 <text x="223.0" y="348.0" font-size="15" fill="#EEECF4" font-weight="600" text-anchor="end">2 hr: ~4%</text>
 <text x="372.0" y="288.0" font-size="15" fill="#EEECF4" font-weight="600" text-anchor="end">4 hr: ~8%</text>
-<text x="672.0" y="164.0" font-size="15" fill="#EEECF4" font-weight="600" text-anchor="end">8 hr: ~16%</text>
+<circle cx="680.0" cy="180.0" r="7" fill="#EEECF4"/>
+<text x="668.0" y="164.0" font-size="15" fill="#EEECF4" font-weight="600" text-anchor="end">Observed: 16% in 8 hr</text>
 <circle cx="195.8" cy="375.0" r="7" fill="#EEECF4"/>
 <text x="209.75" y="401.0" font-size="14" fill="#EEECF4" font-weight="600" text-anchor="start">Observed: 3% in 1.5 hr</text>
 <rect x="84" y="118" width="330" height="62" rx="8" fill="#17161D" opacity="0.9"/>
 <line x1="90" y1="132" x2="118" y2="132" stroke="#8B7CF6" stroke-width="2.5" stroke-dasharray="8 6"/>
-<text x="128" y="137" font-size="14" fill="#C2BFD0" font-weight="400" text-anchor="start">Projection at ~2% an hour</text>
+<text x="128" y="137" font-size="14" fill="#C2BFD0" font-weight="400" text-anchor="start">~2% an hour</text>
 <rect x="90" y="146" width="28" height="12" fill="#8B7CF6" opacity="0.3"/>
-<text x="128" y="157" font-size="14" fill="#C2BFD0" font-weight="400" text-anchor="start">Illustrative +/-15% range (1.7 to 2.3%/hr)</text>
-<text x="32" y="512" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">The range is illustrative, not a statistical interval. Real use varies with battery</text>
-<text x="32" y="536" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">age, temperature and charge level. The RG SP (2026) only sleeps this long if</text>
+<text x="128" y="157" font-size="14" fill="#C2BFD0" font-weight="400" text-anchor="start">Range from 1% readings (1.88 to 2.12%/hr)</text>
+<text x="32" y="512" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">The range is the gauge's 1% resolution over the 8-hour sleep. Real use varies with</text>
+<text x="32" y="536" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">battery age, temperature and charge level. The RG SP (2026) only sleeps this long if</text>
 <text x="32" y="560" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">Settings &gt; Sleep is set long enough; then it shuts down cleanly.</text>
 </g>
 </svg>
