@@ -1,99 +1,45 @@
-use slot_gfx::{Draw, TexId, OUT_H, OUT_W};
-use slot_ui::{draw_backdrop, draw_sticker, sticker_face, wallpaper_face, StickerFields};
+//! Renders the About screen to a PNG for a visual check. Runs only when SCRATCH_PNG names
+//! the output file; SCRATCH_LOGO may name a 24-bit BMP to use as the logo.
+use slot_ui::{about_face, AboutFields, CardSpace, Logo};
+
+fn bmp(path: &str) -> Option<(Vec<[u8; 3]>, u32, u32)> {
+    let b = std::fs::read(path).ok()?;
+    let u32_at = |i: usize| u32::from_le_bytes(b[i..i + 4].try_into().unwrap());
+    let (w, h, off) = (u32_at(18), u32_at(22) as i32, u32_at(10) as usize);
+    let (top_down, h) = (h < 0, h.unsigned_abs());
+    let stride = ((w * 3 + 3) & !3) as usize;
+    let mut out = Vec::with_capacity((w * h) as usize);
+    for y in 0..h as usize {
+        let row = if top_down { y } else { h as usize - 1 - y };
+        for px in b[off + row * stride..].chunks_exact(3).take(w as usize) {
+            out.push([px[2], px[1], px[0]]);
+        }
+    }
+    Some((out, w, h))
+}
 
 #[test]
 fn render_about() {
     let Ok(out) = std::env::var("SCRATCH_PNG") else {
         return;
     };
-    let paper = std::env::var("SCRATCH_WALL")
-        .ok()
-        .and_then(|p| wallpaper_face(std::path::Path::new(&p)));
-    let label = sticker_face(&StickerFields {
+    let logo = std::env::var("SCRATCH_LOGO").ok().and_then(|p| bmp(&p));
+    let face = about_face(&AboutFields {
+        version: "0.4.0",
+        games: 142,
+        card: Some(CardSpace {
+            free: 21_400_000_000,
+            total: 59_500_000_000,
+        }),
         battery: Some(87),
-        serial: "0473885",
-        dirty_digit: '0',
+        logo: logo.as_ref().map(|(rgb, w, h)| Logo { rgb, w: *w, h: *h }),
     });
-
-    let mut list = Vec::new();
-    draw_backdrop(paper.as_ref().map(|_| TexId::from_raw(0)), &mut list);
-    draw_sticker(Some(TexId::from_raw(1)), &mut list);
-
-    let (w, h) = (OUT_W as usize, OUT_H as usize);
-    let mut px = vec![0u8; w * h * 4];
-    for p in px.chunks_mut(4) {
-        p.copy_from_slice(&[0, 0, 0, 255]);
-    }
-    let blend = |dst: &mut [u8], c: [f32; 3], a: f32| {
-        for k in 0..3 {
-            dst[k] = (c[k] * 255.0 * a + dst[k] as f32 * (1.0 - a)) as u8;
-        }
-    };
-
-    for d in &list {
-        match *d {
-            Draw::Rect {
-                x,
-                y,
-                w: rw,
-                h: rh,
-                colour,
-            } => {
-                for yy in y as usize..((y + rh) as usize).min(h) {
-                    for xx in x as usize..((x + rw) as usize).min(w) {
-                        let at = (yy * w + xx) * 4;
-                        blend(
-                            &mut px[at..at + 4],
-                            [colour[0], colour[1], colour[2]],
-                            colour[3],
-                        );
-                    }
-                }
-            }
-            Draw::Tex {
-                x,
-                y,
-                w: tw,
-                h: th,
-                tex,
-                alpha,
-            } => {
-                let (src, sw, sh) = match tex == TexId::from_raw(0) {
-                    true => (paper.as_deref().unwrap_or(&[]), OUT_W, OUT_H),
-                    false => (label.rgba.as_slice(), label.w, label.h),
-                };
-                if src.is_empty() {
-                    continue;
-                }
-                for row in 0..th as usize {
-                    for col in 0..tw as usize {
-                        let (sx, sy) = (
-                            col * sw as usize / tw as usize,
-                            row * sh as usize / th as usize,
-                        );
-                        let s = (sy * sw as usize + sx) * 4;
-                        let a = src[s + 3] as f32 / 255.0 * alpha;
-                        let (dx, dy) = (x as usize + col, y as usize + row);
-                        if a > 0.0 && dx < w && dy < h {
-                            let at = (dy * w + dx) * 4;
-                            let c = [
-                                src[s] as f32 / 255.0,
-                                src[s + 1] as f32 / 255.0,
-                                src[s + 2] as f32 / 255.0,
-                            ];
-                            blend(&mut px[at..at + 4], c, a);
-                        }
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-
-    let f = std::fs::File::create(&out).unwrap();
-    let mut e = png::Encoder::new(std::io::BufWriter::new(f), w as u32, h as u32);
-    e.set_color(png::ColorType::Rgba);
-    e.set_depth(png::BitDepth::Eight);
-    e.write_header().unwrap().write_image_data(&px).unwrap();
-    println!("wrote {out} ({} draws)", list.len());
+    let file = std::fs::File::create(out).unwrap();
+    let mut enc = png::Encoder::new(std::io::BufWriter::new(file), face.w, face.h);
+    enc.set_color(png::ColorType::Rgba);
+    enc.set_depth(png::BitDepth::Eight);
+    enc.write_header()
+        .unwrap()
+        .write_image_data(&face.rgba)
+        .unwrap();
 }

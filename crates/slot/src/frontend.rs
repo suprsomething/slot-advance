@@ -7,17 +7,19 @@ use slot_input::{InputSource, Millis};
 use slot_power::{Platform, Power};
 use slot_store::format_stamp;
 use slot_ui::{
-    arrows_hint_face, badge_face, bezel_face, cart_shadow, chip_face, chip_shadow_face,
+    about_face, arrows_hint_face, badge_face, bezel_face, cart_shadow, chip_face, chip_shadow_face,
     date_time_text, gb_cart_shadow, hhmm, hint_face, icon_face, menu_face, photo_face,
     quick_caret_face, quick_label_face, quick_legend_faces, quick_value_face, rebuild_count_face,
-    rebuild_title_face, set_clock_hint_face, socket_face, sticker_face, title_face, toast_face,
-    wallpaper_face, word_face, CartFace, GbShell, Icon, LinkBadge, PowerChoice, QuickMenuFaces,
-    QuickRow, QuickValue, RebuildScreen, StickerFields, Toast, UndoFace, ALERT_PX, BOLT_PX,
+    rebuild_title_face, set_clock_hint_face, socket_face, title_face, toast_face, wallpaper_face,
+    word_face, AboutFields, CardSpace, CartFace, GbShell, Icon, LinkBadge, Logo, PowerChoice,
+    QuickMenuFaces, QuickRow, QuickValue, RebuildScreen, Toast, UndoFace, ALERT_PX, BOLT_PX,
     HUD_ICON_PX, HUD_INK, LEGEND,
 };
 
 use crate::app::{App, LinkRow, Phase};
+use crate::bootlogo;
 use crate::build_info::Build;
+use crate::card_space::card_space;
 use crate::cart_faces::CartFaces;
 use crate::face_builder::FaceBuilder;
 use crate::label_cache::{self, Rebuild};
@@ -76,8 +78,13 @@ struct QuickClock {
 #[derive(Default)]
 struct AboutFace {
     tex: Option<TexId>,
-    battery: Option<u8>,
+    /// The figures the face was last drawn with, while the About screen is open. Cleared
+    /// when it closes, so each visit reads the game count and the card's space afresh.
+    shown: Option<(Option<u8>, usize, Option<CardSpace>)>,
 }
+
+/// slot.advance's boot logo, drawn small at the top of the About screen.
+const ABOUT_LOGO: &[u8] = include_bytes!("../../../card/System/bootlogo.bmp");
 
 #[derive(Default)]
 struct Clocks {
@@ -773,21 +780,34 @@ fn sync_quick_clock(app: &mut App, compositor: &mut Compositor, state: &mut Quic
 
 fn sync_about(app: &mut App, compositor: &mut Compositor, state: &mut AboutFace) {
     if !matches!(app.phase(), Phase::About) {
+        state.shown = None;
         return;
     }
     let battery = app.battery().map(|b| b.percent);
-    if state.tex.is_some() && state.battery == battery {
+    let (games, card) = match state.shown {
+        Some((_, games, card)) => (games, card),
+        None => (app.carts().count(), app.root().and_then(card_space)),
+    };
+    if state.tex.is_some() && state.shown == Some((battery, games, card)) {
         return;
     }
-    state.battery = battery;
+    state.shown = Some((battery, games, card));
+    static LOGO: std::sync::OnceLock<Option<bootlogo::Bmp>> = std::sync::OnceLock::new();
+    let logo = LOGO.get_or_init(|| bootlogo::decode(ABOUT_LOGO)).as_ref();
     let build = Build::current();
-    let face = sticker_face(&StickerFields {
+    let face = about_face(&AboutFields {
+        version: build.version,
+        games,
+        card,
         battery,
-        serial: &build.serial(),
-        dirty_digit: build.dirty_digit(),
+        logo: logo.map(|b| Logo {
+            rgb: &b.rgb,
+            w: b.width as u32,
+            h: b.height as u32,
+        }),
     });
     let id = upload(compositor, &mut state.tex, face);
-    app.set_sticker_face(id);
+    app.set_about_face(id);
 }
 
 fn sync_core_picker(
