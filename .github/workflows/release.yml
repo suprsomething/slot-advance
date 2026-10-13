@@ -7,7 +7,7 @@ on:
     inputs:
       release_tag:
         description: >-
-          To publish a release, the tag to create from this branch, e.g. advance-0.4.0-beta.2.
+          To publish a release, the tag to create from this branch, e.g. advance-0.4.0.
           Leave empty for a test build that publishes nothing.
         required: false
         default: ''
@@ -29,14 +29,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # slot advance tags (advance-0.4.0-beta.2) ship as slot-advance-<version>-rg-sp.zip,
-      # the layout of the earlier slot advance downloads. Upstream tags keep their own names.
+      # slot.advance tags (advance-0.4.0) ship as slot.advance-<version>-rg-sp.zip. The
+      # downloads before 0.4.0, the 0.4.0 betas included, were slot-advance-...; they keep
+      # their names. Upstream tags keep their own names.
       - name: Name the build
         id: name
         run: |
           set -eu
           case "$TAG" in
-            advance-*) out="slot-advance-${TAG#advance-}-rg-sp"; zip="$out.zip" ;;
+            advance-*) out="slot.advance-${TAG#advance-}-rg-sp"; zip="$out.zip" ;;
             *) out="slot-${TAG}"; zip="$out-h700.zip" ;;
           esac
           echo "out=$out" >> "$GITHUB_OUTPUT"
@@ -112,7 +113,7 @@ jobs:
           set -eu
           title="$TAG"
           case "$TAG" in
-            advance-*) title="slot advance ${TAG#advance-}" ;;
+            advance-*) title="slot.advance ${TAG#advance-}" ;;
           esac
           if [ -f "documentation/releases/$TAG.md" ]; then
             cp "documentation/releases/$TAG.md" notes.md
@@ -124,12 +125,14 @@ jobs:
           NOTES
           fi
           # slot.advance tags, betas included (advance-0.4.0-beta.3), are published as ordinary
-          # releases, so a recommended beta can be marked Latest. Other tags with a pre-release
-          # suffix are published as pre-releases and never become Latest.
+          # releases, so a recommended beta can be marked Latest. A stable slot.advance tag
+          # (no suffix, such as advance-0.4.0) is always marked Latest. Other tags with a
+          # pre-release suffix are published as pre-releases and never become Latest.
           # Run by hand with a release_tag, the tag is created here, on the commit just built.
           set -- --title "$title" --notes-file notes.md --target "$GITHUB_SHA"
           case "$TAG" in
-            advance-*) ;;
+            advance-*-*) ;;
+            advance-*) set -- "$@" --latest ;;
             *-*) set -- "$@" --prerelease --latest=false ;;
           esac
           gh release create "$TAG" "$ZIP" --repo "$GITHUB_REPOSITORY" "$@"

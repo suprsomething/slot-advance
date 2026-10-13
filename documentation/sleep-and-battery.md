@@ -1,8 +1,8 @@
 # Sleep and battery: how it works and how it was measured
 
-This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what still has to be checked on the device.
+This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what was checked on the device before release.
 
-Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot.advance** versions, not upstream slot's. **0.4.0-beta.3** is the current recommended beta and is undergoing hardware validation; stable 0.4.0 will follow once the checks under [Validation status](#validation-status) pass. **0.3.0** (tag `advance-v3`) is the previous stable release.
+Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot.advance** versions, not upstream slot's. **0.4.0** (tag `advance-0.4.0`) is the current release, released after the checks under [Validation status](#validation-status). **0.3.0** (tag `advance-v3`) is the previous release.
 
 ## Contents
 
@@ -168,10 +168,15 @@ The earlier experiments that established suspend, lid wake, timed wake and `POWE
 - A timed shutdown: with Sleep at `3 min`, the device woke at 179 seconds and shut down cleanly, and the next session loaded the game at boot.
 - Rapid lid flicks: the kernel's refusals to suspend mid-flick were handled, but after some flicks the screen stayed dark for 4 to 5 seconds with the lid open. The lid driver had recorded "shut" after the wake. 0.4.0-beta.3 checks the sensor's raw level in that case (see `crates/slot-power/src/lid.rs`).
 
-**Still to verify before 0.4.0 is released as stable:**
-- Rapid lid flicks on 0.4.0-beta.3: the screen should come back as soon as the lid opens. `slot.log` notes each time the sensor overrules the driver.
-- Connecting and disconnecting the charger while asleep.
-- Rumble, headphones and all controls after many sleeps.
-- A fresh battery measurement of the release build. This is desirable but not required: until it exists, the figures above stay labelled as preliminary.
+**Checked on the device with 0.4.0-beta.3 (13 October 2026):**
+- From `slot.log`: repeated sleeps and resumes from inside a game, including quick lid flicks, with each slow lid open resuming the game.
+- From `slot.log`: a timed shutdown. With Sleep at `3 min`, the device woke at 179 seconds with the lid shut and shut down cleanly; the game was restored at the next power-on.
+- From `slot.log`: the lid sensor's level was learnt at start-up after a cold boot (`lid: sensor reads hi with the lid open`), and the beta.1 problem (the lid driver recording "shut" after a wake with the lid open) did not recur: `slot.log` never had to overrule the driver.
+- Reported by the tester, from sessions whose logs had been replaced: `POWER` pressed with the lid shut, and the charger plugged in and unplugged while asleep, both left the screen dark until the lid was opened.
+- Rumble, headphones and all controls after several resumes were confirmed on 0.4.0-beta.1, and nothing they rely on changed afterwards.
 
-Until those checks pass, 0.4.0 stays a beta (currently **0.4.0-beta.3**, the recommended download). Stable 0.4.0 will follow successful testing.
+**Known limitation.** Once, while flicking the lid far faster than in normal use, the device woke and read the lid as shut (from both the driver and the raw sensor), so it went back to sleep while the lid came to rest open. With no further lid movement to wake it, the screen stayed dark until the lid was closed and opened again, which brought the game straight back with nothing lost. The lid was most likely still moving when it was read. It was accepted for 0.4.0 rather than fixed, because it needs unrealistic flicking, it cannot be reproduced on demand to prove a fix, and recovery is simply closing and opening the lid.
+
+**Not yet measured:** a battery test of the 0.4.0 build itself. The battery figures on this page come from the development experiments above and stay labelled as preliminary until one exists.
+
+0.4.0 was released on the strength of these checks, built from the same code as 0.4.0-beta.3 plus a new About screen, which was checked on the device before release.

@@ -13,8 +13,8 @@ use slot_store::{
     VOLUME_MAX,
 };
 use slot_ui::{
-    board_from, board_zoom, draw_backdrop, draw_empty_slot, draw_footer, draw_slot_name,
-    draw_sticker, ease, grown, lid_at, lid_from, lift_of, on_board, shelf_cart_at, ClockPicker,
+    board_from, board_zoom, draw_about, draw_backdrop, draw_empty_slot, draw_footer,
+    draw_slot_name, ease, grown, lid_at, lid_from, lift_of, on_board, shelf_cart_at, ClockPicker,
     Draw, FfState, GbShell, Hud, HudKind, Icon, LinkBadge, Millis, Placed, Polaroids, PowerChoice,
     QuickMenu, QuickMenuFaces, QuickRow, QuickValue, Refusal, Shelf, ShownTitle, SlotChrome, TexId,
     Toast, BOARD_W, BOARD_X, CART_W, CHIP_H, CHIP_U, CHIP_V, CHIP_W, HINT_EDGE, HINT_H, HOP_LIFT,
@@ -337,7 +337,7 @@ pub struct App {
     clock_faces: Option<(TexId, TexId)>,
     quick_menu_faces: Option<QuickMenuFaces>,
     quick_clock_faces: Option<[(TexId, u32, u32); 2]>,
-    sticker_face: Option<TexId>,
+    about_face: Option<TexId>,
     wallpaper: Option<TexId>,
     battery_percent: slot_ui::Printed,
     bolt: Option<TexId>,
@@ -491,7 +491,7 @@ impl App {
             clock_faces: None,
             quick_menu_faces: None,
             quick_clock_faces: None,
-            sticker_face: None,
+            about_face: None,
             wallpaper: None,
             battery_percent: slot_ui::Printed::default(),
             bolt: None,
@@ -920,8 +920,8 @@ impl App {
         self.quick_clock_faces = Some([dim, lit]);
     }
 
-    pub fn set_sticker_face(&mut self, face: TexId) {
-        self.sticker_face = Some(face);
+    pub fn set_about_face(&mut self, face: TexId) {
+        self.about_face = Some(face);
     }
 
     pub fn set_clock_faces(&mut self, line: TexId, hint: TexId) {
@@ -2505,8 +2505,7 @@ impl App {
                 );
             }
             Phase::About => {
-                draw_backdrop(self.wallpaper, out);
-                draw_sticker(self.sticker_face, out);
+                draw_about(self.about_face, out);
                 return;
             }
             Phase::Inserting { cart, resumed, .. } => {

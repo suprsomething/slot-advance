@@ -5,6 +5,7 @@ pub mod boot_time;
 pub mod bootlogo;
 pub mod build_info;
 pub mod cable;
+pub mod card_space;
 pub mod cart_faces;
 pub mod core;
 pub mod core_picker;

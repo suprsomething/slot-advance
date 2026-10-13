@@ -1,3 +1,4 @@
+mod about;
 mod art;
 pub use art::cover;
 mod backdrop;
@@ -21,11 +22,14 @@ mod shelf;
 mod shell;
 mod silhouette;
 mod slot_chrome;
-mod sticker;
 pub mod text;
 mod title;
 mod toast;
 
+pub use about::{
+    about_face, about_lines, about_rows, card_size, draw_about, AboutFields, CardSpace, Logo,
+    ABOUT_CREDITS, ABOUT_H, ABOUT_W, WEBSITE,
+};
 pub use backdrop::{bezel_face, draw_backdrop, wallpaper_face};
 pub use barcode::{code39, CODE39_NARROW, CODE39_WIDE};
 pub use battery::{draw_gauge, BOLT_PX, GAUGE_H, GAUGE_W, WALL};
@@ -82,10 +86,6 @@ pub use silhouette::{gb_silhouette, silhouette, GbShell};
 pub use slot_chrome::{
     draw_empty_slot, draw_slot_name, ease, edge, housing, opening, recess, set_theme, SlotChrome,
     ALERT_PX, LIP_H, MOUTH_H, MOUTH_W,
-};
-pub use sticker::{
-    draw_sticker, head_rows, sticker_face, sticker_lines, StickerFields, COPYRIGHT, CREDITS, DC,
-    HOME, ORIGIN, STICKER_H, STICKER_W,
 };
 pub use title::{
     display_title, fitted_title, marquee, title_faces, visible_spans, Marquee, ShownTitle,
