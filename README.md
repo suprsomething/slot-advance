@@ -16,10 +16,10 @@
 
 | Release | Version | Description |
 |---|---|---|
-| **Current beta** | **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)**<br>[`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip) | Latest build with hardware sleep, improved standby efficiency, configurable sleep settings and optional game-title display. |
+| **Current release** | **[slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)**<br>[`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip) | Hardware sleep with lid wake, improved standby efficiency, configurable sleep settings, optional game-title display and a new About screen. |
 | **Previous release** | [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3)<br>[`slot-advance-v3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-v3/slot-advance-v3-rg-sp.zip) | Earlier version without hardware sleep or game-title display. |
 
-**Beta status:** Version 0.4.0-beta.3 is a beta undergoing real-world testing. Once [validated](documentation/sleep-and-battery.md#validation-status), it will form the basis of the stable 0.4.0 release. See [Installing and updating](#installing-and-updating).
+See [Installing and updating](#installing-and-updating) to install or upgrade.
 
 > [!IMPORTANT]
 > **Supported device: Anbernic RG SP (2026) only**: the clamshell model with the 720 x 480 display. Not compatible with the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot).
@@ -34,6 +34,7 @@ slot.advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the 
 - **Six sleep durations**, from 3 minutes to 8 hours, then a **clean automatic shutdown**. The game is restored at the next power-on. *(0.4.0)*
 - **About 2% of the battery per hour** while asleep in the optimised configuration, against about 7% for software standby held awake. *(0.4.0, preliminary)*
 - **Optional game titles** above the selected cartridge. *(0.4.0)*
+- **An About screen** with the version, the number of games, free space on the games card and the battery. *(0.4.0)*
 - **All, Recents and Favourites** categories, **five save states** per game with an Up / Down switcher, **per-game settings**, and a carousel that reopens on the last game played.
 
 slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by **Brandon T. Kowalski**. The carousel, the cart shelf, the save-state switcher, link play and nearly everything else you see is his work. This fork adds features for one way of playing: GBA games on the 720 x 480 RG SP (2026).
@@ -54,9 +55,10 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 | GBA screen shader | Grid by default | **Off** by default (GBA is an exact 3x on a 720 x 480 screen, so it is already pixel perfect) |
 | Per-game settings | One setting for every game | **Each game remembers** its shader, colour correction, fast-forward speed and fast-forward sound |
 | After a reboot | First cart on the shelf | **The game you played last**, in the category you started it from |
+| About screen | A "back of the console" sticker | The **version, number of games, free space** on the games card and **battery** *(0.4.0)* |
 | Low battery | Shuts down at 5% | A quiet **banner at 15% and 10%** first, then the same 5% shutdown |
 
-<sub>Rows marked *(0.4.0)* are new in the 0.4.0 beta and not in 0.3.0. Everything else is in both.</sub>
+<sub>Rows marked *(0.4.0)* are new in 0.4.0 and not in 0.3.0. Everything else is in both.</sub>
 
 ### What it looks like
 
@@ -153,7 +155,7 @@ Before sleeping, slot.advance attempts to save your game to its separate suspend
 
 # Installing and updating
 
-The download, the current beta, is **[slot.advance 0.4.0-beta.3](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3)** ([`slot-advance-0.4.0-beta.3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0-beta.3/slot-advance-0.4.0-beta.3-rg-sp.zip)). It is a beta, still being tested on the device. It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download is **[slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)** ([`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip)). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
 The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
 
@@ -161,7 +163,7 @@ The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot-advance-0.4.0-beta.3-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot-advance-0.4.0-beta.3-rg-sp`.
+3. Unzip `slot.advance-0.4.0-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot.advance-0.4.0-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
@@ -291,7 +293,7 @@ Shader, colour correction and fast-forward changes made in game are saved **for 
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state`, the suspend slot used when the lid closes. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
-| `slot.log`, `slot.log.1` | What slot.advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0-beta.3 (` followed by the commit and build date. |
+| `slot.log`, `slot.log.1` | What slot.advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0 (` followed by the commit and build date. |
 
 The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on an update leaves them alone.
 
@@ -299,12 +301,10 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 
 # Known limitations
 
-- **0.4.0 is a beta.** On the device, sleep and resume from inside a game and the timed shutdown have worked. Still being confirmed: plugging in or unplugging the charger while asleep, rumble and headphones after many sleeps, and rapid lid flicks with the beta.3 fix. See [Validation status](documentation/sleep-and-battery.md#validation-status).
+- **Flicking the lid very quickly** can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost. It happened once in testing, only when flicking far faster than in normal use. See [Validation status](documentation/sleep-and-battery.md#validation-status).
 - **Battery figures are preliminary**, from single development runs with the battery gauge.
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
-
-On 0.4.0-beta.1 and beta.2, after rapid lid flicks, opening the lid could leave the screen dark for a few seconds before the game came back. 0.4.0-beta.3 fixes the likely cause; it is waiting to be confirmed on the device.
 
 ### Reporting a problem
 
@@ -316,12 +316,12 @@ On 0.4.0-beta.1 and beta.2, after rapid lid flicks, opening the lid could leave 
 
 # Versions
 
-This build: **0.4.0-beta.3**
+This build: **0.4.0**
 
 From 0.4.0, slot.advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
 
 - A **test build** has a pre-release suffix, such as `0.4.0-beta.1`. If a beta needs fixing, the next one is `0.4.0-beta.2`.
-- Once a beta is approved on the RG SP (2026), the same code is released as `0.4.0`.
+- Once a build is approved on the RG SP (2026), it is released without the suffix, such as `0.4.0`.
 - A **fix** to a release raises the last number (`0.4.1`); **new features** raise the middle one (`0.5.0`).
 - Releases on GitHub are tagged with an `advance-` prefix, such as `advance-0.4.0`, to keep them apart from upstream slot's tags in this repository. 0.3.0 keeps its original tag, `advance-v3`.
 - From the stable 0.4.0 release, downloads are named `slot.advance-<version>-rg-sp.zip`, such as `slot.advance-0.4.0-rg-sp.zip`. Earlier downloads, including the 0.4.0 betas, keep their original `slot-advance-…` names.

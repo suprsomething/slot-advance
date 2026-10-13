@@ -8,9 +8,28 @@ The release previously named v3 is now displayed as 0.3.0; its contents are unch
 
 ---
 
-## 0.4.0-beta.3 (beta, the current recommended download)
+## 0.4.0 (current release)
 
-Tag `advance-0.4.0-beta.3`. Download: `slot-advance-0.4.0-beta.3-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3). It is undergoing hardware validation; stable `0.4.0` will follow once the checks under [Validation status](sleep-and-battery.md#validation-status) pass. [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.
+Tag `advance-0.4.0`. Download: `slot.advance-0.4.0-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0). [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.
+
+0.4.0 is 0.4.0-beta.3's code with a new About screen. Everything new since 0.3.0 is listed under the betas below.
+
+**New since 0.4.0-beta.3**
+- **About screen:** it now shows the slot.advance logo, the version, the number of games, free space on the games card, the battery, slotadvance.com and the credits. It replaces upstream slot's "back of the console" sticker.
+- Downloads are now named `slot.advance-<version>-rg-sp.zip`.
+
+**Checked on the device** with 0.4.0-beta.3 and this About screen: sleep and resume from inside a game, quick lid flicks, `POWER` and the charger while asleep, the timed shutdown with the game restored at the next power-on, and the first sleep after a cold boot. See [Validation status](sleep-and-battery.md#validation-status).
+
+**Known limitation**
+- Flicking the lid very quickly can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost.
+
+**Not yet measured:** a battery test of this build. The battery figures stay labelled as preliminary.
+
+---
+
+## 0.4.0-beta.3 (beta, superseded by 0.4.0)
+
+Tag `advance-0.4.0-beta.3`. Download: `slot-advance-0.4.0-beta.3-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0-beta.3). It has been superseded by 0.4.0, which is the one to download.
 
 **Fixed since 0.4.0-beta.2**
 - After rapid lid flicks, opening the lid could leave the screen dark for 4 to 5 seconds before the game came back. The lid driver sometimes records "shut" after a wake even though the lid is open, so slot.advance put the device back to sleep. It now checks the lid sensor's raw level whenever the driver says "shut", and the raw level wins. It learns which level means "open" at start-up. `slot.log` notes each time it overrules the driver.
@@ -55,7 +74,7 @@ Everything below was introduced in 0.4.0-beta.1, which was only installed for on
 
 ---
 
-## 0.3.0 (previous stable release, previously named v3)
+## 0.3.0 (previous release, previously named v3)
 
 Tag `advance-v3`, published 10 October 2026. Download: `slot-advance-v3-rg-sp.zip` (the filename is unchanged).
 
