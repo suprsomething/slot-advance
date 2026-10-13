@@ -68,9 +68,8 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--s3); outline-o
 /* Video */
 .video {
   position: relative;
-  /* Wider than the text column on large screens, so the 1080p video has room. */
-  width: max(100%, min(64rem, 100vw - 4rem));
-  max-width: none;
+  /* Same width as the text column. */
+  width: 100%;
   justify-self: center;
   aspect-ratio: 16 / 9;
   border-radius: 10px;
