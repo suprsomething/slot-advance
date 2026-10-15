@@ -145,6 +145,7 @@ section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
   clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
   background: var(--c);
 }
+.blocks i.part { background: linear-gradient(90deg, var(--c) 60%, color-mix(in srgb, var(--c) 25%, transparent) 60%); }
 .rate { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .note { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; text-align: center; }
 
@@ -193,7 +194,7 @@ section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
 
   <section class="battery">
     <h2><i class="mark" style="--c:var(--s2)" aria-hidden="true"></i>Lower standby drain</h2>
-    <p class="headline"><strong>About 2% an hour asleep</strong>, down from about 7%.</p>
+    <p class="headline"><strong>About 2 to 2.6% an hour asleep</strong>, down from about 7%.</p>
     <div class="chart" role="group" aria-label="Battery used per hour with the lid closed">
       <div class="row">
         <div class="row-top">
@@ -218,14 +219,14 @@ section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
       <div class="row">
         <div class="row-top">
           <span class="row-name">slot.advance 0.4.0</span>
-          <span class="row-obs">98% → 82% over 8 hours</span>
+          <span class="row-obs">98% → 82% in 8 h · 94% → 74% in 7¾ h</span>
         </div>
         <div class="row-bar">
-          <span class="blocks" style="--c:var(--s3)" aria-hidden="true"><i></i><i></i></span>
-          <span class="rate">~2% an hour</span>
+          <span class="blocks" style="--c:var(--s3)" aria-hidden="true"><i></i><i></i><i class="part"></i></span>
+          <span class="rate">~2 to 2.6% an hour</span>
         </div>
       </div>
-      <p class="note">Each block is 1% of the battery per hour, read from the battery gauge.</p>
+      <p class="note">Each block is 1% of the battery per hour, read from the battery gauge. 0.4.0 is two overnight sleeps; the gauge's 1% steps vary in size with the charge level, so the two nights read a little differently.</p>
     </div>
   </section>
 

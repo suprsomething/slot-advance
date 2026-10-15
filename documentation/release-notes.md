@@ -23,7 +23,7 @@ Tag `advance-0.4.0`. Download: `slot.advance-0.4.0-rg-sp.zip` from the [release 
 **Known limitation**
 - Flicking the lid very quickly can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost.
 
-**Battery:** an 8-hour overnight sleep on 0.4.0-beta.3 went from 98% to 82%, about 2% an hour, matching the earlier experiment.
+**Battery:** about 2 to 2.6% an hour asleep, from two overnight sleeps: 98% to 82% in 8 hours on 0.4.0-beta.3, and 94% to 74% in 7 hours 46 minutes on 0.4.0. *(Corrected: these notes first gave only the beta.3 figure of about 2% an hour.)*
 
 ---
 
@@ -62,7 +62,7 @@ Everything below was introduced in 0.4.0-beta.1, which was only installed for on
 **Battery**
 - Six USB host controllers the RG SP (2026) has no ports for are switched off at startup. The USB-C port is unaffected.
 - Wi-Fi is switched off about 20 seconds after starting. Link play needs `wifi=on` in `Config/slot.state`, and the link shortcut shows **Link Off** without it.
-- In development testing, the lid-closed current fell from about 250 mA (0.3.0 software standby, held awake by a test build) to about 70 mA, around 72% less. An 8-hour overnight sleep on 0.4.0-beta.3 later confirmed the rate: 98% to 82%, about 2% an hour. See [Sleep and battery](sleep-and-battery.md).
+- In development testing, the lid-closed current fell from about 250 mA (0.3.0 software standby, held awake by a test build) to about 70 mA, around 72% less. Over a whole night the battery gauge showed about 2 to 2.6% an hour: 98% to 82% in 8 hours on 0.4.0-beta.3, and 94% to 74% in 7 hours 46 minutes on the 0.4.0 release. The gauge's 1% steps vary in size at high charge, so these percentages are not used to confirm the current. *(Corrected: these notes first said the overnight sleep "confirmed the rate" at about 2% an hour.)* See [Sleep and battery](sleep-and-battery.md).
 
 **Carousel**
 - Optional game titles: **Settings > Screen > Show Game Titles** (off by default) shows the selected game's title above its cartridge.
