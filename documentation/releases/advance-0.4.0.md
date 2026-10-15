@@ -13,7 +13,7 @@ slot.advance 0.4.0 for the Anbernic RG SP (2026) (720 x 480). It is not for the 
 - Striped slot.advance boot logo, and the build's version and commit written as the first line of `slot.log`.
 
 ### Known limitation
-Flicking the lid very quickly can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost.
+Rapidly flicking the lid closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress.
 
 If anything goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again, and [open a bug report](https://github.com/suprsomething/slot.advance/issues/new/choose) with both files attached.
 

@@ -302,7 +302,7 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 
 # Known limitations
 
-- **Flicking the lid very quickly** can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost. It happened once in testing, only when flicking far faster than in normal use. See [Validation status](documentation/sleep-and-battery.md#validation-status).
+- **Rapidly flicking the lid** closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress. See [Validation status](documentation/sleep-and-battery.md#validation-status).
 - **Battery figures come from the battery gauge**, which reads in whole 1% steps, with one run per configuration.
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.

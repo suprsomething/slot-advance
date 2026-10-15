@@ -21,7 +21,7 @@ Tag `advance-0.4.0`. Download: `slot.advance-0.4.0-rg-sp.zip` from the [release 
 **Checked on the device** with 0.4.0-beta.3 and this About screen: sleep and resume from inside a game, quick lid flicks, `POWER` and the charger while asleep, the timed shutdown with the game restored at the next power-on, and the first sleep after a cold boot. See [Validation status](sleep-and-battery.md#validation-status).
 
 **Known limitation**
-- Flicking the lid very quickly can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost.
+- Rapidly flicking the lid closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress.
 
 **Battery:** about 2 to 2.6% an hour asleep, from two overnight sleeps: 98% to 82% in 8 hours on 0.4.0-beta.3, and 94% to 74% in 7 hours 46 minutes on 0.4.0. *(Corrected: these notes first gave only the beta.3 figure of about 2% an hour.)*
 
