@@ -206,3 +206,104 @@ fn the_cartridge_clock_in_a_save_reaches_the_game() {
         "the save's clock never reached the core"
     );
 }
+
+#[test]
+fn mgba_states_repeat_and_load_with_trailing_padding() {
+    let _g = lock();
+    let Some(mut c) = test_core() else { return };
+    c.load(&test_rom()).unwrap();
+    for _ in 0..60 {
+        c.run_frame(ButtonMask::default());
+    }
+    let s = c.serialize().unwrap();
+    assert_eq!(
+        c.serialize().unwrap(),
+        s,
+        "a second save of the same frame differed"
+    );
+
+    c.unserialize(&s).unwrap();
+    c.run_frame(ButtonMask::default());
+    let expected = c.video_xrgb8888().to_vec();
+    for _ in 0..60 {
+        c.run_frame(ButtonMask::default());
+    }
+
+    let mut padded = s.clone();
+    padded.extend_from_slice(&[0u8; 4096]);
+    c.unserialize(&padded)
+        .expect("mGBA refused a state with zeros after it");
+    c.run_frame(ButtonMask::default());
+    assert_eq!(c.video_xrgb8888(), expected);
+}
+
+fn sram_rom() -> PathBuf {
+    let mut rom = std::fs::read(test_rom()).expect("read test rom");
+    // At the entry point: write 0x55 to cartridge SRAM, then spin. mGBA only learns the
+    // cart has SRAM from that first write, so the state grows after the first frame.
+    const CODE: [u32; 4] = [0xe3a0040e, 0xe3a01055, 0xe5c01000, 0xeafffffe];
+    for (i, w) in CODE.iter().enumerate() {
+        let o = 0xc0 + i * 4;
+        rom[o..o + 4].copy_from_slice(&w.to_le_bytes());
+    }
+    let p = Path::new(env!("CARGO_TARGET_TMPDIR")).join("slot-test-sram.gba");
+    std::fs::write(&p, rom).expect("write sram rom");
+    p
+}
+
+#[test]
+fn an_exact_save_drops_the_padding_a_cached_size_leaves_after_save_ram_appears() {
+    let _g = lock();
+    let Some(mut c) = test_core() else { return };
+    c.load(&sram_rom()).unwrap();
+    let first = c.serialize().expect("the first save");
+    for _ in 0..10 {
+        c.run_frame(ButtonMask::default());
+    }
+    let cached = c.serialize().expect("a save at the cached size");
+    let exact = c.serialize_exact().expect("an exact save");
+    assert_eq!(cached.len(), first.len(), "the cached size was not used");
+    assert!(
+        exact.len() < cached.len(),
+        "the test rom never shrank the state ({} bytes), so this proves nothing",
+        exact.len()
+    );
+    assert_eq!(
+        &cached[..exact.len()],
+        &exact[..],
+        "the cached save is not the exact save plus padding"
+    );
+    assert!(
+        cached[exact.len()..].iter().all(|&b| b == 0),
+        "the padding was not zeros"
+    );
+    assert_eq!(
+        c.serialize().unwrap().len(),
+        exact.len(),
+        "an exact save did not refresh the cached size"
+    );
+    c.unserialize(&exact)
+        .expect("the exact state would not load");
+    c.unserialize(&cached)
+        .expect("the padded state would not load");
+}
+
+#[test]
+fn loading_a_game_forgets_the_cached_state_size() {
+    let _g = lock();
+    let Some(mut c) = test_core() else { return };
+    c.load(&sram_rom()).unwrap();
+    let before = c.serialize().unwrap();
+    c.load(&sram_rom()).unwrap();
+    for _ in 0..10 {
+        c.run_frame(ButtonMask::default());
+    }
+    let after = c.serialize().unwrap();
+    assert!(
+        after.len() < before.len(),
+        "the reloaded game reused the old cached size ({} vs {})",
+        after.len(),
+        before.len()
+    );
+    assert_eq!(after, c.serialize_exact().unwrap());
+}

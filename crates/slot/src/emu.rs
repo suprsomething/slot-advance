@@ -556,7 +556,7 @@ impl Worker {
                             c.accept(&buf);
                         }
                         if let Some(state) = c.take_state() {
-                            let own = core.serialize().unwrap_or_default();
+                            let own = core.serialize_exact().unwrap_or_default();
                             if !link_state::same_bios(&state, &own) {
                                 eprintln!("slot: cable: the host runs another GBA BIOS");
                                 self.shared.bios_mismatch.store(true, Ordering::Relaxed);
@@ -852,7 +852,7 @@ impl Worker {
         link: &Link,
     ) {
         match cmd {
-            Cmd::Save(reply) => match core.serialize() {
+            Cmd::Save(reply) => match core.serialize_exact() {
                 Ok(state) => {
                     let _ = reply.send(self.for_card(state));
                 }
@@ -885,7 +885,7 @@ impl Worker {
                 let mut c = Cable::new(player);
                 let mut wire = t;
                 if player == 0 {
-                    match core.serialize() {
+                    match core.serialize_exact() {
                         Ok(state) => {
                             eprintln!("slot: cable: sending {} bytes of state", state.len());
                             for p in cable::state_packets(&state) {

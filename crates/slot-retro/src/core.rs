@@ -86,6 +86,12 @@ pub trait RetroCore: Send {
     fn video_xrgb8888(&self) -> &[u8];
     fn take_audio(&mut self) -> Vec<i16>;
     fn serialize(&mut self) -> Result<Vec<u8>, CoreError>;
+    /// A state of exactly the size the core reports now, for anything written to the card
+    /// or sent to a peer. `serialize` may reuse an earlier size and pad the state with
+    /// zeros, which is fine for rewind but not worth keeping on the card.
+    fn serialize_exact(&mut self) -> Result<Vec<u8>, CoreError> {
+        self.serialize()
+    }
     fn unserialize(&mut self, data: &[u8]) -> Result<(), CoreError>;
     fn save_ram(&self) -> Option<Vec<u8>>;
     fn load_save_ram(&mut self, data: &[u8]) -> Result<(), CoreError>;
