@@ -5,7 +5,7 @@ slot.advance 0.4.0 for the Anbernic RG SP (2026) (720 x 480). It is not for the 
 ### New in 0.4.0
 - **Real hardware sleep.** Closing the lid saves the game, then suspends the RG SP (2026) to RAM. Opening the lid carries on from the same moment, with nothing reloaded.
 - **Settings > Sleep:** `3 min`, `15 min`, `30 min` (default), `1 hr`, `2 hr`, `8 hr`. When the time runs out with the lid shut, it shuts down cleanly and the next power-on restores the game.
-- **Battery:** six unused USB host controllers and Wi-Fi are switched off. Link play needs `wifi=on` in `Config/slot.state`. Lid-closed standby current fell by about 72% (about 250 mA to about 70 mA). An 8-hour overnight sleep on 0.4.0-beta.3 went from 98% to 82%, about 2% an hour. [How it was measured](https://github.com/suprsomething/slot.advance/blob/main/documentation/sleep-and-battery.md).
+- **Battery:** six unused USB host controllers and Wi-Fi are switched off. Link play needs `wifi=on` in `Config/slot.state`. Lid-closed standby current fell by about 72% (about 250 mA to about 70 mA). Asleep, the battery gauge showed about 2 to 2.6% an hour over two overnight sleeps: 98% to 82% in 8 hours on 0.4.0-beta.3, and 94% to 74% in 7 hours 46 minutes on 0.4.0. [How it was measured](https://github.com/suprsomething/slot.advance/blob/main/documentation/sleep-and-battery.md).
 - **Optional game titles:** Settings > Screen > Show Game Titles (off by default).
 - **About screen** with the version, the number of games, free space on the games card, the battery, slotadvance.com and the credits.
 - A game that could not be saved when the lid closed is never shut down by the sleep timer.
@@ -13,7 +13,7 @@ slot.advance 0.4.0 for the Anbernic RG SP (2026) (720 x 480). It is not for the 
 - Striped slot.advance boot logo, and the build's version and commit written as the first line of `slot.log`.
 
 ### Known limitation
-Flicking the lid very quickly can occasionally leave the screen dark with the lid open. Closing and opening the lid again brings the game straight back, and nothing is lost.
+Rapidly flicking the lid closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress.
 
 If anything goes wrong, copy `slot.log` and `slot.log.1` from the games card before powering on again, and [open a bug report](https://github.com/suprsomething/slot.advance/issues/new/choose) with both files attached.
 

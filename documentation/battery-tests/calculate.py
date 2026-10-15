@@ -90,29 +90,52 @@ S = 70.0
 print(f"  figure used: ~{S:.0f} mA (raw {seg3[0]:.1f}; corrected {min(seg3[1].values()):.1f} to {max(seg3[1].values()):.1f})")
 
 print("=" * 72)
-print("Overnight sleep: 8 hours asleep on 0.4.0-beta.3 (same sleep configuration as 0.4.0)")
-# Read by the tester from the battery percentage before and after; no log file.
-start, end, hours = 98, 82, 8
-drop = start - end
-lo_drop, hi_drop = drop - 1, drop + 1   # each whole-percent reading hides up to 1 point
-print(f"  battery {start}% -> {end}% over {hours} h: {drop} points, {drop / hours:.1f} %/h observed")
-print(f"  whole-percent readings: anything from {lo_drop / hours:.3f} to {hi_drop / hours:.3f} %/h is consistent")
-HIGH_STEP_MAH = 26.3   # Experiment 5, segment 1: the implied step above about 80%
-print(f"  at 35 mAh per percent: {drop * STEP_MAH / hours:.0f} mA "
-      f"({lo_drop * STEP_MAH / hours:.1f} to {hi_drop * STEP_MAH / hours:.1f} mA)")
-print(f"  at {HIGH_STEP_MAH} mAh per percent (the run was entirely above 80%): {drop * HIGH_STEP_MAH / hours:.0f} mA "
-      f"({lo_drop * HIGH_STEP_MAH / hours:.1f} to {hi_drop * HIGH_STEP_MAH / hours:.1f} mA)")
-print("  so about 50 to 74 mA: consistent with segment 3's ~70 mA, or a little lower")
+# The same sleep configuration (lid wake armed, USB and Wi-Fi off) measured over two nights.
+NIGHTS = [
+    # name, start %, end %, hours asleep, how the end reading was taken
+    ("0.4.0-beta.3, 8 hours (tester's notes; no log)", 98, 82, 8.0,
+     "read the next morning, after the 8-hour timer had shut the device down"),
+    ("0.4.0, night A (overnight-0.4.0-night-a.txt)", 94, 74, 27987 / 3600,
+     "read by the watcher straight after a lid wake at 7 h 46 min"),
+]
+print("Overnight sleeps on 0.4.0's sleep configuration")
+rates = []
+for name, a0, a1, h, how in NIGHTS:
+    d = a0 - a1
+    rates.append(d / h)
+    print(f"  {name}")
+    print(f"     {a0}% -> {a1}% over {h:.2f} h: {d} points, {d / h:.2f} %/h observed "
+          f"(whole-percent readings: {(d - 1) / h:.2f} to {(d + 1) / h:.2f} %/h)")
+    print(f"     end reading {how}")
+print(f"  observed range: {min(rates):.1f} to {max(rates):.1f} %/h")
+
+# Converting either night to a current needs the size of each 1% step, and that is only
+# measured below about 84%: Experiment 5's awake ticks give 26.3 mAh at 83%, 31 at 78%,
+# 36 at 73% and 36 at 69%, each assuming about 250 mA awake. Nothing measures 85% to 100%.
+# Applying 26.3 mAh to every step above 80% and 35 below, as an illustration only:
+HIGH_STEP_MAH = 26.3
+def mah(a0, a1):
+    hi = max(0, a0 - max(a1, 80))
+    lo = max(0, min(a0, 80) - a1)
+    return hi * HIGH_STEP_MAH + lo * STEP_MAH
+print("  illustration only, with 26.3 mAh per step above 80% and 35 below:")
+for name, a0, a1, h, how in NIGHTS:
+    print(f"     {name.split(',')[0]}: {mah(a0, a1):.0f} mAh, {mah(a0, a1) / h:.0f} mA")
+print("  These two do not agree, and the evidence cannot say why: the step sizes above 85%")
+print("  are unmeasured, the end readings were taken differently, and in the 22 minutes")
+print("  before night A, awake, the gauge fell from 99% to 94%: about 20 mAh a step at")
+print("  250 to 300 mA awake, if the gauge is right, which would suggest small steps near full.")
+print("  Neither night is used as a current. The current figure stays Experiment 5's,")
+print("  measured where the steps are known.")
 
 print("=" * 72)
 print("Comparisons and projections")
 print(f"  reduction: (250 - 70) / 250 = {(B - S) / B:.0%}")
 for s in (min(seg3[1].values()), max(seg3[1].values())):
     print(f"    with {s:.1f} mA instead of 70 (segment 3's corrected range): {(B - s) / B:.0%}")
-rate = S / STEP_MAH
-print(f"  0.4.0 rate: 70 mA / 35 mAh per percent = {rate:.1f} %/h")
-band = 1 / drop
-print(f"  range on the projection chart, from the overnight sleep's whole-percent readings (percent per hour, independent of step size): +/-{band:.1%} = "
-      f"{rate * (1 - band):.2f} to {rate * (1 + band):.2f} %/h")
-for h in (0.5, 1, 2, 4, 8):
-    print(f"    {h:>4} h asleep: ~{rate * h:.0f}%  ({rate * (1 - band) * h:.1f} to {rate * (1 + band) * h:.1f}%)")
+print(f"  0.4.0 at Experiment 5's ~70 mA, where one step is ~35 mAh: {S / STEP_MAH:.1f} %/h")
+LO_RATE, HI_RATE = 2.0, 2.6   # the two overnight sleeps, rounded
+print(f"  shown on the battery gauge over two overnight sleeps: {LO_RATE} to {HI_RATE} %/h")
+print("  projected battery used, if asleep the whole time (the 8-hour row is measured):")
+for h in (0.25, 0.5, 1, 2, 4, 8):
+    print(f"    {h:>5} h asleep: {LO_RATE * h:.1f} to {HI_RATE * h:.1f}%")
