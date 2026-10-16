@@ -47,3 +47,42 @@ fn a_crash_says_where_it_happened_and_still_dies_by_its_signal() {
         out.status
     );
 }
+
+#[test]
+fn a_crash_signal_sent_from_outside_is_reported_and_still_kills() {
+    if std::env::var_os(CHILD).is_some() {
+        slot::crash::install();
+        let me = std::process::id().to_string();
+        std::thread::Builder::new()
+            .name("slot-kit".into())
+            .spawn(move || {
+                Command::new("kill").args(["-SEGV", &me]).status().unwrap();
+                std::thread::sleep(std::time::Duration::from_secs(10));
+            })
+            .unwrap()
+            .join()
+            .ok();
+        return;
+    }
+    let out = Command::new(std::env::current_exe().unwrap())
+        .args([
+            "a_crash_signal_sent_from_outside_is_reported_and_still_kills",
+            "--exact",
+            "--nocapture",
+        ])
+        .env(CHILD, "1")
+        .output()
+        .unwrap();
+    let log = String::from_utf8_lossy(&out.stderr);
+    let line = log
+        .lines()
+        .find(|l| l.starts_with("slot: crash: SIGSEGV"))
+        .unwrap_or_else(|| panic!("no crash line in the log:\n{log}"));
+    assert!(line.contains(" pc "), "{line}");
+    assert_eq!(
+        out.status.signal(),
+        Some(11),
+        "a crash sent by kill -SEGV (as the device crash test does) did not end the process by SIGSEGV: {:?}",
+        out.status
+    );
+}
