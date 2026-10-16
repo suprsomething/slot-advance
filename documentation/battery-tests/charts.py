@@ -134,7 +134,7 @@ def current():
     body.append(text(570, 362, "than software standby", 15, INK2, anchor="middle"))
     body.append(notes(458, [
         "Whiskers: the battery gauge's resolution over each run. 0.4.0's current is from a",
-        "1.5-hour run below 80% charge, where the gauge's step size was measured. The two",
+        "1.5-hour run below 80% charge, where the gauge's step size was estimated. The two",
         "overnight sleeps started above 80%, where it is not, so they give no current.",
     ]))
     return card(566, "\n".join(body),

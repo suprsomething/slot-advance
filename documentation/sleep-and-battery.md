@@ -26,10 +26,10 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 | 0.4.0, USB and Wi-Fi off | Not converted (above 80%; see below) | 94% to 74% in 7 h 46 min (~2.6% an hour) | Overnight sleep, night A log |
 | 0.4.0 configuration, reproduced | ~70 mA (70 to 75) | 77% to 74% in 1.5 hours (~2% an hour) | Experiment 5, segment 3 |
 
-- All currents are **estimates calculated from the battery gauge**, not measured with electrical test equipment.
-- **About 72% less** standby current: (250 - 70) / 250, using Experiment 5's 70 mA, measured below 80%, where the gauge's step sizes are known. Its range of 70 to 75 mA gives 70% to 72%.
+- All currents are **estimates calculated from the battery gauge**, not measured with electrical test equipment. They rely on the battery's nominal 3,500 mAh capacity and on assumptions about the gauge's calibration. The ranges shown reflect each test's method, not every possible systematic calibration error. No independent current measurement was made.
+- **About 72% less** standby current: (250 - 70) / 250, using Experiment 5's 70 mA, measured below 80%, where the gauge's step sizes were estimated. Its range of 70 to 75 mA gives 70% to 72%.
 - **About 2 to 2.6% an hour on the battery gauge**, from two overnight sleeps with 0.4.0's sleep configuration: 0.4.0-beta.3 went from 98% to 82% in 8 hours (~2% an hour), and 0.4.0 from 94% to 74% in 7 hours 46 minutes (~2.6% an hour). The range is reported as observed rather than averaged.
-- **The overnight sleeps are not converted to a current.** Both ran above 80%, where the gauge's 1% steps are smaller than 35 mAh and, above about 85%, unmeasured. Converted with the one step size known up there, the two nights would give about 53 and 74 mA, which do not agree; see [the overnight sleeps](#methodology-and-uncertainty). The current figures stay with the runs where the step size is known.
+- **The overnight sleeps are not converted to a current.** Both ran above 80%, where the gauge's 1% steps are smaller than 35 mAh and, above about 85%, unmeasured. Converted with the one step size estimated up there, the two nights would give about 53 and 74 mA, which do not agree; see [the overnight sleeps](#methodology-and-uncertainty). The current figures stay with the runs where the step size was estimated.
 - **Ordinary 0.3.0 shuts down 3 minutes after the lid closes.** Its hourly figure describes a test build deliberately held in standby. A switched-off device draws only a negligible amount compared with any standby, so 0.4.0's benefit is staying asleep efficiently for hours with instant lid wake, not lower consumption than switching off.
 - No change to battery use **during gameplay** has been measured, and none is claimed.
 
@@ -149,12 +149,12 @@ The range shown on this page, 2 to 2.6% an hour, is these two observations. It r
 
 **Why a percentage drop isn't a current at high charge.** The gauge reports whole percent, and its steps are not all 35 mAh. Experiment 5's awake ticks, at about 250 mA, put one step at about **26 mAh at 83%**, **31 at 78%**, **36 at 73%** and **36 at 69%**. Above about 85% no step has been measured. Both overnight sleeps started there.
 
-**The two nights don't confirm the same current.** Applying the one known high-charge step (26.3 mAh above 80%, 35 below) as an illustration gives about **53 mA** for beta.3 and **74 mA** for night A. These don't agree, and the evidence can't say why. Three things differ and none can be ruled out:
+**The two nights don't confirm the same current.** Applying the one estimated high-charge step (26.3 mAh above 80%, 35 below) as an illustration gives about **53 mA** for beta.3 and **74 mA** for night A. These don't agree, and the evidence can't say why. Three things differ and none can be ruled out:
 - the step sizes above 85% are unknown;
 - the end readings were taken differently (after a timer shutdown and a power-on, against straight after a wake);
 - before night A, the gauge fell from 99% to 94% in 22 minutes awake, which at 250 to 300 mA would be only about 20 mAh a step if the gauge is right.
 
-So neither overnight sleep is converted to a current. The current-draw chart and the 72% reduction keep Experiment 5's ~70 mA, measured below 80% where the step sizes are known. Both nights are reported as the percentages the gauge showed, because that is what a player sees. `calculate.py` prints the full working.
+So neither overnight sleep is converted to a current. The current-draw chart and the 72% reduction keep Experiment 5's ~70 mA, measured below 80% where the step sizes were estimated. Both nights are reported as the percentages the gauge showed, because that is what a player sees. `calculate.py` prints the full working.
 
 ---
 

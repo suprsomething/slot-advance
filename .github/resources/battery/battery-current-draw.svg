@@ -27,7 +27,7 @@
 <text x="570" y="336" font-size="30" fill="#EEECF4" font-weight="750" text-anchor="middle">~72% less</text>
 <text x="570" y="362" font-size="15" fill="#C2BFD0" font-weight="400" text-anchor="middle">than software standby</text>
 <text x="32" y="458" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">Whiskers: the battery gauge's resolution over each run. 0.4.0's current is from a</text>
-<text x="32" y="482" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">1.5-hour run below 80% charge, where the gauge's step size was measured. The two</text>
+<text x="32" y="482" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">1.5-hour run below 80% charge, where the gauge's step size was estimated. The two</text>
 <text x="32" y="506" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">overnight sleeps started above 80%, where it is not, so they give no current.</text>
 </g>
 </svg>

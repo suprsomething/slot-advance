@@ -126,7 +126,7 @@ print("  are unmeasured, the end readings were taken differently, and in the 22 
 print("  before night A, awake, the gauge fell from 99% to 94%: about 20 mAh a step at")
 print("  250 to 300 mA awake, if the gauge is right, which would suggest small steps near full.")
 print("  Neither night is used as a current. The current figure stays Experiment 5's,")
-print("  measured where the steps are known.")
+print("  measured where the step sizes were estimated.")
 
 print("=" * 72)
 print("Comparisons and projections")
