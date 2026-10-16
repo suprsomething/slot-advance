@@ -26,13 +26,14 @@ def num(pattern, text, group=1, cast=float):
 
 
 print("=" * 72)
-print("Test B: 0.3.0 software standby, test build held awake (lid closed, 2 h)")
+print("Test B: 0.3.0 (semi-stock) software standby, modified build held awake (lid closed, 2 h)")
 b = read("test-b-software-standby.txt")
 interval = num(r"Whole test interval \(uptime\): ([\d.]+) s", b)
 p0, p1 = (int(x) for x in re.search(r"capacity: (\d+)% -> (\d+)%", b).groups())
 end_ma = (p0 - p1) * STEP_MAH / (interval / 3600)
 end_err = STEP_MAH / (interval / 3600)
 print(f"  battery {p0}% -> {p1}% over {interval:.0f} s: {p0 - p1} points, {(p0 - p1) / (interval / 3600):.1f} %/h observed")
+print(f"  whole-percent readings: {(p0 - p1 - 1) / (interval / 3600):.1f} to {(p0 - p1 + 1) / (interval / 3600):.1f} %/h")
 print(f"  from start and end readings: {end_ma:.0f} +/- {end_err:.1f} mA")
 # Tick timing: the minute log shows when each 1% step happened, to within one minute.
 rows = [r.split(", ") for r in re.findall(r"^\d+, [\d.]+, \d+, \d+, \d+, .*$", b, re.M)]

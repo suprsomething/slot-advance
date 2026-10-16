@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="566" viewBox="0 0 720 566" role="img" aria-labelledby="t d">
-<title id="t">Estimated lid-closed current draw: about 250 mA for 0.3.0 software standby, 105 mA for the first suspend-to-RAM test, 70 mA for the 0.4.0 configuration</title>
-<desc id="d">Horizontal bar chart of currents calculated from battery-gauge readings. 0.3.0 software standby, a test build held awake: about 250 mA (248 to 253). First suspend-to-RAM with USB and Wi-Fi on: about 105 mA (87.5 to 122.5). 0.4.0 configuration, from a 1.5-hour run below 80% charge, where the gauge's step size was estimated: about 70 mA (70 to 75). The extended sleeps started above 80% charge, where the gauge's step size is not known, so they are not converted to a current. About 72% less than software standby.</desc>
+<title id="t">Estimated lid-closed current draw: about 250 mA for 0.3.0 (semi-stock) software standby, 105 mA for the first suspend-to-RAM test, 70 mA for the 0.4.0 configuration</title>
+<desc id="d">Horizontal bar chart of currents calculated from battery-gauge readings, one run each. 0.3.0 (semi-stock) software standby, a modified build held awake: about 250 mA, bounded 248 to 253 by when each 1% tick fell. First suspend-to-RAM test with USB and Wi-Fi on: about 105 mA, 87.5 to 122.5 from whole-percent gauge resolution. 0.4.0 configuration, from a 1.5-hour run below 80% charge: about 70 mA, 69.6 to 75.4 from the awake current assumed in the correction method (240 to 260 mA). None of the ranges is a confidence interval. The extended sleeps started above 80% charge, where the gauge's step size is not known, so they are not converted to a current. About 72% less than software standby.</desc>
 <rect x="0.5" y="0.5" width="719" height="565" rx="14" fill="#17161D" stroke="#2E2C38"/>
 <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
 <text x="32" y="50" font-size="24" fill="#EEECF4" font-weight="650" text-anchor="start">Estimated lid-closed current draw</text>
@@ -11,11 +11,11 @@
 <text x="234.85714285714283" y="424" font-size="14" fill="#A3A0B3" font-weight="400" text-anchor="middle">100 mA</text>
 <line x1="437.7" y1="104" x2="437.7" y2="400" stroke="#2E2C38" stroke-width="1"/>
 <text x="437.71428571428567" y="424" font-size="14" fill="#A3A0B3" font-weight="400" text-anchor="middle">200 mA</text>
-<text x="32" y="132" font-size="18" fill="#EEECF4" font-weight="600">0.3.0 software standby<tspan dx="10" font-size="15" font-weight="400" fill="#A3A0B3">test build held awake</tspan></text>
+<text x="32" y="132" font-size="18" fill="#EEECF4" font-weight="600">0.3.0 (semi-stock)<tspan dx="10" font-size="15" font-weight="400" fill="#A3A0B3">software standby, held awake</tspan></text>
 <rect x="32" y="146" width="507.1" height="30" rx="4" fill="#5C596C"/>
 <path d="M535.1 161H545.2M535.1 154V168M545.2 154V168" stroke="#C2BFD0" stroke-width="1.5" fill="none" opacity="0.85"/>
 <text x="557.2285714285714" y="167" font-size="18" fill="#EEECF4" font-weight="650" text-anchor="start">~250 mA</text>
-<text x="32" y="228" font-size="18" fill="#EEECF4" font-weight="600">First suspend-to-RAM<tspan dx="10" font-size="15" font-weight="400" fill="#A3A0B3">USB and Wi-Fi on</tspan></text>
+<text x="32" y="228" font-size="18" fill="#EEECF4" font-weight="600">First suspend-to-RAM test<tspan dx="10" font-size="15" font-weight="400" fill="#A3A0B3">USB and Wi-Fi on</tspan></text>
 <rect x="32" y="242" width="213.0" height="30" rx="4" fill="#7A7690"/>
 <path d="M209.5 257H280.5M209.5 250V264M280.5 250V264" stroke="#C2BFD0" stroke-width="1.5" fill="none" opacity="0.85"/>
 <text x="292.5" y="263" font-size="18" fill="#EEECF4" font-weight="650" text-anchor="start">~105 mA</text>
@@ -26,8 +26,9 @@
 <rect x="452" y="290" width="236" height="90" rx="10" fill="#221F33" stroke="#8B7CF6" stroke-width="1.5"/>
 <text x="570" y="336" font-size="30" fill="#EEECF4" font-weight="750" text-anchor="middle">~72% less</text>
 <text x="570" y="362" font-size="15" fill="#C2BFD0" font-weight="400" text-anchor="middle">than software standby</text>
-<text x="32" y="458" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">Whiskers: the battery gauge's resolution over each run. 0.4.0's current is from a</text>
-<text x="32" y="482" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">1.5-hour run below 80% charge, where the gauge's step size was estimated. The</text>
-<text x="32" y="506" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">extended sleeps started above 80%, where it is not, so they give no current.</text>
+<text x="32" y="458" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">Whiskers differ by run, and none is a confidence interval. 0.3.0: when each 1%</text>
+<text x="32" y="482" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">tick fell. First suspend test: whole-percent gauge resolution. 0.4.0 configuration:</text>
+<text x="32" y="506" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">the assumed awake current (240 to 260 mA) in the correction method. One run each.</text>
+<text x="32" y="530" font-size="16" fill="#A3A0B3" font-weight="400" text-anchor="start">Extended sleeps started above 80%, where step sizes are unknown: no current.</text>
 </g>
 </svg>

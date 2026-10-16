@@ -6,9 +6,9 @@
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP (2026).**
 
-**35% faster wake-up. Real hardware sleep.**
+**35% less resume time. Real hardware sleep.**
 
-<sub>With Wi-Fi off, 0.4.1 shows your game's first frame about 0.81 s after the RG SP (2026) starts to resume, compared with 1.25 s in 0.4.0 (medians). Hardware sleep used about 2 to 3.2% of the displayed battery per hour across three extended tests, with readings varying by charge level, and about 72% less estimated standby current than continuous software standby. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
+<sub>With Wi-Fi off: a median of 0.81 s in 0.4.1 against 1.25 s in 0.4.0, from the kernel's first logged resume marker to the game's first rendered frame (not counting the unlogged moment the lid starts to open, and not the kernel's total device-resume time). Hardware sleep showed about 2 to 3.2% of the battery gauge per hour over three extended sleeps on 0.4.x, against about 7% for 0.3.0 (semi-stock) software standby. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
 
 <a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot.advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License: GPL-3.0"></a>
 <a href="https://github.com/BrandonKowalski/slot"><img src="https://img.shields.io/badge/Based_on-slot-4d4d57?style=for-the-badge&labelColor=242429" height="32" alt="Based on slot"></a>
@@ -18,7 +18,7 @@
 
 | Release | Version | Description |
 |---|---|---|
-| **Current release** | **[slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)**<br>[`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip) | 35% faster wake-up from sleep with Wi-Fi off. Everything else as in 0.4.0. |
+| **Current release** | **[slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)**<br>[`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip) | 35% less resume time with Wi-Fi off. Everything else as in 0.4.0. |
 | **Previous release** | [slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)<br>[`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip) | Hardware sleep with lid wake, improved standby efficiency, configurable sleep settings, optional game-title display and a new About screen. |
 
 See [Installing and updating](#installing-and-updating) to install or upgrade.
@@ -32,10 +32,10 @@ See [Installing and updating](#installing-and-updating) to install or upgrade.
 
 slot.advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the lid and your game waits in memory, drawing a fraction of the power of the old standby. Open it, and you carry on from the same moment.
 
-- **35% faster wake-up.** With Wi-Fi off, the game's first frame appears about 0.81 s after resume starts, down from 1.25 s. See [Faster wake-up](#faster-wake-up). *(0.4.1)*
+- **35% less resume time.** With Wi-Fi off, the game's first frame appears a median of 0.81 s after the kernel's first resume marker, down from 1.25 s. See [Faster wake-up](#faster-wake-up). *(0.4.1)*
 - **Real hardware sleep** with automatic **lid wake**. The running game stays in RAM, and nothing is reloaded. *(0.4.0)*
 - **Six sleep durations**, from 3 minutes to 8 hours, then a **clean automatic shutdown**. The game is restored at the next power-on. *(0.4.0)*
-- **About 2 to 3.2% of the battery per hour** while asleep, observed across three extended sleeps on 0.4.0 and 0.4.1, against about 7% for software standby held awake. *(0.4.0)*
+- **About 2 to 3.2% of the battery per hour** while asleep, observed over three extended sleeps on 0.4.x, against about 7% for 0.3.0 (semi-stock) software standby. *(0.4.0)*
 - **Optional game titles** above the selected cartridge. *(0.4.0)*
 - **An About screen** with the version, the number of games, free space on the games card and the battery. *(0.4.0)*
 - **All, Recents and Favourites** categories, **five save states** per game with an Up / Down switcher, **per-game settings**, and a carousel that reopens on the last game played.
@@ -89,14 +89,14 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 # Faster wake-up
 
 <p align="center">
-<img src=".github/resources/wake/wake-first-frame.svg" width="100%" alt="Waking from sleep with Wi-Fi off, median time from the start of resume to the game's first frame: 1.25 s on 0.4.0 (10 wakes, 1236 to 1270 ms) and 0.81 s on 0.4.1 (11 wakes, 803 to 828 ms), 443 ms sooner, 35% less time">
+<img src=".github/resources/wake/wake-first-frame.svg" width="100%" alt="Waking from sleep with Wi-Fi off, median time from the kernel's first logged resume marker to the game's first rendered frame: 1.25 s on 0.4.0 (10 wakes, 1236 to 1270 ms) and 0.81 s on 0.4.1, timed as 0.4.1-beta.1 (11 wakes, 803 to 828 ms), 443 ms sooner, 35% less measured time. With wifi=on both take about 0.82 s">
 </p>
 
-With Wi-Fi off (the default), **0.4.1 shows your game 443 ms sooner after a wake**: a median of **0.81 s** from the start of resume to the first frame, against **1.25 s** in 0.4.0, 35% less time. These are median first-frame times from the device's own kernel log, not total kernel resume times; the moment the lid starts to open isn't logged, so the time before resume starts isn't included.
+With Wi-Fi off (the default), **0.4.1 shows your game 443 ms sooner after a wake**: a median of **0.81 s** against **1.25 s** in 0.4.0, 35% less measured time. The time runs from the kernel's first logged resume marker to the first rendered frame, from the device's own kernel log. It leaves out the unlogged interval between the lid starting to open and that marker, and it isn't the kernel's total device-resume time. The timings were taken on 0.4.1-beta.1, whose runtime source is the same as 0.4.1's apart from the version number.
 
 - **Why 0.4.0 was slower.** Switching Wi-Fi off unloads its driver and cuts power to the radio, but the kernel kept the radio's card registered. On every wake it tried to resume that unpowered card and waited about a second for it to time out.
 - **What 0.4.1 changes.** Once, at start-up, straight after unloading the Wi-Fi driver, slot.advance asks the system to remove that stale card, exactly as BaseOS does before loading the driver. Wakes no longer wait for it.
-- **What it doesn't change.** Sleep itself, the radio's power state and `wifi=on` are as in 0.4.0. With `wifi=on`, wakes take about 0.82 s on both versions, because the driver is still loaded and resumes the radio.
+- **What it doesn't change.** Sleep itself, the radio's power state and `wifi=on` are as in 0.4.0. With `wifi=on`, wakes take about 0.82 s on both versions, because the driver is still loaded and resumes the radio; no improvement is claimed there.
 
 The measurements, the raw logs and the full explanation are in **[Sleep and battery](documentation/sleep-and-battery.md#waking-up-faster-in-041)**.
 
@@ -107,12 +107,11 @@ The measurements, the raw logs and the full explanation are in **[Sleep and batt
 ### Battery used with the lid closed
 
 <p align="center">
-<img src=".github/resources/battery/battery-drain-hourly.svg" width="100%" alt="Battery used per hour with the lid closed, as 1% blocks from observed battery-gauge drops: about 7% for 0.3.0 software standby held awake by a test build (61% to 47% in 2 hours), about 3% for the first suspend-to-RAM test (68% to 62% in 2 hours), and about 2 to 3.2% for 0.4.0 and 0.4.1 from three extended sleeps (98% to 82% in 8 hours on 0.4.0-beta.3, 94% to 74% in 7 hours 46 minutes on 0.4.0, 99% to 75% in 7 hours 37 minutes on 0.4.1-beta.1)">
+<img src=".github/resources/battery/battery-drain-hourly.svg" width="100%" alt="Battery used per hour with the lid closed, as 1% blocks from observed battery-gauge drops: about 7% for 0.3.0 (semi-stock) software standby, a modified test build held in standby (61% to 47% in 2 hours), and about 2 to 3.2% for 0.4.x hardware sleep from three extended sleeps (98% to 82% in 8 hours on 0.4.0-beta.3, 94% to 74% in 7 hours 46 minutes on 0.4.0, 99% to 75% in 7 hours 37 minutes on 0.4.1-beta.1)">
 </p>
 
-- **Read from the battery gauge** in whole 1% steps. The estimated current fell from about **250 mA** to about **70 mA**, around **72% less**.
-- **0.3.0 software standby, test build held awake.** Ordinary 0.3.0 shuts down 3 minutes after the lid closes. Its hourly figure comes from a test build deliberately held in standby.
-- **The 2 to 3.2% range** is what the battery gauge showed over three extended sleeps. It is not a guaranteed or statistically established range.
+- **0.3.0 (semi-stock)** is slot.advance's last release before hardware sleep. It still used software standby, with the CPU and display powered, though it already improved on upstream slot's (it stops drawing once the screen is dark). Ordinary 0.3.0 shuts down 3 minutes after the lid closes; its ~7% comes from a modified test build held in standby for 2 hours.
+- **0.4.x: about 2 to 3.2% an hour**, what the battery gauge showed over three extended sleeps on 0.4.0-beta.3, 0.4.0 and 0.4.1-beta.1. These are observed gauge readings, not a guaranteed range, and not a controlled measurement of how much one release improves on another.
 
   | Version | Asleep | Battery | Observed rate |
   |---|---|---|---|
@@ -120,12 +119,13 @@ The measurements, the raw logs and the full explanation are in **[Sleep and batt
   | 0.4.0 | 7 h 46 min | 94% to 74% (20%) | ~2.6% an hour |
   | 0.4.1-beta.1 | 7 h 37 min | 99% to 75% (24%) | ~3.2% an hour |
 
+- **Estimated current**, worked out from the gauge in separate shorter runs, fell from about **250 mA** to about **70 mA**, around **72% less**. These are estimates, not electrical measurements, and the 72% isn't calculated from the hourly blocks above.
 - **Why the sleeps differ.** The battery gauge counts in whole 1% steps, and its steps are not all the same size: near 83% one step was about 26 mAh, near 70% about 36 mAh, and above 85% it hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a different rate depending on where the charge started. The 70 mA estimate comes from a separate run below 80%, where the step sizes were estimated; the extended sleeps are reported only as the percentages the gauge showed.
 - **0.4.0 and 0.4.1 have not been shown to differ in standby use, or to match.** The 0.4.1 sleep started at 99%, the 0.4.0 one at 94%, and the top of the gauge behaves differently, so the comparison is inconclusive.
 - **The point of hardware sleep isn't to beat switching off.** A switched-off RG SP (2026) draws only a negligible amount compared with any standby. Sleep lets it stay asleep efficiently for hours and wake the moment you open the lid.
 - No change to battery use **during gameplay** has been measured or claimed.
 
-The current-draw chart, the long-sleep projection, the raw logs and the uncertainty calculations are in **[Sleep and battery: how it works and how it was measured](documentation/sleep-and-battery.md)**.
+The run-by-run comparison, the current estimates, the raw logs and the uncertainty calculations are in **[Sleep and battery: how it works and how it was measured](documentation/sleep-and-battery.md)**.
 
 ### Sleep duration
 
@@ -140,7 +140,7 @@ The current-draw chart, the long-sleep projection, the raw logs and the uncertai
 | `2 hr` | 2 hours | ~4 to 6.4% |
 | `8 hr` | 8 hours | ~16 to 26% |
 
-<sub>Mathematical projections at 2 to 3.2% an hour, the range of the three extended sleeps above, not measurements at every duration. The longest sleeps observed were 16% over exactly 8 hours (0.4.0-beta.3), 20% over 7 h 46 min (0.4.0) and 24% over 7 h 37 min (0.4.1-beta.1). Real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
+<sub>Mathematical projections at 2 to 3.2% an hour, the range of the three extended sleeps on 0.4.x above, not measurements at every duration. The longest sleeps observed were 16% over exactly 8 hours (0.4.0-beta.3), 20% over 7 h 46 min (0.4.0) and 24% over 7 h 37 min (0.4.1-beta.1). Real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
 
 ### Waking up: two kinds of resume
 

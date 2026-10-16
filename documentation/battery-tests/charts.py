@@ -17,12 +17,12 @@ GRID = "#2E2C38"
 INK = "#EEECF4"
 INK2 = "#C2BFD0"
 INK3 = "#A3A0B3"
-ACCENT = "#8B7CF6"   # lilac: the 0.4.0 result
+ACCENT = "#8B7CF6"   # lilac: 0.4.x hardware sleep
 CONTEXT = "#5C596C"  # earlier generations
 MID = "#7A7690"
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
 W = 720
-LO_RATE, HI_RATE = 2.0, 3.2   # %/h shown by the gauge over three extended sleeps, 0.4.0 and 0.4.1 (see calculate.py)
+LO_RATE, HI_RATE = 2.0, 3.2   # %/h shown by the gauge over three extended sleeps on 0.4.x (see calculate.py)
 
 
 def esc(s):
@@ -60,17 +60,18 @@ def labelled(x, y, name, note, size=18):
             f'<tspan dx="10" font-size="15" font-weight="400" fill="{INK3}">{esc(note)}</tspan></text>')
 
 
-# ---------------------------------------------------------------- hourly drain (README)
+# ---------------------------------------------------------------- hourly drain (README, website)
+# Two standby architectures only. The first suspend-to-RAM test (Test A, ~3% an hour) and
+# Experiment 5 stay in the technical page and in calculate.py.
 def hourly():
     rows = [
         # name, note, low %/h, high %/h, what was seen, colour
-        ("0.3.0 software standby", "test build held awake", 7, 7, "61% to 47% in 2 hours", CONTEXT),
-        ("First suspend-to-RAM", "development test", 3, 3, "68% to 62% in 2 hours", MID),
-        ("0.4.0 and 0.4.1", "three extended sleeps", LO_RATE, HI_RATE, "16% in 8 h, 20% in 7.8 h, 24% in 7.6 h", ACCENT),
+        ("0.3.0 (semi-stock)", "software standby", 7, 7, "61% to 47% in 2 hours", CONTEXT),
+        ("0.4.x", "hardware sleep", LO_RATE, HI_RATE, "16% in 8 h, 20% in 7.8 h, 24% in 7.6 h", ACCENT),
     ]
     body = [header("Battery used per hour, lid closed",
                    "Each block is 1% of the battery, as shown by the battery gauge")]
-    y = 118
+    y = 124
     cell, gap = 46, 8
     for name, note, lo, hi, seen, col in rows:
         body.append(labelled(32, y + 18, name, note))
@@ -87,31 +88,96 @@ def hourly():
             body.append(f'<rect x="{cx}" y="{y + 32}" width="{cell * part:.1f}" height="34" rx="4" fill="{col}" opacity="0.45"/>')
             i += 1
         label = f"~{lo:g}% an hour" if lo == hi else f"~{lo:g} to {hi:g}% an hour"
-        end = i
-        body.append(text(32 + end * (cell + gap) + 6, y + 57, label, 18, INK, 650))
+        body.append(text(32 + i * (cell + gap) + 6, y + 57, label, 18, INK, 650))
         body.append(text(688, y + 18, seen, 15, INK3, anchor="end"))
-        y += 100
-    body.append(notes(434, [
-        "Observed battery-percentage drops (whole 1% steps). Ordinary 0.3.0 shuts down",
-        "3 minutes after the lid closes; its rate comes from a test build held in standby.",
-        "Extended sleeps: 0.4.0-beta.3 (about 2% an hour), 0.4.0 (2.6%) and 0.4.1-beta.1",
-        "(3.2%, from 99%). The gauge's 1% steps differ in size, so the rate shown depends",
-        "partly on the charge level. These are observations, not a guaranteed range.",
+        y += 112
+    body.append(notes(372, [
+        "0.3.0 (semi-stock): a modified 0.3.0 test build held in software standby for",
+        "2 hours. Ordinary 0.3.0 shuts down 3 minutes after the lid closes.",
+        "0.4.x: three extended sleeps, on 0.4.0-beta.3, 0.4.0 and 0.4.1-beta.1.",
+        "Observed gauge readings in whole 1% steps: not a guaranteed range, and not a",
+        "controlled measurement of the improvement between releases.",
     ]))
-    return card(566, "\n".join(body),
-                "Battery used per hour with the lid closed: about 7% for 0.3.0 software standby, 3% for the first suspend-to-RAM test, 2 to 3.2% for 0.4.0 and 0.4.1",
-                "Blocks of 1 percent, from observed battery-gauge drops. 0.3.0 software standby (a test build held awake; ordinary 0.3.0 shuts down after 3 minutes): "
-                "61% to 47% in 2 hours, about 7% an hour. First suspend-to-RAM test: 68% to 62% in 2 hours, about 3% an hour. "
-                "0.4.0 and 0.4.1, three extended sleeps: 98% to 82% in 8 hours on 0.4.0-beta.3 (about 2% an hour), 94% to 74% in 7 h 46 min on 0.4.0 (about 2.6% an hour) "
-                "and 99% to 75% in 7 h 37 min on 0.4.1-beta.1 (about 3.2% an hour). "
-                "The gauge's 1% steps differ in size, so the rate shown depends partly on the charge level.")
+    return card(500, "\n".join(body),
+                "Battery used per hour with the lid closed: about 7% for 0.3.0 (semi-stock) software standby, about 2 to 3.2% for 0.4.x hardware sleep",
+                "Blocks of 1 percent, from observed battery-gauge drops. 0.3.0 (semi-stock), software standby: a modified 0.3.0 test build held in standby "
+                "went from 61% to 47% in 2 hours, about 7% an hour; ordinary 0.3.0 shuts down 3 minutes after the lid closes. "
+                "0.4.x, hardware sleep: about 2 to 3.2% an hour over three extended sleeps, 98% to 82% in 8 hours on 0.4.0-beta.3, "
+                "94% to 74% in 7 hours 46 minutes on 0.4.0 and 99% to 75% in 7 hours 37 minutes on 0.4.1-beta.1. "
+                "Observed gauge readings, not a guaranteed range or a controlled measurement of the improvement between releases.")
+
+
+# ---------------------------------------------------------------- observed rates (doc)
+# Each point is one run. Whiskers: the rates consistent with whole-percent start and end
+# readings, (drop - 1) to (drop + 1) points over the time asleep (see calculate.py).
+def rates():
+    x0, x1, top = 280, 680, 8
+    def px(r): return x0 + (x1 - x0) * r / top
+    groups = [
+        ("0.3.0 (semi-stock)", "software standby", CONTEXT, [
+            ("Modified build, 2 h (Test B)", 14, 7203),
+        ]),
+        ("0.4.x", "hardware sleep", ACCENT, [
+            ("0.4.0-beta.3, 8 h", 16, 8 * 3600),
+            ("0.4.0, 7 h 46 min", 20, 27987),
+            ("0.4.1-beta.1, 7 h 37 min", 24, 27420),
+        ]),
+    ]
+    body = [header("Battery used per hour asleep, as observed",
+                   "One point per run, read from the battery gauge")]
+    for r in range(0, top + 1, 2):
+        body.append(text(px(r), 360, f"{r}%", 14, INK3, anchor="middle"))
+    body.append(f'<line x1="{x0}" y1="338" x2="{x1}" y2="338" stroke="{GRID}" stroke-width="1"/>')
+    body.append(text((x0 + x1) / 2, 384, "Battery used per hour", 15, INK2, anchor="middle"))
+    y = 118
+    for gname, gnote, col, runs in groups:
+        body.append(labelled(32, y + 18, gname, gnote))
+        if len(runs) > 1:
+            band_top, band_bot = y + 30, y + 30 + 36 * len(runs)
+            body.append(f'<rect x="{px(LO_RATE):.1f}" y="{band_top}" width="{px(HI_RATE) - px(LO_RATE):.1f}" '
+                        f'height="{band_bot - band_top}" rx="4" fill="{col}" opacity="0.16"/>')
+            body.append(text(688, y + 18, f"observed range ~{LO_RATE:g} to {HI_RATE:g}% an hour", 15, INK2, anchor="end"))
+        ry = y + 30
+        # Grid lines only behind the data rows, so they never cross the group labels.
+        for r in range(0, top + 1, 2):
+            body.append(f'<line x1="{px(r):.1f}" y1="{ry}" x2="{px(r):.1f}" y2="{ry + 36 * len(runs)}" stroke="{GRID}" stroke-width="1"/>')
+        for label, drop, secs in runs:
+            h = secs / 3600
+            v, lo, hi = drop / h, (drop - 1) / h, (drop + 1) / h
+            cy = ry + 18
+            body.append(text(48, cy + 5, label, 15, INK2))
+            body.append(f'<path d="M{px(lo):.1f} {cy}H{px(hi):.1f}M{px(lo):.1f} {cy-6}V{cy+6}M{px(hi):.1f} {cy-6}V{cy+6}" '
+                        f'stroke="{INK2}" stroke-width="2" fill="none"/>')
+            body.append(f'<circle cx="{px(v):.1f}" cy="{cy}" r="5" fill="{col}" stroke="{INK}" stroke-width="1.5"/>')
+            if v > top / 2:
+                body.append(text(px(lo) - 10, cy + 5, f"~{v:.1f}% an hour", 15, INK, 600, "end"))
+            else:
+                body.append(text(px(hi) + 10, cy + 5, f"{v:.1f}%", 15, INK, 600))
+            ry += 36
+        y = ry + 24
+    body.append(notes(424, [
+        "Whiskers: the rates consistent with whole-percent start and end readings. Ordinary",
+        "0.3.0 shuts down 3 minutes after the lid closes; its point is a modified build held",
+        "in standby for 2 hours. The 0.4.x points are separate sleeps on different versions,",
+        "started at different charge levels: not one discharge, and not a controlled",
+        "comparison between 0.4.0 and 0.4.1.",
+    ]))
+    return card(560, "\n".join(body),
+                "Battery used per hour asleep, as observed: about 7% for 0.3.0 (semi-stock) software standby, about 2 to 3.2% for 0.4.x hardware sleep",
+                "Dot plot, one point per run, from battery-gauge readings, with whiskers for the rates consistent with whole-percent readings. "
+                "0.3.0 (semi-stock), software standby: a modified build held in standby for 2 hours (Test B), 61% to 47%, 7.0% an hour (6.5 to 7.5); "
+                "ordinary 0.3.0 shuts down 3 minutes after the lid closes. "
+                "0.4.x, hardware sleep, three separate extended sleeps: 0.4.0-beta.3, 98% to 82% in 8 hours, 2.0% an hour (1.9 to 2.1); "
+                "0.4.0, 94% to 74% in 7 hours 46 minutes, 2.6% an hour (2.4 to 2.7); "
+                "0.4.1-beta.1, 99% to 75% in 7 hours 37 minutes, 3.2% an hour (3.0 to 3.3). Observed range about 2 to 3.2% an hour. "
+                "Not one discharge, and not a controlled comparison between 0.4.0 and 0.4.1.")
 
 
 # ---------------------------------------------------------------- current draw (doc)
 def current():
     rows = [
-        ("0.3.0 software standby", "test build held awake", 250, 248, 253, CONTEXT),
-        ("First suspend-to-RAM", "USB and Wi-Fi on", 105, 87.5, 122.5, MID),
+        ("0.3.0 (semi-stock)", "software standby, held awake", 250, 248, 253, CONTEXT),
+        ("First suspend-to-RAM test", "USB and Wi-Fi on", 105, 87.5, 122.5, MID),
         ("0.4.0 configuration", "USB and Wi-Fi off", 70, 69.6, 75.4, ACCENT),
     ]
     x0, x1 = 32, 600
@@ -137,69 +203,18 @@ def current():
     body.append(text(570, 336, "~72% less", 30, INK, 750, "middle"))
     body.append(text(570, 362, "than software standby", 15, INK2, anchor="middle"))
     body.append(notes(458, [
-        "Whiskers: the battery gauge's resolution over each run. 0.4.0's current is from a",
-        "1.5-hour run below 80% charge, where the gauge's step size was estimated. The",
-        "extended sleeps started above 80%, where it is not, so they give no current.",
+        "Whiskers differ by run, and none is a confidence interval. 0.3.0: when each 1%",
+        "tick fell. First suspend test: whole-percent gauge resolution. 0.4.0 configuration:",
+        "the assumed awake current (240 to 260 mA) in the correction method. One run each.",
+        "Extended sleeps started above 80%, where step sizes are unknown: no current.",
     ]))
     return card(566, "\n".join(body),
-                "Estimated lid-closed current draw: about 250 mA for 0.3.0 software standby, 105 mA for the first suspend-to-RAM test, 70 mA for the 0.4.0 configuration",
-                "Horizontal bar chart of currents calculated from battery-gauge readings. 0.3.0 software standby, a test build held awake: about 250 mA (248 to 253). "
-                "First suspend-to-RAM with USB and Wi-Fi on: about 105 mA (87.5 to 122.5). 0.4.0 configuration, from a 1.5-hour run below 80% charge, where the gauge's step size was estimated: "
-                "about 70 mA (70 to 75). The extended sleeps started above 80% charge, where the gauge's step size is not known, so they are not converted to a current. About 72% less than software standby.")
-
-
-# ---------------------------------------------------------------- projection (doc)
-def projection():
-    x0, x1, y0, y1 = 84, 680, 420, 120
-    top = 30
-    def px(h): return x0 + (x1 - x0) * h / 8
-    def py(p): return y0 - (y0 - y1) * p / top
-    body = [header("Battery used while asleep",
-                   "About 2 to 3.2% an hour, as three extended sleeps showed (0.4.0 and 0.4.1)")]
-    for p in range(0, top + 1, 5):
-        body.append(f'<line x1="{x0}" y1="{py(p):.1f}" x2="{x1}" y2="{py(p):.1f}" stroke="{GRID}"/>')
-        body.append(text(x0 - 12, py(p) + 5, f"{p}%", 14, INK3, anchor="end"))
-    for h in range(0, 9):
-        body.append(text(px(h), y0 + 26, f"{h}", 14, INK3, anchor="middle"))
-    body.append(text((x0 + x1) / 2, y0 + 52, "Hours asleep", 15, INK2, anchor="middle"))
-    body.append(text(26, (y0 + y1) / 2, "Battery used", 15, INK2, anchor="middle",
-                     extra=f' transform="rotate(-90 26 {(y0 + y1) / 2})"'))
-    band = f"M{px(0)} {py(0)} L{px(8):.1f} {py(8 * HI_RATE):.1f} L{px(8):.1f} {py(8 * LO_RATE):.1f} Z"
-    body.append(f'<path d="{band}" fill="{ACCENT}" opacity="0.18"/>')
-    for r in (LO_RATE, HI_RATE):
-        body.append(f'<line x1="{px(0)}" y1="{py(0)}" x2="{px(8):.1f}" y2="{py(8 * r):.1f}" '
-                    f'stroke="{ACCENT}" stroke-width="2" stroke-dasharray="8 6"/>')
-    for h in (2, 4):
-        body.append(text(px(h) - 10, py(h * HI_RATE) - 12, f"{h} hr: {h * LO_RATE:g} to {h * HI_RATE:g}%", 15, INK, 600, "end"))
-
-    def observed(h, pct, label, dy=5):
-        cx, cy = px(h), py(pct)
-        w = 7.7 * len(label)
-        body.append(f'<rect x="{cx - 18 - w:.1f}" y="{cy + dy - 16:.1f}" width="{w + 8:.1f}" height="22" rx="4" fill="{BG}" opacity="0.88"/>')
-        body.append(text(cx - 14, cy + dy, label, 15, INK, 600, "end"))
-        body.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="7" fill="{INK}"/>')
-
-    observed(27420 / 3600, 24, "24% in 7.6 hr (0.4.1-beta.1)")
-    observed(27987 / 3600, 20, "20% in 7.8 hr (0.4.0)")
-    observed(8, 16, "16% in 8 hr (0.4.0-beta.3)")
-    body.append(f'<circle cx="{px(1.5):.1f}" cy="{py(3):.1f}" r="7" fill="{INK}"/>')
-    body.append(text(px(1.5) + 14, py(3) + 26, "3% in 1.5 hr (Experiment 5)", 14, INK, 600))
-    lx, ly = 430, 372
-    body.append(f'<rect x="{lx-6}" y="{ly-20}" width="262" height="62" rx="8" fill="{BG}" opacity="0.9"/>')
-    body.append(f'<line x1="{lx}" y1="{ly-6}" x2="{lx+28}" y2="{ly-6}" stroke="{ACCENT}" stroke-width="2" stroke-dasharray="8 6"/>')
-    body.append(text(lx + 38, ly - 1, f"Projected at {LO_RATE:g} and {HI_RATE:g}% an hour", 14, INK2))
-    body.append(f'<circle cx="{lx + 14}" cy="{ly + 14}" r="6" fill="{INK}"/>')
-    body.append(text(lx + 38, ly + 19, "Observed", 14, INK2))
-    body.append(notes(512, [
-        "The three extended sleeps set the range; it is what the gauge showed, not a",
-        "guaranteed range. The gauge's 1% steps differ in size, so the rate depends partly",
-        "on the charge level. Real use also varies with battery age and temperature.",
-    ]))
-    return card(590, "\n".join(body),
-                "Battery used while asleep: about 2 to 3.2% an hour, 16 to 26% over 8 hours, from three extended sleeps on 0.4.0 and 0.4.1",
-                "Two dashed lines rise from 0% at 0 hours to 16% and about 26% at 8 hours, at 2 and 3.2% an hour, with the range between them shaded. "
-                "Four observed points: 16% (98% to 82%) over 8 hours on 0.4.0-beta.3, 20% (94% to 74%) over 7 hours 46 minutes on 0.4.0, "
-                "24% (99% to 75%) over 7 hours 37 minutes on 0.4.1-beta.1, and 3% over 1.5 hours in an earlier experiment.")
+                "Estimated lid-closed current draw: about 250 mA for 0.3.0 (semi-stock) software standby, 105 mA for the first suspend-to-RAM test, 70 mA for the 0.4.0 configuration",
+                "Horizontal bar chart of currents calculated from battery-gauge readings, one run each. 0.3.0 (semi-stock) software standby, a modified build held awake: "
+                "about 250 mA, bounded 248 to 253 by when each 1% tick fell. First suspend-to-RAM test with USB and Wi-Fi on: about 105 mA, 87.5 to 122.5 from whole-percent gauge resolution. "
+                "0.4.0 configuration, from a 1.5-hour run below 80% charge: about 70 mA, 69.6 to 75.4 from the awake current assumed in the correction method (240 to 260 mA). "
+                "None of the ranges is a confidence interval. The extended sleeps started above 80% charge, where the gauge's step size is not known, so they are not converted to a current. "
+                "About 72% less than software standby.")
 
 
 # ---------------------------------------------------------------- wake-up time (README)
@@ -210,7 +225,7 @@ WAKE_040, WAKE_041 = 1251, 808
 def wake():
     rows = [
         ("0.4.0", "10 wakes, 1236 to 1270 ms", WAKE_040, CONTEXT),
-        ("0.4.1", "11 wakes, 803 to 828 ms", WAKE_041, ACCENT),
+        ("0.4.1", "11 wakes on 0.4.1-beta.1, 803 to 828 ms", WAKE_041, ACCENT),
     ]
     x0, x1 = 32, 560
     scale = (x1 - x0) / 1400
@@ -233,15 +248,18 @@ def wake():
     body.append(text(600, 238, f"{100 * saved / WAKE_040:.0f}% less", 28, INK, 750, "middle"))
     body.append(text(600, 264, f"{saved} ms sooner", 15, INK2, anchor="middle"))
     body.append(notes(362, [
-        "Measured on the RG SP (2026) from the kernel's own log. The moment the lid starts",
-        "to open isn't logged, so the time before resume starts isn't included. With",
-        "wifi=on, both versions take about 0.82 s.",
+        "From the kernel's first logged resume marker to the first rendered frame. Excludes",
+        "the unlogged time from the lid starting to open until that marker; not the kernel's",
+        "total device-resume time. 0.4.1 was timed as 0.4.1-beta.1, the same runtime source",
+        "apart from the version. With wifi=on, both take about 0.82 s: no improvement.",
     ]))
-    return card(442, "\n".join(body),
-                f"Waking from sleep with Wi-Fi off: median {WAKE_040 / 1000:.2f} s on 0.4.0 and {WAKE_041 / 1000:.2f} s on 0.4.1, 35% less time",
-                f"Two horizontal bars. Median time from the start of the kernel's resume to the game's first frame, with Wi-Fi off: "
-                f"0.4.0, {WAKE_040} ms over 10 wakes (1236 to 1270); 0.4.1, {WAKE_041} ms over 11 wakes (803 to 828). "
-                f"{saved} ms sooner, 35% less time. The time before resume starts is not logged and not included. With wifi=on, both take about 0.82 s.")
+    return card(466, "\n".join(body),
+                f"Waking from sleep with Wi-Fi off: median {WAKE_040 / 1000:.2f} s on 0.4.0 and {WAKE_041 / 1000:.2f} s on 0.4.1, 35% less measured resume time",
+                f"Two horizontal bars. Median time from the kernel's first logged resume marker to the game's first rendered frame, with Wi-Fi off: "
+                f"0.4.0, {WAKE_040} ms over 10 wakes (1236 to 1270); 0.4.1, timed as 0.4.1-beta.1 (the same runtime source apart from the version), "
+                f"{WAKE_041} ms over 11 wakes (803 to 828). {saved} ms sooner, 35% less measured time. "
+                f"The unlogged time from the lid starting to open until resume starts is not included, and this is not the kernel's total device-resume time. "
+                f"With wifi=on, both take about 0.82 s, and no improvement is claimed.")
 
 
 WAKE_OUT = OUT.parent / "wake"
@@ -249,5 +267,5 @@ WAKE_OUT.mkdir(parents=True, exist_ok=True)
 (WAKE_OUT / "wake-first-frame.svg").write_text(wake())
 (OUT / "battery-drain-hourly.svg").write_text(hourly())
 (OUT / "battery-current-draw.svg").write_text(current())
-(OUT / "battery-drain-projection.svg").write_text(projection())
+(OUT / "battery-rate-comparison.svg").write_text(rates())
 print("wrote", OUT)
