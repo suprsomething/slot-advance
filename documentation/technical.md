@@ -2,7 +2,7 @@
 
 This page describes how the current release, **slot.advance 0.4.1**, puts the RG SP (2026) to sleep, wakes it, shuts it down on a timer and manages hardware it doesn't use. It is written for technically curious players and anyone who wants to work on the code, and it names the source files involved.
 
-It describes **0.4.1 only**. How sleep evolved through 0.3.0 and 0.4.0, the configurations that were tested, the battery and wake-up measurements, and how far they can be trusted are in **[Sleep and battery: how it works and how it was measured](sleep-and-battery.md)**. What the features do and how to use them is in the **[README](../README.md)**.
+It describes **0.4.1 only**. How sleep evolved through 0.3.0 and 0.4.0, the configurations that were tested, the battery and wake-up measurements, and how far they can be trusted are in **[Sleep and battery: how it evolved and how it was measured](sleep-and-battery.md)**. What the features do and how to use them is in the **[README](../README.md)** and the **[User guide](user-guide.md)**.
 
 Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). It does not apply to the RG35XX SP.
 

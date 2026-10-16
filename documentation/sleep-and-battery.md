@@ -1,4 +1,4 @@
-# Sleep and battery: how it works and how it was measured
+# Sleep and battery: how it evolved and how it was measured
 
 This page is the detail behind the sleep, wake-up and battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, why 0.4.1 wakes faster, how the figures were obtained, how far they can be trusted, and what was checked on the device before each release. How the current release works, with the source files involved, is in the [Technical reference](technical.md).
 
