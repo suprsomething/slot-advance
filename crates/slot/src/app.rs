@@ -2211,6 +2211,10 @@ impl App {
         self.game_ready = ready;
     }
 
+    pub fn game_ready(&self) -> bool {
+        self.game_ready
+    }
+
     pub fn game_visible(&self) -> bool {
         self.game_ready && self.screen > 0.0
     }
@@ -2928,6 +2932,10 @@ impl App {
         }) else {
             return;
         };
+        eprintln!(
+            "slot: launch: insert {cart} at {:.1} ms",
+            crate::boot_time::ms()
+        );
         self.play_held = None;
         self.refusal = None;
         self.refused_from = None;
