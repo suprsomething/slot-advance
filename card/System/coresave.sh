@@ -2,6 +2,7 @@
 SD="${AGS_CARD:-/mnt/sdcard}"
 MOUNTPOINT="${AGS_MOUNTPOINT:-mountpoint}"
 DIR="$SD/crash"
+KEEP_LOGS=5
 
 if ! $MOUNTPOINT -q "$SD" 2>/dev/null; then
 	cat > /dev/null
@@ -17,6 +18,11 @@ case "$exe ${cmd% }" in
 */slot|*/slot\ *)
 	cp "/proc/$1/maps" "$DIR/slot.maps" 2>/dev/null
 	cp "$SD/slot.log" "$DIR/slot-$(date '+%F_%H-%M-%S').log" 2>/dev/null
+	set -- "$DIR"/slot-*.log
+	while [ "$#" -gt "$KEEP_LOGS" ]; do
+		rm -f "$1"
+		shift
+	done
 	cat > "$DIR/slot.core.tmp" && mv -f "$DIR/slot.core.tmp" "$DIR/slot.core"
 	;;
 *)
