@@ -212,7 +212,7 @@ wifi=on
 
 ## Versions
 
-This build: **0.4.1**
+This build: **0.4.2-beta.1**
 
 Every release is on the [releases page](https://github.com/suprsomething/slot.advance/releases). What changed in each, and how versions are numbered, is in the [release notes](documentation/release-notes.md). The first line of `slot.log` names the version and Git commit a build came from. [CHANGELOG.md](CHANGELOG.md) is upstream slot's changelog, inherited unchanged.
 
