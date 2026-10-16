@@ -1365,6 +1365,7 @@ fn session_on_a_real_core() -> Option<(Session, TempDir, Millis)> {
             cart: Some("Emerald".into()),
             clock_set: true,
             utc_offset_min: 0,
+            wifi: true,
             ..Default::default()
         },
     )
