@@ -20,6 +20,24 @@ The version and Git commit a build came from are written as the first line of `s
 
 ---
 
+## 0.4.2-beta.1 (candidate, under device validation, not released)
+
+A maintenance release: small fixes taken from upstream slot, each checked against slot.advance and adapted where needed. Nothing in it touches sleep, wake, the lid, the RTC timer, Wi-Fi, USB or power management.
+
+**Fixed**
+- **A new save state could vanish when the clock had gone backwards** (set back in Set Clock, or reset after the battery ran flat). With all five slots full, the new state was saved, "saved" was shown, and the state was deleted straight away to make room. A new state is now always stamped after the newest one, so it lands first in the switcher and the oldest is the one replaced. From upstream slot.
+- **Muted play could drop frames.** After 3 seconds of silence slot lets go of the speaker, and its timing then ran slightly slow, holding the game back. It now keeps time to a deadline. From upstream slot (flo333).
+- **Crashes of slot itself were not being kept.** slot.advance starts slot through the system loader, which the crash helper did not recognise, so a crash left almost nothing to diagnose. Crashes are now kept in `crash/` on the games card with that run's log, and slot writes a line naming where it crashed. See [Crashes](technical.md#crashes). From upstream slot, with a 2-second safety limit and the newest five logs kept.
+- **gpSP could fail to start** if memory near it was crowded at boot. Its code cache is now part of the core itself. From upstream slot.
+
+**Faster**
+- **Rewind does about half the work.** mGBA was asked to build every state twice, and rewind takes one every second frame. The size is now remembered while a game runs (on a computer, 0.73 ms down to 0.39 ms per state). States written to the card still ask afresh, so they are exactly the size mGBA reports, as in 0.4.1. From upstream slot, adapted.
+
+**Diagnostics**
+- `slot.log` records each step of a game launch with its time, and the rom's size. From upstream slot.
+
+---
+
 ## 0.4.1 (current release)
 
 Tag `advance-0.4.1`. Download: `slot.advance-0.4.1-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1). [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.

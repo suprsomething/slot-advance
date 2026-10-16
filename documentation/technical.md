@@ -205,6 +205,17 @@ Sleep and power lines include:
 - `slot: sleep: software standby for this doze: …`
 - `slot: quiet: usb host controllers off: 6 of 6` and `slot: quiet: wifi off (driver unloaded, radio supply off)`
 
+From 0.4.2, each game launch is logged step by step, in milliseconds since slot started: `slot: launch: insert …`, `opening … on mgba`, `resume state read`, `core opened`, `save read`, `slot: emu: loading …, N bytes`, `save ram`, `resume state`, `slot: emu: ready`, and `slot: launch: first frame shown`. Ejecting logs `slot: emu: stopping` and `stopped`, and the speaker coming back after a silence logs `slot: audio reopened`.
+
+### Crashes
+
+If slot itself crashes, two things record it, both on the games card:
+
+- slot writes one line to `slot.log` before it dies: `slot: crash: SIGSEGV in thread slot-emu addr … pc … lr …`, naming the signal, the thread and the code location (`crates/slot/src/crash.rs`). If writing that line takes more than 2 seconds, the process is ended anyway, so a crash can never leave the screen frozen.
+- The kernel then hands the crash to `card/System/coresave.sh`, which adds a line to `crash/cores.log` and keeps `crash/slot.core` and `crash/slot.maps` (replaced at each crash) and a copy of that run's log as `crash/slot-<date>_<time>.log` (the newest five are kept). Crashes of other programs only get the `cores.log` line.
+
+Nothing here runs unless slot is already crashing, so sleep, wake and shutdown are unaffected.
+
 ---
 
 ## Design limitations
@@ -233,3 +244,5 @@ Sleep and power lines include:
 | `crates/slot/src/device_app.rs` | The main loop: arms sleep, starts the quiet job and calls the suspend |
 | `crates/slot-store/src/slot_state.rs` | The settings in `Config/slot.state`, including `sleep_minutes` and `wifi` |
 | `card/System/launch_frontend.sh` | Starts slot and keeps the previous `slot.log` as `slot.log.1` |
+| `crates/slot/src/crash.rs` | Writes the `slot: crash:` line when slot crashes |
+| `card/System/coresave.sh` | Keeps slot's crash core, memory map and log in `crash/` on the games card |
