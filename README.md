@@ -317,7 +317,7 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 
 # Versions
 
-This build: **0.4.0**
+This build: **0.4.1-beta.1**
 
 From 0.4.0, slot.advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
 

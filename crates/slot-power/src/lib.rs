@@ -13,7 +13,7 @@ pub use device::{
 pub use lid::{raw_level, LidReading, LidSensor};
 pub use motor::Motor;
 pub use power::Power;
-pub use quiet::{quiet_hardware, Quiet, QuietReport, WifiResult};
+pub use quiet::{quiet_hardware, Quiet, QuietReport, StaleCard, WifiResult};
 pub use sim::SimPlatform;
 pub use sleep::{SleepPaths, Woke};
 
