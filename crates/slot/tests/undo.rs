@@ -30,6 +30,71 @@ fn undoing_a_save_removes_it_and_restores_the_evicted_entry() {
     );
 }
 
+fn future_ring(root: &std::path::Path, count: usize) -> StateRing {
+    let r = StateRing::new(root, Platform::Gba, Core::Mgba, "Emerald");
+    for i in 0..count {
+        r.push(&[i as u8; 64], b"png", &format!("2099-01-01_00-00-{i:02}"))
+            .unwrap();
+    }
+    r
+}
+
+fn stamps(r: &StateRing) -> Vec<String> {
+    r.list().unwrap().into_iter().map(|e| e.stamp).collect()
+}
+
+#[test]
+fn a_save_behind_the_newest_stamp_survives_a_full_ring() {
+    let d = tmp_root_with_carts(&["Emerald"]);
+    let r = future_ring(d.path(), RING_MAX);
+    let mut a = app_playing_in(d.path(), "Emerald");
+    a.apply_at(Action::SaveState, 1_000);
+    let l = stamps(&r);
+    assert_eq!(l.len(), RING_MAX);
+    assert_eq!(
+        l[0],
+        format!("2099-01-01_00-00-{RING_MAX:02}"),
+        "the new save was not stamped after the newest one (it was evicted by its own push)"
+    );
+    assert!(
+        l.iter().all(|s| s != "2099-01-01_00-00-00"),
+        "the oldest entry was kept instead of making room"
+    );
+}
+
+#[test]
+fn a_save_behind_the_newest_stamp_sorts_first_in_a_part_full_ring() {
+    let d = tmp_root_with_carts(&["Emerald"]);
+    let r = future_ring(d.path(), 2);
+    let mut a = app_playing_in(d.path(), "Emerald");
+    a.apply_at(Action::SaveState, 1_000);
+    assert_eq!(
+        stamps(&r),
+        [
+            "2099-01-01_00-00-02",
+            "2099-01-01_00-00-01",
+            "2099-01-01_00-00-00"
+        ],
+        "the new save did not land at the top of the switcher"
+    );
+}
+
+#[test]
+fn undoing_a_save_behind_the_newest_stamp_restores_the_full_ring() {
+    let d = tmp_root_with_carts(&["Emerald"]);
+    let r = future_ring(d.path(), RING_MAX);
+    let before = stamps(&r);
+    let mut a = app_playing_in(d.path(), "Emerald");
+    a.apply_at(Action::SaveState, 1_000);
+    assert_ne!(stamps(&r), before, "the save changed nothing");
+    a.undo(2_000);
+    assert_eq!(stamps(&r), before, "undo did not put the ring back");
+    let (state, _) = r
+        .read("2099-01-01_00-00-00")
+        .expect("the evicted state is back");
+    assert_eq!(state, vec![0u8; 64], "the restored state lost its bytes");
+}
+
 #[test]
 fn undo_expires_after_thirty_seconds() {
     let d = tmp_root_with_carts(&["Emerald"]);
