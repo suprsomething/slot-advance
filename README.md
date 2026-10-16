@@ -232,7 +232,7 @@ Press `MENU` on the carousel.
 
 ### Wi-Fi and link play
 
-From 0.4.0, slot.advance switches Wi-Fi off about 20 seconds after starting, because only link play uses it. It also switches off six USB host controllers the RG SP (2026) has no ports for; the USB-C port has its own controller and still works for charging. BaseOS turns both back on at the next boot.
+From 0.4.0, slot.advance switches Wi-Fi off once the system has been running for at least 20 seconds, because only link play uses it. It also switches off six USB host controllers the RG SP (2026) has no ports for; the USB-C port has its own controller and still works for charging. BaseOS turns both back on at the next boot.
 
 Link play (the link cable and the wireless adapter) runs over Wi-Fi between two devices, so with Wi-Fi off the link shortcut shows **Link Off**. To use link play, add this line to `Config/slot.state` on the games card and restart:
 
