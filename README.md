@@ -6,7 +6,9 @@
 
 **A Game Boy Advance focused build of [slot](https://github.com/BrandonKowalski/slot) for the Anbernic RG SP (2026).**
 
-<sub>Approximately 72% lower estimated standby current than continuous software standby. Two overnight sleeps used about 2 to 2.6% of the battery an hour. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
+**35% faster wake-up. Real hardware sleep.**
+
+<sub>With Wi-Fi off, 0.4.1 shows your game's first frame about 0.81 s after the RG SP (2026) starts to resume, compared with 1.25 s in 0.4.0 (medians). Hardware sleep used about 2 to 3.2% of the displayed battery per hour across three extended tests, with readings varying by charge level, and about 72% less estimated standby current than continuous software standby. <a href="documentation/sleep-and-battery.md">How it was measured</a>.</sub>
 
 <a href="LICENSE"><img src="https://img.shields.io/github/license/suprsomething/slot.advance?style=for-the-badge&labelColor=242429&color=4d4d57" height="32" alt="License: GPL-3.0"></a>
 <a href="https://github.com/BrandonKowalski/slot"><img src="https://img.shields.io/badge/Based_on-slot-4d4d57?style=for-the-badge&labelColor=242429" height="32" alt="Based on slot"></a>
@@ -16,8 +18,8 @@
 
 | Release | Version | Description |
 |---|---|---|
-| **Current release** | **[slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)**<br>[`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip) | Hardware sleep with lid wake, improved standby efficiency, configurable sleep settings, optional game-title display and a new About screen. |
-| **Previous release** | [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3)<br>[`slot-advance-v3-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-v3/slot-advance-v3-rg-sp.zip) | Earlier version without hardware sleep or game-title display. |
+| **Current release** | **[slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)**<br>[`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip) | 35% faster wake-up from sleep with Wi-Fi off. Everything else as in 0.4.0. |
+| **Previous release** | [slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)<br>[`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip) | Hardware sleep with lid wake, improved standby efficiency, configurable sleep settings, optional game-title display and a new About screen. |
 
 See [Installing and updating](#installing-and-updating) to install or upgrade.
 
@@ -30,9 +32,10 @@ See [Installing and updating](#installing-and-updating) to install or upgrade.
 
 slot.advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the lid and your game waits in memory, drawing a fraction of the power of the old standby. Open it, and you carry on from the same moment.
 
+- **35% faster wake-up.** With Wi-Fi off, the game's first frame appears about 0.81 s after resume starts, down from 1.25 s. See [Faster wake-up](#faster-wake-up). *(0.4.1)*
 - **Real hardware sleep** with automatic **lid wake**. The running game stays in RAM, and nothing is reloaded. *(0.4.0)*
 - **Six sleep durations**, from 3 minutes to 8 hours, then a **clean automatic shutdown**. The game is restored at the next power-on. *(0.4.0)*
-- **About 2 to 2.6% of the battery per hour** while asleep in the optimised configuration, against about 7% for software standby held awake. Two overnight sleeps went from 98% to 82% in 8 hours and from 94% to 74% in 7 hours 46 minutes. *(0.4.0)*
+- **About 2 to 3.2% of the battery per hour** while asleep, observed across three extended sleeps on 0.4.0 and 0.4.1, against about 7% for software standby held awake. *(0.4.0)*
 - **Optional game titles** above the selected cartridge. *(0.4.0)*
 - **An About screen** with the version, the number of games, free space on the games card and the battery. *(0.4.0)*
 - **All, Recents and Favourites** categories, **five save states** per game with an Up / Down switcher, **per-game settings**, and a carousel that reopens on the last game played.
@@ -83,19 +86,43 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 
 ---
 
+# Faster wake-up
+
+<p align="center">
+<img src=".github/resources/wake/wake-first-frame.svg" width="100%" alt="Waking from sleep with Wi-Fi off, median time from the start of resume to the game's first frame: 1.25 s on 0.4.0 (10 wakes, 1236 to 1270 ms) and 0.81 s on 0.4.1 (11 wakes, 803 to 828 ms), 443 ms sooner, 35% less time">
+</p>
+
+With Wi-Fi off (the default), **0.4.1 shows your game 443 ms sooner after a wake**: a median of **0.81 s** from the start of resume to the first frame, against **1.25 s** in 0.4.0, 35% less time. These are median first-frame times from the device's own kernel log, not total kernel resume times; the moment the lid starts to open isn't logged, so the time before resume starts isn't included.
+
+- **Why 0.4.0 was slower.** Switching Wi-Fi off unloads its driver and cuts power to the radio, but the kernel kept the radio's card registered. On every wake it tried to resume that unpowered card and waited about a second for it to time out.
+- **What 0.4.1 changes.** Once, at start-up, straight after unloading the Wi-Fi driver, slot.advance asks the system to remove that stale card, exactly as BaseOS does before loading the driver. Wakes no longer wait for it.
+- **What it doesn't change.** Sleep itself, the radio's power state and `wifi=on` are as in 0.4.0. With `wifi=on`, wakes take about 0.82 s on both versions, because the driver is still loaded and resumes the radio.
+
+The measurements, the raw logs and the full explanation are in **[Sleep and battery](documentation/sleep-and-battery.md#waking-up-faster-in-041)**.
+
+---
+
 # Sleep and battery
 
 ### Battery used with the lid closed
 
 <p align="center">
-<img src=".github/resources/battery/battery-drain-hourly.svg" width="100%" alt="Battery used per hour with the lid closed, as 1% blocks from observed battery-gauge drops: about 7% for 0.3.0 software standby held awake by a test build (61% to 47% in 2 hours), about 3% for the first suspend-to-RAM test (68% to 62% in 2 hours), and about 2 to 2.6% for 0.4.0 from two overnight sleeps (98% to 82% in 8 hours on 0.4.0-beta.3, 94% to 74% in 7 hours 46 minutes on 0.4.0)">
+<img src=".github/resources/battery/battery-drain-hourly.svg" width="100%" alt="Battery used per hour with the lid closed, as 1% blocks from observed battery-gauge drops: about 7% for 0.3.0 software standby held awake by a test build (61% to 47% in 2 hours), about 3% for the first suspend-to-RAM test (68% to 62% in 2 hours), and about 2 to 3.2% for 0.4.0 and 0.4.1 from three extended sleeps (98% to 82% in 8 hours on 0.4.0-beta.3, 94% to 74% in 7 hours 46 minutes on 0.4.0, 99% to 75% in 7 hours 37 minutes on 0.4.1-beta.1)">
 </p>
 
 - **Read from the battery gauge** in whole 1% steps. The estimated current fell from about **250 mA** to about **70 mA**, around **72% less**.
 - **0.3.0 software standby, test build held awake.** Ordinary 0.3.0 shuts down 3 minutes after the lid closes. Its hourly figure comes from a test build deliberately held in standby.
-- **The 2 to 2.6% range** comes from two overnight sleeps with the same sleep configuration: **0.4.0-beta.3** went from **98% to 82%** in 8 hours (about 2% an hour), and **0.4.0** went from **94% to 74%** in 7 hours 46 minutes (about 2.6% an hour).
-- **Why two nights differ.** The battery gauge counts in whole 1% steps, and its steps are not all the same size: near 83% one step was about 26 mAh, near 70% about 36 mAh, and above 85% it hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a slightly different rate depending on where the charge started. The 70 mA estimate comes from a separate run below 80%, where the step sizes were estimated; the overnight sleeps are reported only as the percentages the gauge showed.
-- **The point of 0.4.0 isn't to beat switching off.** A switched-off RG SP (2026) draws only a negligible amount compared with any standby. 0.4.0 lets it stay asleep efficiently for hours and wake the moment you open the lid.
+- **The 2 to 3.2% range** is what the battery gauge showed over three extended sleeps. It is not a guaranteed or statistically established range.
+
+  | Version | Asleep | Battery | Observed rate |
+  |---|---|---|---|
+  | 0.4.0-beta.3 | 8 hours | 98% to 82% (16%) | ~2% an hour |
+  | 0.4.0 | 7 h 46 min | 94% to 74% (20%) | ~2.6% an hour |
+  | 0.4.1-beta.1 | 7 h 37 min | 99% to 75% (24%) | ~3.2% an hour |
+
+- **Why the sleeps differ.** The battery gauge counts in whole 1% steps, and its steps are not all the same size: near 83% one step was about 26 mAh, near 70% about 36 mAh, and above 85% it hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a different rate depending on where the charge started. The 70 mA estimate comes from a separate run below 80%, where the step sizes were estimated; the extended sleeps are reported only as the percentages the gauge showed.
+- **0.4.0 and 0.4.1 have not been shown to differ in standby use, or to match.** The 0.4.1 sleep started at 99%, the 0.4.0 one at 94%, and the top of the gauge behaves differently, so the comparison is inconclusive.
+- **The point of hardware sleep isn't to beat switching off.** A switched-off RG SP (2026) draws only a negligible amount compared with any standby. Sleep lets it stay asleep efficiently for hours and wake the moment you open the lid.
 - No change to battery use **during gameplay** has been measured or claimed.
 
 The current-draw chart, the long-sleep projection, the raw logs and the uncertainty calculations are in **[Sleep and battery: how it works and how it was measured](documentation/sleep-and-battery.md)**.
@@ -107,13 +134,13 @@ The current-draw chart, the long-sleep projection, the raw logs and the uncertai
 | Setting | Asleep for up to | Projected battery used, if asleep the whole time |
 |---|---|---|
 | `3 min` | 3 minutes | under 0.2% |
-| `15 min` | 15 minutes | ~0.5 to 0.7% |
-| `30 min` (default) | 30 minutes | ~1 to 1.3% |
-| `1 hr` | 1 hour | ~2 to 2.6% |
-| `2 hr` | 2 hours | ~4 to 5.2% |
-| `8 hr` | 8 hours | ~16 to 21% (observed: 16% over exactly 8 hours on 0.4.0-beta.3; 20% over 7 h 46 min on 0.4.0) |
+| `15 min` | 15 minutes | ~0.5 to 0.8% |
+| `30 min` (default) | 30 minutes | ~1 to 1.6% |
+| `1 hr` | 1 hour | ~2 to 3.2% |
+| `2 hr` | 2 hours | ~4 to 6.4% |
+| `8 hr` | 8 hours | ~16 to 26% |
 
-<sub>Projected at 2 to 2.6% an hour, the range of the two overnight sleeps, which are also listed in the 8-hour row with their actual durations. Real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
+<sub>Mathematical projections at 2 to 3.2% an hour, the range of the three extended sleeps above, not measurements at every duration. The longest sleeps observed were 16% over exactly 8 hours (0.4.0-beta.3), 20% over 7 h 46 min (0.4.0) and 24% over 7 h 37 min (0.4.1-beta.1). Real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
 
 ### Waking up: two kinds of resume
 
@@ -156,15 +183,15 @@ Before sleeping, slot.advance attempts to save your game to its separate suspend
 
 # Installing and updating
 
-The download is **[slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)** ([`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip)). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download is **[slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)** ([`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip)). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
-The previous release, [slot.advance 0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (`slot-advance-v3-rg-sp.zip`), installs the same way and is the way back if you need it.
+The previous release, [slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0) (`slot.advance-0.4.0-rg-sp.zip`), installs the same way and is the way back if you need it. So is [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3), from before hardware sleep.
 
 ### New install
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot.advance-0.4.0-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot.advance-0.4.0-rg-sp`.
+3. Unzip `slot.advance-0.4.1-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot.advance-0.4.1-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
@@ -186,7 +213,7 @@ The slot.advance **boot logo** appears from the second power-on: on the first st
 
 ### Going back
 
-Copy `System/slot` from an earlier download, such as [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
+Copy `System/slot` from an earlier download, such as [0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0) or [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
 
 ---
 
@@ -294,7 +321,7 @@ Shader, colour correction and fast-forward changes made in game are saved **for 
 | `States/GBA/<core>/<game>/` | Up to five save states, named by the time they were saved, plus `resume.state`, the suspend slot used when the lid closes. |
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
-| `slot.log`, `slot.log.1` | What slot.advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.0 (` followed by the commit and build date. |
+| `slot.log`, `slot.log.1` | What slot.advance did this session and the one before, including each sleep and wake. The first line names the exact build, e.g. `slot advance 0.4.1 (` followed by the commit and build date. |
 
 The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on an update leaves them alone.
 
@@ -303,6 +330,7 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 # Known limitations
 
 - **Rapidly flicking the lid** closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress. See [Validation status](documentation/sleep-and-battery.md#validation-status).
+- **The faster wake can occasionally be missed for one session.** If the lid is closed at almost exactly the moment Wi-Fi switches off, about 20 seconds after power-on, the stale Wi-Fi card may not be removed. Sleep and wake still work normally; wakes in that session simply take as long as in 0.4.0, and the next power-on removes it as usual. *(0.4.1)*
 - **Battery figures come from the battery gauge**, which reads in whole 1% steps, with one run per configuration.
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.

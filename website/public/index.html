@@ -145,7 +145,12 @@ section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
   clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
   background: var(--c);
 }
-.blocks i.part { background: linear-gradient(90deg, var(--c) 60%, color-mix(in srgb, var(--c) 25%, transparent) 60%); }
+.blocks i.range { background: color-mix(in srgb, var(--c) 45%, transparent); }
+.blocks i.part { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 45%, transparent) var(--p), color-mix(in srgb, var(--c) 15%, transparent) var(--p)); }
+.wake-row { display: grid; grid-template-columns: 3.2rem 1fr; align-items: center; gap: 0.75rem; text-align: left; }
+.wake-row .row-name { font-family: var(--mono); font-size: 1rem; }
+.wake-bar { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+.wake-bar i { display: block; height: 1.6rem; width: var(--w); background: var(--c); border-radius: 3px; }
 .rate { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .note { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; text-align: center; }
 .note a { text-decoration-color: var(--dim); text-underline-offset: 3px; }
@@ -189,14 +194,26 @@ section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
     </video>
   </div>
 
-  <section>
+  <section class="battery">
     <h2><i class="mark" style="--c:var(--s1)" aria-hidden="true"></i>Open and continue</h2>
     <p>Close the lid and the RG SP genuinely sleeps. Open it and your game carries on from the same moment.</p>
+    <p class="headline"><strong>35% faster wake-up</strong> in 0.4.1, with Wi-Fi off.</p>
+    <div class="chart" role="group" aria-label="Median time from the start of resume to the game's first frame, Wi-Fi off: 1.25 seconds on 0.4.0, 0.81 seconds on 0.4.1">
+      <div class="wake-row">
+        <span class="row-name">0.4.0</span>
+        <span class="wake-bar"><i style="--c:var(--dim); --w:calc((100% - 4rem) * 1)" aria-hidden="true"></i><span class="rate">1.25 s</span></span>
+      </div>
+      <div class="wake-row">
+        <span class="row-name">0.4.1</span>
+        <span class="wake-bar"><i style="--c:var(--s1); --w:calc((100% - 4rem) * 0.646)" aria-hidden="true"></i><span class="rate">0.81 s</span></span>
+      </div>
+      <p class="note">Median time from the start of resume to the game's first frame, with Wi-Fi off, measured from the device's kernel log (10 wakes on 0.4.0, 11 on 0.4.1). 0.4.1 removes a stale Wi-Fi device that every wake used to wait for. With Wi-Fi on, both take about 0.82 s.</p>
+    </div>
   </section>
 
   <section class="battery">
     <h2><i class="mark" style="--c:var(--s2)" aria-hidden="true"></i>Lower standby drain</h2>
-    <p class="headline"><strong>About 2 to 2.6% an hour asleep</strong>, down from about 7%.</p>
+    <p class="headline"><strong>About 2 to 3.2% an hour asleep</strong>, down from about 7%.</p>
     <div class="chart" role="group" aria-label="Battery used per hour with the lid closed">
       <div class="row">
         <div class="row-top">
@@ -220,15 +237,15 @@ section > p { margin: 0 auto; color: var(--muted); max-width: 36rem; }
       </div>
       <div class="row">
         <div class="row-top">
-          <span class="row-name">slot.advance 0.4.0</span>
-          <span class="row-obs">98% → 82% in 8 h · 94% → 74% in 7¾ h</span>
+          <span class="row-name">slot.advance 0.4.0 and 0.4.1</span>
+          <span class="row-obs">16% in 8 h · 20% in 7.8 h · 24% in 7.6 h</span>
         </div>
         <div class="row-bar">
-          <span class="blocks" style="--c:var(--s3)" aria-hidden="true"><i></i><i></i><i class="part"></i></span>
-          <span class="rate">~2 to 2.6% an hour</span>
+          <span class="blocks" style="--c:var(--s3)" aria-hidden="true"><i></i><i></i><i class="range"></i><i class="part" style="--p:20%"></i></span>
+          <span class="rate">~2 to 3.2% an hour</span>
         </div>
       </div>
-      <p class="note">Each block is 1% of the battery per hour, read from the battery gauge. 0.4.0 is two overnight sleeps; the gauge's 1% steps vary in size with the charge level, so the two nights read a little differently.</p>
+      <p class="note">Each block is 1% of the battery per hour, read from the battery gauge. The 0.4.0 and 0.4.1 range is three extended sleeps, observed rather than guaranteed; the gauge's 1% steps vary in size with the charge level, so each sleep reads differently.</p>
       <p class="note"><a href="https://github.com/suprsomething/slot.advance/blob/main/documentation/sleep-and-battery.md">How it was measured</a></p>
     </div>
   </section>

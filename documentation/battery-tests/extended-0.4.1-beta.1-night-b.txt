@@ -1,0 +1,100 @@
+slot.advance 0.4.1-beta.1: extended sleep ("night B", run in the daytime), 16 October 2026 (UTC 15 to 16 October)
+
+Recorded with the read-only validation watcher (v41-watch.sh, from the 0.4.1 validation kit) on
+the 0.4.1-beta.1 candidate (program SHA-256 085e5180...7b26; slot.log: "slot advance
+0.4.1-beta.1 (497c8e5)"). Settings > Sleep at 8 hr, Wi-Fi off. The device was powered on at
+07:50 local time (21:50 UTC), a game was started, and the lid was closed about 50 seconds
+later. It was opened by hand at 15:28 (05:28 UTC), before the 8-hour timer, so the whole run
+was one continuous suspend, ending with a lid wake.
+
+Below this header, everything is unedited device output: the watcher's report, then slot.log
+for the same session. (slot.log.1, an earlier 0.4.0 session, is not part of this test.)
+
+  boot 1  21:50:48 UTC  battery 99%, Discharging
+          last reading before the lid closed (uptime 7.67 s): 99%, 3465 mAh, 4021 mV
+          suspended 27,420 s (7 h 37 min), one wake (the lid, irq 120)
+          first reading after the wake: 75%, 2625 mAh, 3890 mV
+
+This run started at 99%, straight after power-on. Night A (0.4.0) started at 94%, after the
+gauge had fallen from 99% in 22 minutes awake. Because the gauge's 1% steps near full charge
+are unmeasured, the two nights cannot show whether 0.4.0 and 0.4.1 differ in standby use.
+charge_counter is the battery percentage times 35 mAh, so it carries no information beyond
+the percentage. See documentation/sleep-and-battery.md.
+
+======================================================================== v41-watch.txt
+
+===== Boot 1: Thu Oct 15 21:50:48 UTC 2026 (device clock), watcher started at uptime 2.62 s =====
+[     7.62 s] build: slot: slot advance 0.4.1-beta.1 (497c8e5, built 2026-10-14)
+[     7.65 s] settings: sleep_minutes=480 wifi=off 
+[     7.66 s] battery: 99% Discharging, 3465 mAh, 4021 mV
+[ 27475.83 s] wake 1: asleep about 27421 s, wake irq 120, mmc2 -110 this wake: 0
+[ 27476.01 s]   battery before (at 7.67 s): 99% Discharging, 3465 mAh, 4021 mV
+[ 27476.03 s]   battery after: 75% Discharging, 2625 mAh, 3890 mV
+  ---- Start-up window, provisional, after wake 1 (uptime 27479.06 s) ----
+  Kernel events (kernel clock, seconds since boot, not counting sleep; lines before
+  'RTW: module exit start' are BaseOS's own start-up, not slot.advance's shutdown):
+    [    2.187224] misc sunxi-wlan: start scan device on bus_index: 1
+    [    2.210981] mmc2: card 0001 removed
+    [   20.177839] RTW: module exit start
+    [   20.773873] RTW: module exit success
+    [   20.830638] misc sunxi-wlan: start scan device on bus_index: 1
+    [   20.830922] mmc2: card 0001 removed
+    [   53.809273] PM: suspend entry 2026-10-15 21:51:39.580097607 UTC
+    [   56.064782] Restarting tasks ... 
+    [   56.071615] PM: suspend exit 2026-10-16 05:28:41.605684542 UTC
+  Where each suspend fell relative to the Wi-Fi shutdown:
+    Wi-Fi shutdown: unload began 20.178 s, driver gone 20.774 s, stale card removal confirmed by the kernel at 20.831 s
+    suspend 1: entered 53.809 s (+33631 ms from unload start), tasks back 56.065 s: after the shutdown finished
+  This boot's slot.advance quiet and sleep lines (slot.log):
+    slot: slot advance 0.4.1-beta.1 (497c8e5, built 2026-10-14)
+    slot: sleep: ready (lid and rtc1 wake armed)
+    slot: quiet: usb host controllers off: 6 of 6
+    slot: quiet: wifi off (driver unloaded, radio supply off)
+    slot: quiet: stale wifi card mmc2:0001 discarded in 10 ms (resume no longer waits for it)
+    slot: sleep: suspending for up to 28800s (battery 99%)
+    slot: sleep: woke after 27420s asleep (slept true, lid open): Resume
+  Wi-Fi now: driver loaded no, rf-ctrl power_state 0, WLAN rail disabled, SDIO card: none
+  Shutdown verdict: COMPLETE (kernel removal, slot.advance discard line, no SDIO card now)
+
+======================================================================== slot.log (boot 1)
+slot: slot advance 0.4.1-beta.1 (497c8e5, built 2026-10-14)
+slot: boot: start at 0.0 ms
+slot: fb0 hint 720x480
+slot: boot: surface at 868.6 ms
+slot: audio plug:default at 32768 Hz
+slot: boot: compositor at 1690.5 ms
+slot: panel 720x480, canvas 720x480, turned false, ccw false
+slot: backlight dispdbg (0 to 255), battery axp2202-battery, rtc0, motor event1
+slot: sleep: ready (lid and rtc1 wake armed)
+slot: boot: platform at 1703.6 ms
+slot: boot: audio at 1703.6 ms
+slot: boot: root and theme at 1741.1 ms
+slot: boot: scan at 1744.3 ms
+slot: boot: session at 1746.1 ms
+slot: boot: frontend at 1746.7 ms
+slot: boot: paper at 1788.0 ms
+slot: boot: cart faces at 1869.5 ms
+slot: boot: shelf faces at 1883.9 ms
+slot: boot: faces at 1884.1 ms
+slot: boot: bezel at 1884.1 ms
+slot: input /dev/input/event0 (axp2202-pek)
+slot: input /dev/input/event1 (ANBERNIC-keys)
+slot: input /dev/input/event1: poll 20 ms -> 10 ms
+slot: input /dev/input/event2 (dierct-keys-polled)
+slot: input /dev/input/event2: poll 20 ms -> 10 ms
+slot: boot: input at 1885.9 ms
+slot: lid: sensor reads hi with the lid open
+slot: boot: first frame at 1924.5 ms
+slot: boot: ui faces at 1991.9 ms
+slot: quiet: usb host controllers off: 6 of 6
+slot: audio released after silence
+slot: quiet: wifi off (driver unloaded, radio supply off)
+slot: quiet: stale wifi card mmc2:0001 discarded in 10 ms (resume no longer waits for it)
+slot: core /mnt/sdcard/System/mgba_libretro.so
+slot: audio plug:default at 32768 Hz
+slot: sleep: suspending for up to 28800s (battery 99%)
+slot: lid: sensor reads hi with the lid open
+slot: sleep: woke after 27420s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 28800s (battery 75%)
+slot: sleep: woke after 1s asleep (slept true, lid open): Resume
+slot: audio: 0 samples dropped, 3134 starved

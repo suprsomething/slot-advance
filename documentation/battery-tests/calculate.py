@@ -90,7 +90,8 @@ S = 70.0
 print(f"  figure used: ~{S:.0f} mA (raw {seg3[0]:.1f}; corrected {min(seg3[1].values()):.1f} to {max(seg3[1].values()):.1f})")
 
 print("=" * 72)
-# The same sleep configuration (lid wake armed, USB and Wi-Fi off) measured over two nights.
+# Lid wake armed, USB and Wi-Fi off: two nights on 0.4.0, then one long sleep on the 0.4.1
+# candidate, whose only difference is that the stale Wi-Fi card is no longer registered.
 NIGHTS = [
     # name, start %, end %, hours asleep, how the end reading was taken
     ("0.4.0-beta.3, 8 hours (tester's notes; no log)", 98, 82, 8.0,
@@ -98,7 +99,10 @@ NIGHTS = [
     ("0.4.0, night A (overnight-0.4.0-night-a.txt)", 94, 74, 27987 / 3600,
      "read by the watcher straight after a lid wake at 7 h 46 min"),
 ]
-print("Overnight sleeps on 0.4.0's sleep configuration")
+NIGHT_B = ("0.4.1-beta.1, night B (extended-0.4.1-beta.1-night-b.txt)", 99, 75, 27420 / 3600,
+           "read by the watcher straight after a lid wake at 7 h 37 min; started at 99%, "
+           "about a minute after power-on")
+print("Extended sleeps: 0.4.0 (two nights), then 0.4.1-beta.1")
 rates = []
 for name, a0, a1, h, how in NIGHTS:
     d = a0 - a1
@@ -107,7 +111,19 @@ for name, a0, a1, h, how in NIGHTS:
     print(f"     {a0}% -> {a1}% over {h:.2f} h: {d} points, {d / h:.2f} %/h observed "
           f"(whole-percent readings: {(d - 1) / h:.2f} to {(d + 1) / h:.2f} %/h)")
     print(f"     end reading {how}")
-print(f"  observed range: {min(rates):.1f} to {max(rates):.1f} %/h")
+print(f"  0.4.0's observed range (two nights): {min(rates):.1f} to {max(rates):.1f} %/h")
+name, a0, a1, h, how = NIGHT_B
+d = a0 - a1
+print(f"  {name}")
+print(f"     {a0}% -> {a1}% over {h:.2f} h: {d} points, {d / h:.2f} %/h observed "
+      f"(whole-percent readings: {(d - 1) / h:.2f} to {(d + 1) / h:.2f} %/h)")
+print(f"     end reading {how}")
+all_rates = rates + [d / h]
+print(f"  observed range, all three: {min(all_rates):.1f} to {max(all_rates):.1f} %/h")
+print("  Night B started at 99%; night A started at 94% after the gauge fell 5 points in 22")
+print("  minutes awake. The top of the gauge is unmeasured, so the two cannot show whether")
+print("  0.4.0 and 0.4.1 differ in standby use: inconclusive, not a parity or a regression.")
+print("  Night B is not converted to a current.")
 
 # Converting either night to a current needs the size of each 1% step, and that is only
 # measured below about 84%: Experiment 5's awake ticks give 26.3 mAh at 83%, 31 at 78%,
@@ -134,8 +150,8 @@ print(f"  reduction: (250 - 70) / 250 = {(B - S) / B:.0%}")
 for s in (min(seg3[1].values()), max(seg3[1].values())):
     print(f"    with {s:.1f} mA instead of 70 (segment 3's corrected range): {(B - s) / B:.0%}")
 print(f"  0.4.0 at Experiment 5's ~70 mA, where one step is ~35 mAh: {S / STEP_MAH:.1f} %/h")
-LO_RATE, HI_RATE = 2.0, 2.6   # the two overnight sleeps, rounded
-print(f"  shown on the battery gauge over two overnight sleeps: {LO_RATE} to {HI_RATE} %/h")
-print("  projected battery used, if asleep the whole time (the 8-hour row is measured):")
+LO_RATE, HI_RATE = 2.0, 3.2   # the three extended sleeps, rounded
+print(f"  shown on the battery gauge over three extended sleeps: {LO_RATE} to {HI_RATE} %/h")
+print("  projected battery used, if asleep the whole time (projections, not measurements):")
 for h in (0.25, 0.5, 1, 2, 4, 8):
     print(f"    {h:>5} h asleep: {LO_RATE * h:.1f} to {HI_RATE * h:.1f}%")

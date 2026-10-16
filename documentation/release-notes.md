@@ -8,7 +8,27 @@ The release previously named v3 is now displayed as 0.3.0; its contents are unch
 
 ---
 
-## 0.4.0 (current release)
+## 0.4.1 (current release)
+
+Tag `advance-0.4.1`. Download: `slot.advance-0.4.1-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1). [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.
+
+**35% faster wake-up from sleep, with Wi-Fi off.** After a lid wake, the game's first frame now appears a median of 808 ms after the RG SP (2026) starts to resume, against 1,251 ms in 0.4.0: 443 ms sooner, 35% less time. These are median first-frame times from the kernel's own log (11 wakes on 0.4.1-beta.1, 10 on 0.4.0), not total kernel resume times; the moment before resume starts isn't logged or included.
+
+- **Why:** switching Wi-Fi off unloads its driver and cuts power to the radio, but in 0.4.0 the kernel kept the radio's SDIO card registered, and every wake waited about a second for that unpowered card to time out.
+- **The change:** once, at start-up, straight after unloading the Wi-Fi driver, slot.advance removes that stale card, the same way BaseOS discards one before loading the driver. Each outcome is written to `slot.log`. If any safety check fails, nothing is removed and wakes behave as in 0.4.0.
+- **Unchanged:** the suspend itself, the lid and timer wakes, the radio's power state, and `wifi=on`, which keeps the driver loaded (wakes take about 0.82 s on both versions).
+
+**Checked on the device** with 0.4.1-beta.1, which has the same code: V1 first-frame timing (passed), V2 lid closes during the Wi-Fi shutdown (completed, with the start-up race below accepted), V3 the 0.4.0 sleep checklist (completed), and V4 a 7 hour 37 minute sleep (reliability passed: no unexpected wakes, lid wake straight back into the game, radio unpowered, no Wi-Fi resume timeout). See [Validation status](sleep-and-battery.md#validation-status).
+
+**Battery:** whether 0.4.1 uses the same standby battery as 0.4.0 is **inconclusive**. Its extended sleep went from 99% to 75% in 7 hours 37 minutes (about 3.2% an hour), against 94% to 74% in 7 hours 46 minutes on 0.4.0, but the two started at different charge levels and the gauge behaves differently near full. Parity hasn't been shown, and the difference isn't evidence of a regression. Across the three extended sleeps on 0.4.0 and 0.4.1, the gauge showed about 2 to 3.2% an hour.
+
+**Known limitations**
+- **Start-up race:** if the lid is closed at almost exactly the moment Wi-Fi switches off, about 20 seconds after power-on, the stale card may not be removed. Sleep and wake still work normally; that session's wakes simply take as long as in 0.4.0, and the next power-on removes it as usual. `slot.log` reports it as `stale wifi card discard FAILED`.
+- Rapidly flicking the lid closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress.
+
+---
+
+## 0.4.0 (superseded by 0.4.1)
 
 Tag `advance-0.4.0`. Download: `slot.advance-0.4.0-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0). [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.
 

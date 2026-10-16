@@ -1,14 +1,15 @@
 # Sleep and battery: how it works and how it was measured
 
-This page is the detail behind the battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, how the battery figures were obtained, how far they can be trusted, and what was checked on the device before release.
+This page is the detail behind the sleep, wake-up and battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, why 0.4.1 wakes faster, how the figures were obtained, how far they can be trusted, and what was checked on the device before each release.
 
-Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot.advance** versions, not upstream slot's. **0.4.0** (tag `advance-0.4.0`) is the current release, released after the checks under [Validation status](#validation-status). **0.3.0** (tag `advance-v3`) is the previous release.
+Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). Version numbers are **slot.advance** versions, not upstream slot's. **0.4.1** (tag `advance-0.4.1`) is the current release, released after the checks under [Validation status](#validation-status). It is 0.4.0 with one change, described in [Waking up faster in 0.4.1](#waking-up-faster-in-041). **0.4.0** (tag `advance-0.4.0`) introduced hardware sleep; **0.3.0** (tag `advance-v3`) came before it.
 
 ## Contents
 
 - [Summary](#summary)
 - [The evolution of sleep](#the-evolution-of-sleep)
 - [What 0.4.0 does when the lid closes](#what-040-does-when-the-lid-closes)
+- [Waking up faster in 0.4.1](#waking-up-faster-in-041)
 - [Battery results](#battery-results)
 - [Methodology and uncertainty](#methodology-and-uncertainty)
 - [Raw reports and calculations](#raw-reports-and-calculations)
@@ -24,12 +25,14 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 | First suspend-to-RAM, USB and Wi-Fi on | ~105 mA (87.5 to 122.5) | 68% to 62% in 2 hours (~3% an hour) | Test A |
 | 0.4.0-beta.3, USB and Wi-Fi off | Not converted (above 80%; see below) | 98% to 82% in 8 hours (~2% an hour) | Overnight sleep, tester's notes |
 | 0.4.0, USB and Wi-Fi off | Not converted (above 80%; see below) | 94% to 74% in 7 h 46 min (~2.6% an hour) | Overnight sleep, night A log |
+| 0.4.1-beta.1, USB and Wi-Fi off | Not converted (above 80%; see below) | 99% to 75% in 7 h 37 min (~3.2% an hour) | Extended sleep, night B log |
 | 0.4.0 configuration, reproduced | ~70 mA (70 to 75) | 77% to 74% in 1.5 hours (~2% an hour) | Experiment 5, segment 3 |
 
 - All currents are **estimates calculated from the battery gauge**, not measured with electrical test equipment. They rely on the battery's nominal 3,500 mAh capacity and on assumptions about the gauge's calibration. The ranges shown reflect each test's method, not every possible systematic calibration error. No independent current measurement was made.
 - **About 72% less** standby current: (250 - 70) / 250, using Experiment 5's 70 mA, measured below 80%, where the gauge's step sizes were estimated. Its range of 70 to 75 mA gives 70% to 72%.
-- **About 2 to 2.6% an hour on the battery gauge**, from two overnight sleeps with 0.4.0's sleep configuration: 0.4.0-beta.3 went from 98% to 82% in 8 hours (~2% an hour), and 0.4.0 from 94% to 74% in 7 hours 46 minutes (~2.6% an hour). The range is reported as observed rather than averaged.
-- **The overnight sleeps are not converted to a current.** Both ran above 80%, where the gauge's 1% steps are smaller than 35 mAh and, above about 85%, unmeasured. Converted with the one step size estimated up there, the two nights would give about 53 and 74 mA, which do not agree; see [the overnight sleeps](#methodology-and-uncertainty). The current figures stay with the runs where the step size was estimated.
+- **About 2 to 3.2% an hour on the battery gauge, across three extended sleeps.** On 0.4.0, two overnight sleeps showed 2 to 2.6% an hour: 0.4.0-beta.3 went from 98% to 82% in 8 hours (~2% an hour), and 0.4.0 from 94% to 74% in 7 hours 46 minutes (~2.6% an hour). On the 0.4.1 candidate, a third went from 99% to 75% in 7 hours 37 minutes (~3.2% an hour). The range is reported as observed rather than averaged, and is not a guaranteed or statistically established range.
+- **Whether 0.4.0 and 0.4.1 use the same standby battery is inconclusive.** The 0.4.1 sleep started at 99%, straight after power-on; the 0.4.0 one started at 94%, after the gauge had fallen five points in 22 minutes awake. The top of the gauge is unmeasured, so the two readings can't show parity, and the difference isn't evidence of a regression either.
+- **The extended sleeps are not converted to a current.** All three ran above 80%, where the gauge's 1% steps are smaller than 35 mAh and, above about 85%, unmeasured. Converted with the one step size estimated up there, the two 0.4.0 nights would give about 53 and 74 mA, which do not agree; see [the overnight sleeps](#methodology-and-uncertainty). The current figures stay with the runs where the step size was estimated.
 - **Ordinary 0.3.0 shuts down 3 minutes after the lid closes.** Its hourly figure describes a test build deliberately held in standby. A switched-off device draws only a negligible amount compared with any standby, so 0.4.0's benefit is staying asleep efficiently for hours with instant lid wake, not lower consumption than switching off.
 - No change to battery use **during gameplay** has been measured, and none is claimed.
 
@@ -69,6 +72,8 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 
 **Unused hardware** (`crates/slot-power/src/quiet.rs`). At startup, slot.advance switches off the six USB host controllers `ohci1-3` and `ehci1-3` through their sysfs switches. The RG SP (2026)'s USB-C port uses a separate controller (`5100000.udc`, with `ehci0`/`ohci0`) and is not touched. Once BaseOS has finished starting Wi-Fi (uptime 20 s), slot.advance unloads the `8821cs` driver, which cuts the radio's supply rail, unless `wifi=on` is set. Both are logged and optional, hardware sleep never depends on either, and both last only until the next boot. They stay off during gameplay too; no gameplay battery effect has been measured.
 
+**From 0.4.1**, straight after unloading the Wi-Fi driver, slot.advance also removes the radio's stale card from the kernel; see the next section.
+
 **Battery cap.** Sleep is planned to aim to preserve approximately 10% of the battery. It assumes a deliberately pessimistic 100 mA, so the device wakes and shuts down early if the chosen time would go below about 10%. This is a plan based on the gauge, not a guarantee. At 10% or less it sleeps for 3 minutes, as 0.3.0 did. The 5% shutdown from slot still applies.
 
 **Save safety.** A game that could not be written when the lid closed is never shut down by the timer. Instead, the device keeps sleeping and retries the save at each deadline, and only the 5% battery shutdown can end it. This now includes the case where the emulator core fails to provide its state. Before commit `dbbadae`, that case was wrongly reported as saved. A core that is still loading, or failed to start, has no progress to lose and is treated as saved.
@@ -76,6 +81,31 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 ### The lid-wake trade-off
 
 Experiment 5 compared the same hardware with lid wake armed (Normal Standby, segment 3, ~70 mA) and with the firmware's deeper Super Standby (segment 4, ~64 mA, lid not armed). Lid wake costs roughly 7 to 9 mA, about 10%. slot.advance keeps it, because waking by opening the lid is the point of sleeping instead of switching off.
+
+---
+
+## Waking up faster in 0.4.1
+
+<p align="center">
+<img src="../.github/resources/wake/wake-first-frame.svg" width="100%" alt="Waking from sleep with Wi-Fi off, median time from the start of resume to the game's first frame: 1.25 s on 0.4.0 (10 wakes, 1236 to 1270 ms) and 0.81 s on 0.4.1 (11 wakes, 803 to 828 ms), 443 ms sooner, 35% less time">
+</p>
+
+| Wi-Fi off (the default) | 0.4.0 | 0.4.1-beta.1 |
+|---|---|---|
+| Median first frame after resume starts | **1,251 ms** | **808 ms** |
+| Range | 1,236 to 1,270 ms | 803 to 828 ms |
+| Wakes timed (all resumed) | 10 | 11 |
+| Difference | | 443 ms sooner, 35.4% less time |
+
+**What was measured.** A read-only watcher logged real lid closes of about 15 seconds with a game running, on the kernel's own log clock. Each time runs from **resume start** (the kernel's `Enabling non-boot CPUs`, the first thing it logs on waking) to the **first GPU interrupt**, which is slot.advance's first rendered frame (it draws nothing while asleep). These are first-frame times, not the kernel's own "resume of devices complete" figure, which is shorter. The moment the lid starts to open isn't logged, so the time between that and resume starting isn't included; the 443 ms saving is all inside the measured part. The 0.4.0 figures are experiment R2 (14 October 2026); the 0.4.1-beta.1 figures are V1 (15 October 2026), with the same watcher, procedure and device. The polling behind the first-frame mark is accurate to about 10 to 20 ms.
+
+**Why 0.4.0 was slower.** From 0.4.0, slot.advance switches Wi-Fi off about 20 seconds after start-up by unloading the `8821cs` driver, which also cuts the radio's supply. But the kernel kept the radio's SDIO card registered on its slot (`mmc2`). On every resume, it tried to wake that unpowered card and waited about 1.1 s for it to time out (`mmc2: error -110 during resume`), before handing control back to programs.
+
+**What 0.4.1 changes** (`crates/slot-power/src/quiet.rs`). Once, at start-up, straight after a successful driver unload with the radio confirmed unpowered, slot.advance writes `1` to `rf-ctrl/scan_device`, the same step BaseOS's own start-up script uses to discard a stale card before loading the driver. The card goes within about 15 ms, and later resumes have nothing to wait for. Before writing, it checks that the slot holds only the Wi-Fi card (never either TF card) and that the radio's power rail is off; if any check fails, it changes nothing and resumes exactly as 0.4.0 did. Each outcome is written to `slot.log`, for example `slot: quiet: stale wifi card mmc2:0001 discarded in 15 ms`.
+
+**What it doesn't change.** It isn't a new way of sleeping: the suspend itself, the lid and timer wakes, and the radio's power state are exactly as in 0.4.0. With `wifi=on` the driver stays loaded and nothing is removed, so those wakes take about 0.82 s on both versions (median 820 ms on 0.4.0, 825 ms on 0.4.1-beta.1), the driver resuming the radio instead. The 35% applies to the Wi-Fi-off configuration only.
+
+**Start-up race (accepted limitation).** If the lid closes at almost exactly the moment the driver is being unloaded, about 20 seconds after power-on, the kernel holds the removal back while it suspends and doesn't repeat it afterwards. That session's wakes then take as long as in 0.4.0; sleep and wake still work normally, and the next power-on removes the card as usual. `slot.log` reports it as `stale wifi card discard FAILED`. Targeted testing (V2), with lid closes deliberately aimed at that window, reproduced it once; it was accepted rather than adding a retry to the suspend path.
 
 ---
 
@@ -90,23 +120,25 @@ Experiment 5 compared the same hardware with lid wake armed (Normal Standby, seg
 ### Battery used while asleep
 
 <p align="center">
-<img src="../.github/resources/battery/battery-drain-projection.svg" width="100%" alt="Battery used while asleep on 0.4.0, projected at 2 to 2.6% an hour: 4 to 5.2% at 2 hours, 8 to 10.4% at 4 hours and 16 to 21% at 8 hours, with three observed points: 16% over 8 hours on 0.4.0-beta.3, 20% over 7 hours 46 minutes on 0.4.0, and 3% over 1.5 hours in Experiment 5">
+<img src="../.github/resources/battery/battery-drain-projection.svg" width="100%" alt="Battery used while asleep, projected at 2 to 3.2% an hour: 4 to 6.4% at 2 hours, 8 to 12.8% at 4 hours and 16 to 26% at 8 hours, with four observed points: 16% over 8 hours on 0.4.0-beta.3, 20% over 7 hours 46 minutes on 0.4.0, 24% over 7 hours 37 minutes on 0.4.1-beta.1, and 3% over 1.5 hours in Experiment 5">
 </p>
 
-<sub>The dashed lines and shaded band are projections at 2 and 2.6% an hour, the rates of the two overnight sleeps. The white points were measured: 16% (98% to 82%) over 8 hours on 0.4.0-beta.3, 20% (94% to 74%) over 7 hours 46 minutes on 0.4.0, and 3% over 1.5 hours in Experiment 5. Real use varies with battery age, temperature and charge level.</sub>
+<sub>The dashed lines and shaded band are projections at 2 and 3.2% an hour, the lowest and highest rates of the three extended sleeps. The white points were observed: 16% (98% to 82%) over 8 hours on 0.4.0-beta.3, 20% (94% to 74%) over 7 hours 46 minutes on 0.4.0, 24% (99% to 75%) over 7 hours 37 minutes on 0.4.1-beta.1, and 3% over 1.5 hours in Experiment 5. Real use varies with battery age, temperature and charge level.</sub>
 
 | Asleep for | Battery used | Basis |
 |---|---|---|
-| 15 min | ~0.5 to 0.7% | Projected |
-| 30 min | ~1 to 1.3% | Projected |
-| 1 hr | ~2 to 2.6% | Projected |
+| 15 min | ~0.5 to 0.8% | Projected |
+| 30 min | ~1 to 1.6% | Projected |
+| 1 hr | ~2 to 3.2% | Projected |
 | 1.5 hr | 3% (77% to 74%) | Measured once, Experiment 5 |
-| 2 hr | ~4 to 5.2% | Projected |
-| 4 hr | ~8 to 10.4% | Projected |
+| 2 hr | ~4 to 6.4% | Projected |
+| 4 hr | ~8 to 12.8% | Projected |
+| 7 h 37 min | 24% (99% to 75%) | Measured once, 0.4.1-beta.1 |
 | 7 h 46 min | 20% (94% to 74%) | Measured once, 0.4.0 |
 | 8 hr | 16% (98% to 82%) | Measured once, 0.4.0-beta.3 |
+| 8 hr | ~16 to 26% | Projected |
 
-Projected rows are worked out from the two overnight rates, 2 and 2.6% an hour. Measured rows are single runs read in whole percent.
+Projected rows are mathematical projections from the lowest and highest extended-sleep rates, 2 and 3.2% an hour, not measurements at every duration. Measured rows are single runs read in whole percent. For 0.4.0 alone, the two overnight sleeps gave 2 to 2.6% an hour.
 
 ---
 
@@ -135,26 +167,29 @@ Projected rows are worked out from the two overnight rates, 2 and 2.6% an hour. 
 - Wi-Fi off showed no saving that could be separated from noise while asleep.
 - The direction of the overall improvement is confirmed by two independent comparisons (Test A against segment 3, and segment 1 against segments 2 and 3). The size, about 105 to about 70 mA, rests on single runs.
 
-**The overnight sleeps.** Two overnight sleeps used 0.4.0's sleep configuration (0.4.0 only added the About screen to beta.3), each as a single continuous suspend:
+**The overnight sleeps.** Two overnight sleeps used 0.4.0's sleep configuration (0.4.0 only added the About screen to beta.3), and a third, extended sleep ran on the 0.4.1 candidate, each as a single continuous suspend:
 
-| | 0.4.0-beta.3 | 0.4.0 (night A) |
-|---|---|---|
-| Battery | 98% to 82% | 94% to 74% |
-| Time asleep | 8 hours | 7 h 46 min (27,987 s) |
-| Observed rate | 2.0% an hour (1.88 to 2.12 within whole-percent readings) | 2.6% an hour (2.44 to 2.70) |
-| End reading | Next morning, after the 8-hour timer had shut the device down | Straight after a lid wake, by the validation watcher |
-| Record | Tester's notes; no log | [`overnight-0.4.0-night-a.txt`](battery-tests/overnight-0.4.0-night-a.txt) |
+| | 0.4.0-beta.3 | 0.4.0 (night A) | 0.4.1-beta.1 (night B) |
+|---|---|---|---|
+| Battery | 98% to 82% | 94% to 74% | 99% to 75% |
+| Time asleep | 8 hours | 7 h 46 min (27,987 s) | 7 h 37 min (27,420 s) |
+| Observed rate | 2.0% an hour (1.88 to 2.12 within whole-percent readings) | 2.6% an hour (2.44 to 2.70) | 3.2% an hour (3.02 to 3.28) |
+| Start | Not recorded | 22 minutes after power-on, the gauge having fallen from 99% | About a minute after power-on |
+| End reading | Next morning, after the 8-hour timer had shut the device down | Straight after a lid wake, by the validation watcher | Straight after a lid wake, by the validation watcher |
+| Record | Tester's notes; no log | [`overnight-0.4.0-night-a.txt`](battery-tests/overnight-0.4.0-night-a.txt) | [`extended-0.4.1-beta.1-night-b.txt`](battery-tests/extended-0.4.1-beta.1-night-b.txt) |
 
-The range shown on this page, 2 to 2.6% an hour, is these two observations. It rests on two runs and is not a statistical interval.
+0.4.0's own range, 2 to 2.6% an hour, is its two observations. With the 0.4.1 sleep, the three span 2 to 3.2% an hour. Each rests on one run, and the range is not a statistical interval.
+
+**Night A against night B.** These were meant to compare 0.4.0 and 0.4.1, but they started at different charge levels: night B at 99%, night A at 94% after the gauge had already fallen five points while awake. Both ended near 75%, with night B's end voltage slightly higher (3,890 against 3,868 mV), but voltage is no more precise here than the gauge. Because the steps near full are unmeasured, the two can't show whether the versions differ: the result is **inconclusive**, neither a confirmed match nor a confirmed regression. Night B also confirmed that the 0.4.1 candidate stays asleep for hours with no unexpected wakes, the radio unpowered and no Wi-Fi resume timeout.
 
 **Why a percentage drop isn't a current at high charge.** The gauge reports whole percent, and its steps are not all 35 mAh. Experiment 5's awake ticks, at about 250 mA, put one step at about **26 mAh at 83%**, **31 at 78%**, **36 at 73%** and **36 at 69%**. Above about 85% no step has been measured. Both overnight sleeps started there.
 
-**The two nights don't confirm the same current.** Applying the one estimated high-charge step (26.3 mAh above 80%, 35 below) as an illustration gives about **53 mA** for beta.3 and **74 mA** for night A. These don't agree, and the evidence can't say why. Three things differ and none can be ruled out:
+**The two 0.4.0 nights don't confirm the same current.** Applying the one estimated high-charge step (26.3 mAh above 80%, 35 below) as an illustration gives about **53 mA** for beta.3 and **74 mA** for night A. These don't agree, and the evidence can't say why. Three things differ and none can be ruled out:
 - the step sizes above 85% are unknown;
 - the end readings were taken differently (after a timer shutdown and a power-on, against straight after a wake);
 - before night A, the gauge fell from 99% to 94% in 22 minutes awake, which at 250 to 300 mA would be only about 20 mAh a step if the gauge is right.
 
-So neither overnight sleep is converted to a current. The current-draw chart and the 72% reduction keep Experiment 5's ~70 mA, measured below 80% where the step sizes were estimated. Both nights are reported as the percentages the gauge showed, because that is what a player sees. `calculate.py` prints the full working.
+So none of the extended sleeps is converted to a current, night B included. The current-draw chart and the 72% reduction keep Experiment 5's ~70 mA, measured below 80% where the step sizes were estimated. All three are reported as the percentages the gauge showed, because that is what a player sees. `calculate.py` prints the full working.
 
 ---
 
@@ -167,8 +202,11 @@ So neither overnight sleep is converted to a current. The current-draw chart and
 | [`battery-tests/experiment-5-suspend-segments.txt`](battery-tests/experiment-5-suspend-segments.txt) | Experiment 5, 11 October 2026 (UTC): four 90-minute suspends, with USB, Wi-Fi and PE19 states logged around every sleep |
 | (no file) | The 8-hour overnight sleep on 0.4.0-beta.3: battery percentages noted by the tester (98% and 82%), recorded in `calculate.py` |
 | [`battery-tests/overnight-0.4.0-night-a.txt`](battery-tests/overnight-0.4.0-night-a.txt) | Night A, 15 to 16 October 2026: a 7 h 46 min overnight sleep on the 0.4.0 release, 94% to 74%, with the validation watcher's report and `slot.log` |
-| [`battery-tests/calculate.py`](battery-tests/calculate.py) | Recalculates every figure on this page from the reports and the two overnight sleeps |
-| [`battery-tests/charts.py`](battery-tests/charts.py) | Regenerates the three battery charts |
+| [`battery-tests/extended-0.4.1-beta.1-night-b.txt`](battery-tests/extended-0.4.1-beta.1-night-b.txt) | Night B, 16 October 2026: a 7 h 37 min extended sleep on the 0.4.1-beta.1 candidate, 99% to 75%, with the validation watcher's report and `slot.log` |
+| [`battery-tests/calculate.py`](battery-tests/calculate.py) | Recalculates every battery figure on this page from the reports and the three extended sleeps |
+| [`wake-tests/v1-first-frame-0.4.1-beta.1.txt`](wake-tests/v1-first-frame-0.4.1-beta.1.txt) | V1, 15 October 2026 (UTC): first-frame timing on the 0.4.1-beta.1 candidate, 11 wakes with Wi-Fi off and 10 with `wifi=on`, with the watcher's report and `slot.log` |
+| [`wake-tests/first-frame.py`](wake-tests/first-frame.py) | Recalculates the wake-up figures from the V1 report, and records the 0.4.0 baseline (R2), whose own report was not kept |
+| [`battery-tests/charts.py`](battery-tests/charts.py) | Regenerates the three battery charts and the wake-up chart |
 
 The reports are unedited device output. Their own summary lines contain the two errors noted above (Test A's ±2.5 mA and Experiment 5's ±0.5 mA). `calculate.py` shows the corrected working. Run it from the repository root:
 
@@ -207,3 +245,11 @@ The earlier experiments that established suspend, lid wake, timed wake and `POWE
 **Battery:** an 8-hour overnight sleep on 0.4.0-beta.3 went from 98% to 82%, about 2% an hour. A later overnight sleep on the 0.4.0 release went from 94% to 74% in 7 hours 46 minutes, about 2.6% an hour (see [Methodology and uncertainty](#methodology-and-uncertainty)).
 
 0.4.0 was released on the strength of these checks, built from the same code as 0.4.0-beta.3 plus a new About screen, which was checked on the device before release.
+
+**Checked on the device with the 0.4.1-beta.1 candidate (15 and 16 October 2026).** 0.4.1 is built from the same code, with only the version number changed.
+- **V1, wake-up time: passed.** With Wi-Fi off, 11 of 11 wakes resumed with no `mmc2` timeout, first frame 803 to 828 ms (median 808), against 0.4.0's 1,236 to 1,270 ms (median 1,251). With `wifi=on`, 10 of 10 wakes resumed, the driver was left loaded as in 0.4.0, and the first frame took a median 825 ms against 0.4.0's 820 ms.
+- **V2, lid closes during the Wi-Fi shutdown: completed, with the accepted start-up race.** Over 12 power-ons, the lid was closed just before, during and just after the driver unload. No suspend failed, the radio never powered up, and every wake resumed. Eleven sessions ended with the stale card removed; in one, the removal was held back by a suspend that began during the unload, and that session's wakes took as long as in 0.4.0 (see [Waking up faster in 0.4.1](#waking-up-faster-in-041)).
+- **V3, the 0.4.0 sleep checklist: completed.** Over 4 sessions and 19 wakes: every wake resumed, with no `mmc2` timeout; the 3-minute timer shut down cleanly and the game was restored at the next power-on; the stale card was removed at every Wi-Fi-off start-up; and `wifi=on` left Wi-Fi alone as before. Deliberate rapid lid flicks left the screen dark in 9 of 20 flicks on the candidate and 10 of 20 on 0.4.0 (and once in 10 rounds of `POWER` presses with the lid shut, on the candidate only), confirming that the known limitation above is unchanged by 0.4.1.
+- **V4, extended sleep: reliability passed; battery equivalence inconclusive.** The candidate slept continuously for 7 hours 37 minutes with no unexpected wakes, woke to the lid straight back into the game, kept the radio unpowered with the stale card removed, and had no Wi-Fi resume timeout. Its battery reading (99% to 75%) can't be compared like for like with 0.4.0's night A; see [the overnight sleeps](#methodology-and-uncertainty).
+
+Link play with a second device in `wifi=on` was not retested; the code it uses is unchanged from 0.4.0.

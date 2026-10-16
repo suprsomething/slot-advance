@@ -1,0 +1,2570 @@
+slot.advance 0.4.1-beta.1: first-frame resume timing (V1), 15 October 2026 (UTC)
+
+Recorded with the read-only resume-timing watcher (p0r-watch.sh, from the "0.5.0 resume timing"
+kit, unchanged since the 0.4.0 baseline) on the 0.4.1-beta.1 candidate (program SHA-256
+085e5180...7b26; slot.log: "slot advance 0.4.1-beta.1 (497c8e5)"). Real lid closes of about
+15 seconds with a game running, on battery.
+
+  Session A (boot at 06:12 UTC): Wi-Fi off (the default). 11 wakes, all timed.
+  Session B (boot at 06:21 UTC): wifi=on, the driver kept loaded. 10 wakes; the watcher timed
+  7 of them (it misses a wake when the lid opens too soon after it settles).
+
+How to read it: every time is on the kernel's own log clock, in milliseconds from "resume
+start" (the kernel line "Enabling non-boot CPUs", the first thing the kernel logs on waking)
+to the first GPU interrupt, which is slot.advance's first rendered frame. The time between the
+lid opening and the kernel starting to resume is not logged, so it is not included. Each wake's
+summary line begins "TIMELINE (ms from resume start)". first-frame.py recalculates the medians.
+
+The 0.4.0 baseline is R2, the same kit and procedure on 0.4.0 on 14 October 2026: Wi-Fi off,
+10 wakes, first frame 1236 to 1270 ms (median 1251); wifi=on, 9 wakes, median 820 ms. R2's own
+report was not kept in the repository; its figures are recorded in first-frame.py.
+
+Below this header, everything is unedited device output: the watcher's report for both
+sessions, then slot.log for session A and session B.
+
+======================================================================== p0r-resume.txt
+
+==================================================================
+Boot: Thu Oct 15 06:12:43 UTC 2026 (device clock), watcher started at uptime 2.37 s
+Kernel command line: earlyprintk=sunxi-uart,0x05000000 initcall_debug=0 console=ttyS0,115200 loglevel=4 root=/dev/mmcblk0p5 rootwait quiet splash init=/init partitions=special@mmcblk0p1:boot-resource@mmcblk0p2:env@mmcblk0p3:boot@mmcblk0p4:rootfs@mmcblk0p5:UDISK@mmcblk0p6:primary@mmcblk0p7 cma=64M snum=5c001089d75608c2252 mac_addr= wifi_mac= bt_mac= selinux=0 specialstr= gpt=1 androidboot.mode=normal androidboot.serialno=5c001089d75608c2252 androidboot.hardware=sun50iw9p1 boot_type=1 androidboot.boot_type=1 androidboot.secure_os_exist=0 gpt=1 uboot_message=2018.05(06/24/2026-19:09:39) disp_reserve=1382400,0x7bf24800 bootreason=button lcd_type=old 
+printk levels: 4	7	1	7
+Consoles: ttyS0                -W- (EC    )  248:0;
+Backlight file: none found (slot.advance may use dispdbg; item 3 not observable)
+GPU interrupt lines:
+  303:          0          0          0          0  wakeupgen  96 Level     gpu
+  318:          0          0          0          0  wakeupgen  95 Level     gpu
+  319:          1          0          0          0  wakeupgen  97 Level     gpu
+Wi-Fi driver loaded after start-up: no   (no = 0.4.0 Off; yes = wifi=on, driver kept loaded)
+slot.advance start-up line: slot: backlight dispdbg (0 to 255), battery axp2202-battery, rtc0, motor event1
+Close the lid, wait about 15 s, open it. Each wake is recorded below.
+
+----- Wake 1 (driver loaded: no) -----
+  suspend entry: freeze 154.834, last suspend-side line 155.860
+  resume: CPUs back 156.135, noirq done 156.266, early done 156.268, display resumed 156.268
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 156.924, finishing wakeup 156.925, tasks restarted 156.925
+  watcher thawed 156.926, backlight on -, first GPU interrupt 156.944
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 808
+  [  156.923944] PM: resume of devices complete after 656.333 msecs
+  [  156.267603] PM: early resume of devices complete after 0.786 msecs
+  [  156.266427] PM: noirq resume of devices complete after 1.016 msecs
+  slot.advance: slot: sleep: woke after 17s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  142.861996] [sound  164][CODEC sunxi_internal_codec_dai_set_pll] stream -> OUT, freq_in ->98304000, freq_out ->98304000
+    [  151.832411] [sound  164][CODEC sunxi_internal_codec_dai_set_pll] stream -> OUT, freq_in ->98304000, freq_out ->98304000
+    [  154.189340] ---[allen] hall_switch_isr: 711 
+    [  154.213883] ---[allen] hall_press_work_func: state=0 
+    [  154.650952] PM: suspend entry 2026-10-15 06:15:15.577670906 UTC
+    [  154.650960] PM: Syncing filesystems ... done.
+    [  154.675535] PM: Preparing system for sleep (mem)
+    [  154.834008] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  154.835377] Freezing remaining freezable tasks ... (elapsed 0.090 seconds) done.
+    [  154.926358] PM: Suspending system (mem)
+    [  154.927402] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  154.927549] sunxi-mmc sdc0: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  154.961758] disp_suspend
+    [  155.204116] [ohci3-controller]: is disable, can not suspend
+    [  155.204138] [ehci3-controller]: is disable, can not suspend
+    [  155.204158] [ohci2-controller]: is disable, can not suspend
+    [  155.204178] [ehci2-controller]: is disable, can not suspend
+    [  155.204198] [ohci1-controller]: is disable, can not suspend
+    [  155.204218] [ehci1-controller]: is disable, can not suspend
+    [  155.204231] hci: ERR: hcd is null
+    [  155.207946] hci: ERR: hcd is null
+    [  155.211659] udc is disable, need not enter to suspend
+    [  155.211686] sw_uart_suspend()2052 - uart1 suspend
+    [  155.211729] sw_uart_suspend()2052 - uart0 suspend
+    [  155.211745] [cedar] standby suspend
+    [  155.211797] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  155.854036] disp_suspend finish
+    [  155.854142] PM: suspend of devices complete after 926.892 msecs
+    [  155.855377] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  155.855519] PM: late suspend of devices complete after 1.370 msecs
+    [  155.860329] PM: noirq suspend of devices complete after 4.803 msecs
+    [  155.860334] Disabling non-boot CPUs ...
+    [  155.913948] Invalid sched_group_energy for CPU3
+    [  155.913953] Invalid sched_group_energy for Cluster3
+    [  155.913957] Invalid sched_group_energy for CPU2
+    [  155.913961] Invalid sched_group_energy for Cluster2
+    [  155.913964] Invalid sched_group_energy for CPU0
+    [  155.913969] Invalid sched_group_energy for Cluster0
+    [  155.914211] IRQ3 no longer affine to CPU1
+    [  155.914449] CPU1: shutdown
+    [  155.914472] psci: CPU1 killed.
+    [  155.923836] CPU0: update max cpu_capacity 1024
+    [  155.993904] Invalid sched_group_energy for CPU3
+    [  155.993909] Invalid sched_group_energy for Cluster3
+    [  155.993913] Invalid sched_group_energy for CPU0
+    [  155.993917] Invalid sched_group_energy for Cluster0
+    [  155.994300] CPU2: shutdown
+    [  155.994323] psci: CPU2 killed.
+    [  156.003835] CPU0: update max cpu_capacity 1024
+    [  156.103888] Invalid sched_group_energy for CPU0
+    [  156.103893] Invalid sched_group_energy for Cluster0
+    [  156.104209] CPU3: shutdown
+    [  156.104232] psci: CPU3 killed.
+    [  156.134941] Enabling non-boot CPUs ...
+    [  156.164642] Detected VIPT I-cache on CPU1
+    [  156.164686] Invalid sched_group_energy for CPU1
+    [  156.164689] CPU1: update cpu_capacity 1024
+    [  156.164691] CPU1: Booted secondary processor [410fd034]
+    [  156.164969] Invalid sched_group_energy for CPU1
+    [  156.164976] Invalid sched_group_energy for Cluster1
+    [  156.164980] Invalid sched_group_energy for CPU0
+    [  156.164984] Invalid sched_group_energy for Cluster0
+    [  156.165081] CPU1 is up
+    [  156.173761] CPU0: update max cpu_capacity 1024
+    [  156.204671] Detected VIPT I-cache on CPU2
+    [  156.204689] Invalid sched_group_energy for CPU2
+    [  156.204691] CPU2: update cpu_capacity 1024
+    [  156.204693] CPU2: Booted secondary processor [410fd034]
+    [  156.204893] Invalid sched_group_energy for CPU2
+    [  156.204898] Invalid sched_group_energy for Cluster2
+    [  156.204901] Invalid sched_group_energy for CPU1
+    [  156.204906] Invalid sched_group_energy for Cluster1
+    [  156.204909] Invalid sched_group_energy for CPU0
+    [  156.204913] Invalid sched_group_energy for Cluster0
+    [  156.204997] CPU2 is up
+    [  156.213754] CPU1: update max cpu_capacity 1024
+    [  156.264849] Detected VIPT I-cache on CPU3
+    [  156.264867] Invalid sched_group_energy for CPU3
+    [  156.264869] CPU3: update cpu_capacity 1024
+    [  156.264871] CPU3: Booted secondary processor [410fd034]
+    [  156.265092] Invalid sched_group_energy for CPU3
+    [  156.265097] Invalid sched_group_energy for Cluster3
+    [  156.265101] Invalid sched_group_energy for CPU2
+    [  156.265105] Invalid sched_group_energy for Cluster2
+    [  156.265109] Invalid sched_group_energy for CPU1
+    [  156.265113] Invalid sched_group_energy for Cluster1
+    [  156.265116] Invalid sched_group_energy for CPU0
+    [  156.265120] Invalid sched_group_energy for Cluster0
+    [  156.265273] Invalid sched_group_energy for CPU3
+    [  156.265278] Invalid sched_group_energy for Cluster3
+    [  156.265282] Invalid sched_group_energy for CPU2
+    [  156.265286] Invalid sched_group_energy for Cluster2
+    [  156.265289] Invalid sched_group_energy for CPU1
+    [  156.265293] Invalid sched_group_energy for Cluster1
+    [  156.265297] Invalid sched_group_energy for CPU0
+    [  156.265301] Invalid sched_group_energy for Cluster0
+    [  156.265385] CPU3 is up
+    [  156.265638] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  156.266427] PM: noirq resume of devices complete after 1.016 msecs
+    [  156.266569] ---[allen] hall_switch_isr: 711 
+    [  156.266981] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  156.267603] PM: early resume of devices complete after 0.786 msecs
+    [  156.267671] [ehci1-controller]: is disable, can not resume
+    [  156.267680] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  156.267682] [ohci1-controller]: is disable, can not resume
+    [  156.267687] [ehci2-controller]: is disable, can not resume
+    [  156.267694] [ohci2-controller]: is disable, can not resume
+    [  156.267697] [cedar] standby resume
+    [  156.267703] [ehci3-controller]: is disable, can not resume
+    [  156.267710] [ohci3-controller]: is disable, can not resume
+    [  156.267722] refresh hdcp key failed!!!
+    [  156.267730] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  156.267769] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  156.267777] udc is disable, need not enter to resume
+    [  156.267780] hci: ERR: hcd is null
+    [  156.267783] hci: ERR: hcd is null
+    [  156.268457] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+    [  156.268543] 6000000.hdmi supply vdd-hdmi not found, using dummy regulator
+    [  156.269425] ---[allen] hall_release_work_func: 0000
+    [  156.273769] CPU3: update max cpu_capacity 1024
+
+----- Wake 2 (driver loaded: no) -----
+  suspend entry: freeze 161.584, last suspend-side line 162.630
+  resume: CPUs back 162.945, noirq done 163.076, early done 163.078, display resumed 163.078
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 163.734, finishing wakeup 163.735, tasks restarted 163.735
+  watcher thawed 163.736, backlight on -, first GPU interrupt 163.754
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 808
+  [  163.733884] PM: resume of devices complete after 656.218 msecs
+  [  163.077657] PM: early resume of devices complete after 0.857 msecs
+  [  163.076410] PM: noirq resume of devices complete after 1.047 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  160.942581] ---[allen] hall_switch_isr: 711 
+    [  160.963813] ---[allen] hall_press_work_func: state=0 
+    [  161.437786] PM: suspend entry 2026-10-15 06:15:39.119876086 UTC
+    [  161.437794] PM: Syncing filesystems ... done.
+    [  161.446502] PM: Preparing system for sleep (mem)
+    [  161.583896] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  161.585261] Freezing remaining freezable tasks ... (elapsed 0.096 seconds) done.
+    [  161.682013] PM: Suspending system (mem)
+    [  161.683062] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  161.718043] disp_suspend
+    [  161.964043] [ohci3-controller]: is disable, can not suspend
+    [  161.964065] [ehci3-controller]: is disable, can not suspend
+    [  161.964085] [ohci2-controller]: is disable, can not suspend
+    [  161.964105] [ehci2-controller]: is disable, can not suspend
+    [  161.964125] [ohci1-controller]: is disable, can not suspend
+    [  161.964145] [ehci1-controller]: is disable, can not suspend
+    [  161.964158] hci: ERR: hcd is null
+    [  161.967872] hci: ERR: hcd is null
+    [  161.971586] udc is disable, need not enter to suspend
+    [  161.971614] sw_uart_suspend()2052 - uart1 suspend
+    [  161.971657] sw_uart_suspend()2052 - uart0 suspend
+    [  161.971672] [cedar] standby suspend
+    [  161.971725] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  162.623940] disp_suspend finish
+    [  162.624090] PM: suspend of devices complete after 941.181 msecs
+    [  162.625288] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  162.625456] PM: late suspend of devices complete after 1.358 msecs
+    [  162.630222] PM: noirq suspend of devices complete after 4.760 msecs
+    [  162.630228] Disabling non-boot CPUs ...
+    [  162.683868] Invalid sched_group_energy for CPU3
+    [  162.683873] Invalid sched_group_energy for Cluster3
+    [  162.683877] Invalid sched_group_energy for CPU2
+    [  162.683881] Invalid sched_group_energy for Cluster2
+    [  162.683885] Invalid sched_group_energy for CPU0
+    [  162.683889] Invalid sched_group_energy for Cluster0
+    [  162.684354] CPU1: shutdown
+    [  162.684375] psci: CPU1 killed.
+    [  162.693757] CPU2: update max cpu_capacity 1024
+    [  162.763831] Invalid sched_group_energy for CPU3
+    [  162.763836] Invalid sched_group_energy for Cluster3
+    [  162.763839] Invalid sched_group_energy for CPU0
+    [  162.763844] Invalid sched_group_energy for Cluster0
+    [  162.764025] IRQ3 no longer affine to CPU2
+    [  162.764219] CPU2: shutdown
+    [  162.764243] psci: CPU2 killed.
+    [  162.773764] CPU0: update max cpu_capacity 1024
+    [  162.883813] Invalid sched_group_energy for CPU0
+    [  162.883818] Invalid sched_group_energy for Cluster0
+    [  162.884113] CPU3: shutdown
+    [  162.884135] psci: CPU3 killed.
+    [  162.944771] Enabling non-boot CPUs ...
+    [  162.974567] Detected VIPT I-cache on CPU1
+    [  162.974613] Invalid sched_group_energy for CPU1
+    [  162.974615] CPU1: update cpu_capacity 1024
+    [  162.974618] CPU1: Booted secondary processor [410fd034]
+    [  162.974897] Invalid sched_group_energy for CPU1
+    [  162.974903] Invalid sched_group_energy for Cluster1
+    [  162.974907] Invalid sched_group_energy for CPU0
+    [  162.974911] Invalid sched_group_energy for Cluster0
+    [  162.975008] CPU1 is up
+    [  162.983689] CPU0: update max cpu_capacity 1024
+    [  163.014601] Detected VIPT I-cache on CPU2
+    [  163.014620] Invalid sched_group_energy for CPU2
+    [  163.014622] CPU2: update cpu_capacity 1024
+    [  163.014623] CPU2: Booted secondary processor [410fd034]
+    [  163.014824] Invalid sched_group_energy for CPU2
+    [  163.014829] Invalid sched_group_energy for Cluster2
+    [  163.014833] Invalid sched_group_energy for CPU1
+    [  163.014837] Invalid sched_group_energy for Cluster1
+    [  163.014841] Invalid sched_group_energy for CPU0
+    [  163.014845] Invalid sched_group_energy for Cluster0
+    [  163.014929] CPU2 is up
+    [  163.023683] CPU1: update max cpu_capacity 1024
+    [  163.074805] Detected VIPT I-cache on CPU3
+    [  163.074823] Invalid sched_group_energy for CPU3
+    [  163.074825] CPU3: update cpu_capacity 1024
+    [  163.074827] CPU3: Booted secondary processor [410fd034]
+    [  163.075047] Invalid sched_group_energy for CPU3
+    [  163.075052] Invalid sched_group_energy for Cluster3
+    [  163.075056] Invalid sched_group_energy for CPU2
+    [  163.075060] Invalid sched_group_energy for Cluster2
+    [  163.075063] Invalid sched_group_energy for CPU1
+    [  163.075068] Invalid sched_group_energy for Cluster1
+    [  163.075071] Invalid sched_group_energy for CPU0
+    [  163.075075] Invalid sched_group_energy for Cluster0
+    [  163.075224] Invalid sched_group_energy for CPU3
+    [  163.075228] Invalid sched_group_energy for Cluster3
+    [  163.075232] Invalid sched_group_energy for CPU2
+    [  163.075236] Invalid sched_group_energy for Cluster2
+    [  163.075240] Invalid sched_group_energy for CPU1
+    [  163.075244] Invalid sched_group_energy for Cluster1
+    [  163.075248] Invalid sched_group_energy for CPU0
+    [  163.075252] Invalid sched_group_energy for Cluster0
+    [  163.075336] CPU3 is up
+    [  163.075605] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  163.076410] PM: noirq resume of devices complete after 1.047 msecs
+    [  163.076552] ---[allen] hall_switch_isr: 711 
+    [  163.077018] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  163.077657] PM: early resume of devices complete after 0.857 msecs
+    [  163.077765] [ehci3-controller]: is disable, can not resume
+    [  163.077767] [ehci1-controller]: is disable, can not resume
+    [  163.077774] [ohci3-controller]: is disable, can not resume
+    [  163.077780] refresh hdcp key failed!!!
+    [  163.077787] [ohci1-controller]: is disable, can not resume
+    [  163.077796] [ehci2-controller]: is disable, can not resume
+    [  163.077805] [ohci2-controller]: is disable, can not resume
+    [  163.077831] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  163.077845] [cedar] standby resume
+    [  163.081997] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  163.082036] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  163.082046] udc is disable, need not enter to resume
+    [  163.082051] hci: ERR: hcd is null
+    [  163.082287] [DISP] disp_register_irq,line:544:
+    [  163.082287] irq for 0 already registered
+    [  163.085229] [DISP] lcd_clk_config,line:665:
+    [  163.085229] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [  163.085229]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [  163.085787] tcon_de_attach:de=0, tcon=0
+    [  163.085787] hci: ERR: hcd is null
+    [  163.089687] CPU2: update max cpu_capacity 1024
+
+----- Wake 3 (driver loaded: no) -----
+  suspend entry: freeze 168.584, last suspend-side line 169.620
+  resume: CPUs back 169.905, noirq done 170.036, early done 170.038, display resumed 170.038
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 170.714, finishing wakeup 170.715, tasks restarted 170.719
+  watcher thawed 170.720, backlight on -, first GPU interrupt 170.729
+  TIMELINE (ms from resume start): devices 809, tasks 814, backlight -, first frame 823
+  [  170.713798] PM: resume of devices complete after 676.285 msecs
+  [  170.037504] PM: early resume of devices complete after 0.837 msecs
+  [  170.036276] PM: noirq resume of devices complete after 1.016 msecs
+  slot.advance: slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  167.839811] ---[allen] hall_switch_isr: 711 
+    [  167.873886] ---[allen] hall_press_work_func: state=0 
+    [  168.431129] PM: suspend entry 2026-10-15 06:15:59.296384919 UTC
+    [  168.431137] PM: Syncing filesystems ... done.
+    [  168.439472] PM: Preparing system for sleep (mem)
+    [  168.583779] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  168.585182] Freezing remaining freezable tasks ... (elapsed 0.099 seconds) done.
+    [  168.684319] PM: Suspending system (mem)
+    [  168.685320] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  168.720702] disp_suspend
+    [  168.963979] [ohci3-controller]: is disable, can not suspend
+    [  168.964001] [ehci3-controller]: is disable, can not suspend
+    [  168.964021] [ohci2-controller]: is disable, can not suspend
+    [  168.964041] [ehci2-controller]: is disable, can not suspend
+    [  168.964061] [ohci1-controller]: is disable, can not suspend
+    [  168.964082] [ehci1-controller]: is disable, can not suspend
+    [  168.964095] hci: ERR: hcd is null
+    [  168.967808] hci: ERR: hcd is null
+    [  168.971519] udc is disable, need not enter to suspend
+    [  168.971546] sw_uart_suspend()2052 - uart1 suspend
+    [  168.971589] sw_uart_suspend()2052 - uart0 suspend
+    [  168.971604] [cedar] standby suspend
+    [  168.971657] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  169.613893] disp_suspend finish
+    [  169.613996] PM: suspend of devices complete after 928.787 msecs
+    [  169.615315] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  169.615453] PM: late suspend of devices complete after 1.449 msecs
+    [  169.620258] PM: noirq suspend of devices complete after 4.798 msecs
+    [  169.620263] Disabling non-boot CPUs ...
+    [  169.653795] Invalid sched_group_energy for CPU3
+    [  169.653801] Invalid sched_group_energy for Cluster3
+    [  169.653805] Invalid sched_group_energy for CPU2
+    [  169.653809] Invalid sched_group_energy for Cluster2
+    [  169.653813] Invalid sched_group_energy for CPU0
+    [  169.653817] Invalid sched_group_energy for Cluster0
+    [  169.654284] CPU1: shutdown
+    [  169.654305] psci: CPU1 killed.
+    [  169.663688] CPU2: update max cpu_capacity 1024
+    [  169.793756] Invalid sched_group_energy for CPU3
+    [  169.793760] Invalid sched_group_energy for Cluster3
+    [  169.793764] Invalid sched_group_energy for CPU0
+    [  169.793768] Invalid sched_group_energy for Cluster0
+    [  169.794148] CPU2: shutdown
+    [  169.794171] psci: CPU2 killed.
+    [  169.803688] CPU0: update max cpu_capacity 1024
+    [  169.873740] Invalid sched_group_energy for CPU0
+    [  169.873745] Invalid sched_group_energy for Cluster0
+    [  169.874043] CPU3: shutdown
+    [  169.874065] psci: CPU3 killed.
+    [  169.904686] Enabling non-boot CPUs ...
+    [  169.934496] Detected VIPT I-cache on CPU1
+    [  169.934541] Invalid sched_group_energy for CPU1
+    [  169.934544] CPU1: update cpu_capacity 1024
+    [  169.934546] CPU1: Booted secondary processor [410fd034]
+    [  169.934829] Invalid sched_group_energy for CPU1
+    [  169.934835] Invalid sched_group_energy for Cluster1
+    [  169.934839] Invalid sched_group_energy for CPU0
+    [  169.934843] Invalid sched_group_energy for Cluster0
+    [  169.934940] CPU1 is up
+    [  169.943616] CPU0: update max cpu_capacity 1024
+    [  169.974526] Detected VIPT I-cache on CPU2
+    [  169.974544] Invalid sched_group_energy for CPU2
+    [  169.974546] CPU2: update cpu_capacity 1024
+    [  169.974548] CPU2: Booted secondary processor [410fd034]
+    [  169.974754] Invalid sched_group_energy for CPU2
+    [  169.974759] Invalid sched_group_energy for Cluster2
+    [  169.974763] Invalid sched_group_energy for CPU1
+    [  169.974767] Invalid sched_group_energy for Cluster1
+    [  169.974770] Invalid sched_group_energy for CPU0
+    [  169.974775] Invalid sched_group_energy for Cluster0
+    [  169.974860] CPU2 is up
+    [  169.983609] CPU1: update max cpu_capacity 1024
+    [  170.034711] Detected VIPT I-cache on CPU3
+    [  170.034730] Invalid sched_group_energy for CPU3
+    [  170.034732] CPU3: update cpu_capacity 1024
+    [  170.034734] CPU3: Booted secondary processor [410fd034]
+    [  170.034952] Invalid sched_group_energy for CPU3
+    [  170.034957] Invalid sched_group_energy for Cluster3
+    [  170.034960] Invalid sched_group_energy for CPU2
+    [  170.034965] Invalid sched_group_energy for Cluster2
+    [  170.034968] Invalid sched_group_energy for CPU1
+    [  170.034972] Invalid sched_group_energy for Cluster1
+    [  170.034976] Invalid sched_group_energy for CPU0
+    [  170.034980] Invalid sched_group_energy for Cluster0
+    [  170.035120] Invalid sched_group_energy for CPU3
+    [  170.035125] Invalid sched_group_energy for Cluster3
+    [  170.035129] Invalid sched_group_energy for CPU2
+    [  170.035133] Invalid sched_group_energy for Cluster2
+    [  170.035136] Invalid sched_group_energy for CPU1
+    [  170.035140] Invalid sched_group_energy for Cluster1
+    [  170.035144] Invalid sched_group_energy for CPU0
+    [  170.035148] Invalid sched_group_energy for Cluster0
+    [  170.035232] CPU3 is up
+    [  170.035492] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  170.036276] PM: noirq resume of devices complete after 1.016 msecs
+    [  170.036420] ---[allen] hall_switch_isr: 711 
+    [  170.036866] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  170.037504] PM: early resume of devices complete after 0.837 msecs
+    [  170.037573] [ehci1-controller]: is disable, can not resume
+    [  170.037580] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  170.037582] [ohci1-controller]: is disable, can not resume
+    [  170.037589] [ehci2-controller]: is disable, can not resume
+    [  170.037596] [ohci2-controller]: is disable, can not resume
+    [  170.037598] [cedar] standby resume
+    [  170.037604] [ehci3-controller]: is disable, can not resume
+    [  170.037611] [ohci3-controller]: is disable, can not resume
+    [  170.037623] refresh hdcp key failed!!!
+    [  170.037627] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  170.037665] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  170.037674] udc is disable, need not enter to resume
+    [  170.037677] hci: ERR: hcd is null
+    [  170.037680] hci: ERR: hcd is null
+    [  170.038359] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+    [  170.038444] 6000000.hdmi supply vdd-hdmi not found, using dummy regulator
+    [  170.039354] ---[allen] hall_release_work_func: 0000
+    [  170.043627] CPU3: update max cpu_capacity 1024
+    [  170.049559] [DISP] disp_register_irq,line:544:
+    [  170.049564] irq for 0 already registered
+    [  170.053376] [DISP] lcd_clk_config,line:665:
+    [  170.053383] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+
+----- Wake 4 (driver loaded: no) -----
+  suspend entry: freeze 174.484, last suspend-side line 175.500
+  resume: CPUs back 175.775, noirq done 175.906, early done 175.907, display resumed 175.908
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 176.564, finishing wakeup 176.564, tasks restarted 176.564
+  watcher thawed 176.566, backlight on -, first GPU interrupt 176.583
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 808
+  [  176.563697] PM: resume of devices complete after 656.190 msecs
+  [  175.907499] PM: early resume of devices complete after 0.853 msecs
+  [  175.906254] PM: noirq resume of devices complete after 1.073 msecs
+  slot.advance: slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  173.855357] ---[allen] hall_switch_isr: 711 
+    [  173.883689] ---[allen] hall_press_work_func: state=0 
+    [  174.337591] PM: suspend entry 2026-10-15 06:16:17.249081335 UTC
+    [  174.337599] PM: Syncing filesystems ... done.
+    [  174.346225] PM: Preparing system for sleep (mem)
+    [  174.483787] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  174.485170] Freezing remaining freezable tasks ... (elapsed 0.082 seconds) done.
+    [  174.568052] PM: Suspending system (mem)
+    [  174.569101] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  174.603324] disp_suspend
+    [  174.853897] [ohci3-controller]: is disable, can not suspend
+    [  174.853919] [ehci3-controller]: is disable, can not suspend
+    [  174.853939] [ohci2-controller]: is disable, can not suspend
+    [  174.853959] [ehci2-controller]: is disable, can not suspend
+    [  174.853979] [ohci1-controller]: is disable, can not suspend
+    [  174.853999] [ehci1-controller]: is disable, can not suspend
+    [  174.854012] hci: ERR: hcd is null
+    [  174.857725] hci: ERR: hcd is null
+    [  174.861438] udc is disable, need not enter to suspend
+    [  174.861466] sw_uart_suspend()2052 - uart1 suspend
+    [  174.861508] sw_uart_suspend()2052 - uart0 suspend
+    [  174.861523] [cedar] standby suspend
+    [  174.861576] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  175.493821] disp_suspend finish
+    [  175.493922] PM: suspend of devices complete after 924.978 msecs
+    [  175.495250] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  175.495419] PM: late suspend of devices complete after 1.489 msecs
+    [  175.500153] PM: noirq suspend of devices complete after 4.728 msecs
+    [  175.500159] Disabling non-boot CPUs ...
+    [  175.533724] Invalid sched_group_energy for CPU3
+    [  175.533730] Invalid sched_group_energy for Cluster3
+    [  175.533734] Invalid sched_group_energy for CPU2
+    [  175.533738] Invalid sched_group_energy for Cluster2
+    [  175.533742] Invalid sched_group_energy for CPU0
+    [  175.533746] Invalid sched_group_energy for Cluster0
+    [  175.534212] CPU1: shutdown
+    [  175.534235] psci: CPU1 killed.
+    [  175.543609] CPU2: update max cpu_capacity 1024
+    [  175.653684] Invalid sched_group_energy for CPU3
+    [  175.653689] Invalid sched_group_energy for Cluster3
+    [  175.653693] Invalid sched_group_energy for CPU0
+    [  175.653697] Invalid sched_group_energy for Cluster0
+    [  175.653884] IRQ3 no longer affine to CPU2
+    [  175.654083] CPU2: shutdown
+    [  175.654103] psci: CPU2 killed.
+    [  175.663615] CPU0: update max cpu_capacity 1024
+    [  175.743669] Invalid sched_group_energy for CPU0
+    [  175.743674] Invalid sched_group_energy for Cluster0
+    [  175.743979] CPU3: shutdown
+    [  175.744000] psci: CPU3 killed.
+    [  175.774603] Enabling non-boot CPUs ...
+    [  175.804439] Detected VIPT I-cache on CPU1
+    [  175.804484] Invalid sched_group_energy for CPU1
+    [  175.804486] CPU1: update cpu_capacity 1024
+    [  175.804489] CPU1: Booted secondary processor [410fd034]
+    [  175.804777] Invalid sched_group_energy for CPU1
+    [  175.804785] Invalid sched_group_energy for Cluster1
+    [  175.804789] Invalid sched_group_energy for CPU0
+    [  175.804793] Invalid sched_group_energy for Cluster0
+    [  175.804890] CPU1 is up
+    [  175.813544] CPU0: update max cpu_capacity 1024
+    [  175.844457] Detected VIPT I-cache on CPU2
+    [  175.844475] Invalid sched_group_energy for CPU2
+    [  175.844477] CPU2: update cpu_capacity 1024
+    [  175.844479] CPU2: Booted secondary processor [410fd034]
+    [  175.844683] Invalid sched_group_energy for CPU2
+    [  175.844688] Invalid sched_group_energy for Cluster2
+    [  175.844692] Invalid sched_group_energy for CPU1
+    [  175.844696] Invalid sched_group_energy for Cluster1
+    [  175.844700] Invalid sched_group_energy for CPU0
+    [  175.844704] Invalid sched_group_energy for Cluster0
+    [  175.844787] CPU2 is up
+    [  175.853537] CPU1: update max cpu_capacity 1024
+    [  175.904635] Detected VIPT I-cache on CPU3
+    [  175.904654] Invalid sched_group_energy for CPU3
+    [  175.904656] CPU3: update cpu_capacity 1024
+    [  175.904658] CPU3: Booted secondary processor [410fd034]
+    [  175.904875] Invalid sched_group_energy for CPU3
+    [  175.904880] Invalid sched_group_energy for Cluster3
+    [  175.904883] Invalid sched_group_energy for CPU2
+    [  175.904887] Invalid sched_group_energy for Cluster2
+    [  175.904891] Invalid sched_group_energy for CPU1
+    [  175.904895] Invalid sched_group_energy for Cluster1
+    [  175.904899] Invalid sched_group_energy for CPU0
+    [  175.904903] Invalid sched_group_energy for Cluster0
+    [  175.905042] Invalid sched_group_energy for CPU3
+    [  175.905047] Invalid sched_group_energy for Cluster3
+    [  175.905050] Invalid sched_group_energy for CPU2
+    [  175.905054] Invalid sched_group_energy for Cluster2
+    [  175.905058] Invalid sched_group_energy for CPU1
+    [  175.905062] Invalid sched_group_energy for Cluster1
+    [  175.905065] Invalid sched_group_energy for CPU0
+    [  175.905069] Invalid sched_group_energy for Cluster0
+    [  175.905154] CPU3 is up
+    [  175.905441] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  175.906254] PM: noirq resume of devices complete after 1.073 msecs
+    [  175.906398] ---[allen] hall_switch_isr: 711 
+    [  175.906859] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  175.907499] PM: early resume of devices complete after 0.853 msecs
+    [  175.907607] [ehci3-controller]: is disable, can not resume
+    [  175.907609] [ehci1-controller]: is disable, can not resume
+    [  175.907616] [ohci3-controller]: is disable, can not resume
+    [  175.907622] refresh hdcp key failed!!!
+    [  175.907629] [ehci2-controller]: is disable, can not resume
+    [  175.907637] [ohci2-controller]: is disable, can not resume
+    [  175.907646] [ohci1-controller]: is disable, can not resume
+    [  175.907672] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  175.907687] [cedar] standby resume
+    [  175.911836] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  175.911874] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  175.911885] udc is disable, need not enter to resume
+    [  175.911890] hci: ERR: hcd is null
+    [  175.912086] [DISP] disp_register_irq,line:544:
+    [  175.912086] irq for 0 already registered
+    [  175.915012] [DISP] lcd_clk_config,line:665:
+    [  175.915013] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [  175.915013]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [  175.915625] tcon_de_attach:de=0, tcon=0
+    [  175.915625] hci: ERR: hcd is null
+    [  175.919525] CPU3: update max cpu_capacity 1024
+
+----- Wake 5 (driver loaded: no) -----
+  suspend entry: freeze 180.984, last suspend-side line 182.030
+  resume: CPUs back 182.315, noirq done 182.446, early done 182.447, display resumed 182.448
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 183.104, finishing wakeup 183.104, tasks restarted 183.104
+  watcher thawed 183.107, backlight on -, first GPU interrupt 183.125
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 810
+  [  183.103665] PM: resume of devices complete after 656.190 msecs
+  [  182.447467] PM: early resume of devices complete after 0.836 msecs
+  [  182.446240] PM: noirq resume of devices complete after 1.122 msecs
+  slot.advance: slot: sleep: woke after 11s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  180.396895] ---[allen] hall_switch_isr: 711 
+    [  180.423621] ---[allen] hall_press_work_func: state=0 
+    [  180.955254] PM: suspend entry 2026-10-15 06:16:35.983615336 UTC
+    [  180.955262] PM: Syncing filesystems ... done.
+    [  180.963709] PM: Preparing system for sleep (mem)
+    [  180.983731] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  180.985097] Freezing remaining freezable tasks ... (elapsed 0.110 seconds) done.
+    [  181.096096] PM: Suspending system (mem)
+    [  181.097187] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  181.131542] disp_suspend
+    [  181.373825] [ohci3-controller]: is disable, can not suspend
+    [  181.373847] [ehci3-controller]: is disable, can not suspend
+    [  181.373867] [ohci2-controller]: is disable, can not suspend
+    [  181.373887] [ehci2-controller]: is disable, can not suspend
+    [  181.373907] [ohci1-controller]: is disable, can not suspend
+    [  181.373927] [ehci1-controller]: is disable, can not suspend
+    [  181.373941] hci: ERR: hcd is null
+    [  181.377656] hci: ERR: hcd is null
+    [  181.381368] udc is disable, need not enter to suspend
+    [  181.381396] sw_uart_suspend()2052 - uart1 suspend
+    [  181.381439] sw_uart_suspend()2052 - uart0 suspend
+    [  181.381455] [cedar] standby suspend
+    [  181.381507] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  182.023744] disp_suspend finish
+    [  182.023845] PM: suspend of devices complete after 926.860 msecs
+    [  182.025038] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  182.025207] PM: late suspend of devices complete after 1.354 msecs
+    [  182.029959] PM: noirq suspend of devices complete after 4.745 msecs
+    [  182.029965] Disabling non-boot CPUs ...
+    [  182.083651] Invalid sched_group_energy for CPU3
+    [  182.083656] Invalid sched_group_energy for Cluster3
+    [  182.083660] Invalid sched_group_energy for CPU2
+    [  182.083664] Invalid sched_group_energy for Cluster2
+    [  182.083668] Invalid sched_group_energy for CPU0
+    [  182.083672] Invalid sched_group_energy for Cluster0
+    [  182.084130] CPU1: shutdown
+    [  182.084154] psci: CPU1 killed.
+    [  182.093544] CPU0: update max cpu_capacity 1024
+    [  182.193613] Invalid sched_group_energy for CPU3
+    [  182.193618] Invalid sched_group_energy for Cluster3
+    [  182.193622] Invalid sched_group_energy for CPU0
+    [  182.193626] Invalid sched_group_energy for Cluster0
+    [  182.194016] CPU2: shutdown
+    [  182.194039] psci: CPU2 killed.
+    [  182.203543] CPU0: update max cpu_capacity 1024
+    [  182.283599] Invalid sched_group_energy for CPU0
+    [  182.283604] Invalid sched_group_energy for Cluster0
+    [  182.283900] CPU3: shutdown
+    [  182.283923] psci: CPU3 killed.
+    [  182.314529] Enabling non-boot CPUs ...
+    [  182.344352] Detected VIPT I-cache on CPU1
+    [  182.344397] Invalid sched_group_energy for CPU1
+    [  182.344399] CPU1: update cpu_capacity 1024
+    [  182.344402] CPU1: Booted secondary processor [410fd034]
+    [  182.344691] Invalid sched_group_energy for CPU1
+    [  182.344698] Invalid sched_group_energy for Cluster1
+    [  182.344702] Invalid sched_group_energy for CPU0
+    [  182.344706] Invalid sched_group_energy for Cluster0
+    [  182.344801] CPU1 is up
+    [  182.353472] CPU0: update max cpu_capacity 1024
+    [  182.384381] Detected VIPT I-cache on CPU2
+    [  182.384400] Invalid sched_group_energy for CPU2
+    [  182.384402] CPU2: update cpu_capacity 1024
+    [  182.384404] CPU2: Booted secondary processor [410fd034]
+    [  182.384606] Invalid sched_group_energy for CPU2
+    [  182.384611] Invalid sched_group_energy for Cluster2
+    [  182.384615] Invalid sched_group_energy for CPU1
+    [  182.384619] Invalid sched_group_energy for Cluster1
+    [  182.384622] Invalid sched_group_energy for CPU0
+    [  182.384626] Invalid sched_group_energy for Cluster0
+    [  182.384708] CPU2 is up
+    [  182.393464] CPU1: update max cpu_capacity 1024
+    [  182.444563] Detected VIPT I-cache on CPU3
+    [  182.444581] Invalid sched_group_energy for CPU3
+    [  182.444583] CPU3: update cpu_capacity 1024
+    [  182.444585] CPU3: Booted secondary processor [410fd034]
+    [  182.444808] Invalid sched_group_energy for CPU3
+    [  182.444813] Invalid sched_group_energy for Cluster3
+    [  182.444816] Invalid sched_group_energy for CPU2
+    [  182.444820] Invalid sched_group_energy for Cluster2
+    [  182.444824] Invalid sched_group_energy for CPU1
+    [  182.444828] Invalid sched_group_energy for Cluster1
+    [  182.444832] Invalid sched_group_energy for CPU0
+    [  182.444836] Invalid sched_group_energy for Cluster0
+    [  182.444978] Invalid sched_group_energy for CPU3
+    [  182.444983] Invalid sched_group_energy for Cluster3
+    [  182.444987] Invalid sched_group_energy for CPU2
+    [  182.444991] Invalid sched_group_energy for Cluster2
+    [  182.444994] Invalid sched_group_energy for CPU1
+    [  182.444999] Invalid sched_group_energy for Cluster1
+    [  182.445002] Invalid sched_group_energy for CPU0
+    [  182.445006] Invalid sched_group_energy for Cluster0
+    [  182.445091] CPU3 is up
+    [  182.445422] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  182.446240] PM: noirq resume of devices complete after 1.122 msecs
+    [  182.446384] ---[allen] hall_switch_isr: 711 
+    [  182.446829] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  182.447467] PM: early resume of devices complete after 0.836 msecs
+    [  182.447578] [ehci3-controller]: is disable, can not resume
+    [  182.447580] [ehci1-controller]: is disable, can not resume
+    [  182.447587] [ohci3-controller]: is disable, can not resume
+    [  182.447593] refresh hdcp key failed!!!
+    [  182.447600] [ohci1-controller]: is disable, can not resume
+    [  182.447609] [ehci2-controller]: is disable, can not resume
+    [  182.447617] [ohci2-controller]: is disable, can not resume
+    [  182.447643] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  182.447658] [cedar] standby resume
+    [  182.451809] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  182.451848] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  182.451859] udc is disable, need not enter to resume
+    [  182.451863] hci: ERR: hcd is null
+    [  182.452053] [DISP] disp_register_irq,line:544:
+    [  182.452053] irq for 0 already registered
+    [  182.454978] [DISP] lcd_clk_config,line:665:
+    [  182.454979] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [  182.454979]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [  182.455600] tcon_de_attach:de=0, tcon=0
+    [  182.455601] hci: ERR: hcd is null
+    [  182.459489] CPU1: update max cpu_capacity 1024
+    [  182.459962] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+
+----- Wake 6 (driver loaded: no) -----
+  suspend entry: freeze 186.844, last suspend-side line 187.840
+  resume: CPUs back 188.124, noirq done 188.256, early done 188.257, display resumed 188.257
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 188.914, finishing wakeup 188.914, tasks restarted 188.914
+  watcher thawed 188.916, backlight on -, first GPU interrupt 188.933
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 808
+  [  188.913549] PM: resume of devices complete after 656.194 msecs
+  [  188.257347] PM: early resume of devices complete after 0.845 msecs
+  [  188.256109] PM: noirq resume of devices complete after 1.066 msecs
+  slot.advance: slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  186.262299] ---[allen] hall_switch_isr: 711 
+    [  186.283545] ---[allen] hall_press_work_func: state=0 
+    [  186.712320] PM: suspend entry 2026-10-15 06:16:53.200668794 UTC
+    [  186.712329] PM: Syncing filesystems ... done.
+    [  186.720882] PM: Preparing system for sleep (mem)
+    [  186.843565] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  186.844896] Freezing remaining freezable tasks ... (elapsed 0.052 seconds) done.
+    [  186.897730] PM: Suspending system (mem)
+    [  186.898771] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  186.933266] disp_suspend
+    [  187.183844] [ohci3-controller]: is disable, can not suspend
+    [  187.183865] [ehci3-controller]: is disable, can not suspend
+    [  187.183886] [ohci2-controller]: is disable, can not suspend
+    [  187.183906] [ehci2-controller]: is disable, can not suspend
+    [  187.183926] [ohci1-controller]: is disable, can not suspend
+    [  187.183946] [ehci1-controller]: is disable, can not suspend
+    [  187.183959] hci: ERR: hcd is null
+    [  187.187672] hci: ERR: hcd is null
+    [  187.191382] udc is disable, need not enter to suspend
+    [  187.191410] sw_uart_suspend()2052 - uart1 suspend
+    [  187.191453] sw_uart_suspend()2052 - uart0 suspend
+    [  187.191468] [cedar] standby suspend
+    [  187.191520] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  187.833677] disp_suspend finish
+    [  187.833782] PM: suspend of devices complete after 935.163 msecs
+    [  187.834972] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  187.835140] PM: late suspend of devices complete after 1.350 msecs
+    [  187.839887] PM: noirq suspend of devices complete after 4.741 msecs
+    [  187.839893] Disabling non-boot CPUs ...
+    [  187.873583] Invalid sched_group_energy for CPU3
+    [  187.873589] Invalid sched_group_energy for Cluster3
+    [  187.873593] Invalid sched_group_energy for CPU2
+    [  187.873597] Invalid sched_group_energy for Cluster2
+    [  187.873600] Invalid sched_group_energy for CPU0
+    [  187.873604] Invalid sched_group_energy for Cluster0
+    [  187.874069] CPU1: shutdown
+    [  187.874089] psci: CPU1 killed.
+    [  187.883470] CPU2: update max cpu_capacity 1024
+    [  188.013539] Invalid sched_group_energy for CPU3
+    [  188.013544] Invalid sched_group_energy for Cluster3
+    [  188.013548] Invalid sched_group_energy for CPU0
+    [  188.013552] Invalid sched_group_energy for Cluster0
+    [  188.013737] IRQ3 no longer affine to CPU2
+    [  188.013932] CPU2: shutdown
+    [  188.013955] psci: CPU2 killed.
+    [  188.023473] CPU0: update max cpu_capacity 1024
+    [  188.093523] Invalid sched_group_energy for CPU0
+    [  188.093528] Invalid sched_group_energy for Cluster0
+    [  188.093822] CPU3: shutdown
+    [  188.093843] psci: CPU3 killed.
+    [  188.124498] Enabling non-boot CPUs ...
+    [  188.154299] Detected VIPT I-cache on CPU1
+    [  188.154345] Invalid sched_group_energy for CPU1
+    [  188.154347] CPU1: update cpu_capacity 1024
+    [  188.154350] CPU1: Booted secondary processor [410fd034]
+    [  188.154639] Invalid sched_group_energy for CPU1
+    [  188.154645] Invalid sched_group_energy for Cluster1
+    [  188.154649] Invalid sched_group_energy for CPU0
+    [  188.154653] Invalid sched_group_energy for Cluster0
+    [  188.154749] CPU1 is up
+    [  188.163401] CPU0: update max cpu_capacity 1024
+    [  188.194311] Detected VIPT I-cache on CPU2
+    [  188.194329] Invalid sched_group_energy for CPU2
+    [  188.194331] CPU2: update cpu_capacity 1024
+    [  188.194333] CPU2: Booted secondary processor [410fd034]
+    [  188.194541] Invalid sched_group_energy for CPU2
+    [  188.194546] Invalid sched_group_energy for Cluster2
+    [  188.194549] Invalid sched_group_energy for CPU1
+    [  188.194553] Invalid sched_group_energy for Cluster1
+    [  188.194557] Invalid sched_group_energy for CPU0
+    [  188.194561] Invalid sched_group_energy for Cluster0
+    [  188.194645] CPU2 is up
+    [  188.203393] CPU1: update max cpu_capacity 1024
+    [  188.254491] Detected VIPT I-cache on CPU3
+    [  188.254510] Invalid sched_group_energy for CPU3
+    [  188.254512] CPU3: update cpu_capacity 1024
+    [  188.254514] CPU3: Booted secondary processor [410fd034]
+    [  188.254733] Invalid sched_group_energy for CPU3
+    [  188.254738] Invalid sched_group_energy for Cluster3
+    [  188.254742] Invalid sched_group_energy for CPU2
+    [  188.254746] Invalid sched_group_energy for Cluster2
+    [  188.254749] Invalid sched_group_energy for CPU1
+    [  188.254753] Invalid sched_group_energy for Cluster1
+    [  188.254757] Invalid sched_group_energy for CPU0
+    [  188.254761] Invalid sched_group_energy for Cluster0
+    [  188.254904] Invalid sched_group_energy for CPU3
+    [  188.254908] Invalid sched_group_energy for Cluster3
+    [  188.254912] Invalid sched_group_energy for CPU2
+    [  188.254916] Invalid sched_group_energy for Cluster2
+    [  188.254920] Invalid sched_group_energy for CPU1
+    [  188.254924] Invalid sched_group_energy for Cluster1
+    [  188.254927] Invalid sched_group_energy for CPU0
+    [  188.254931] Invalid sched_group_energy for Cluster0
+    [  188.255016] CPU3 is up
+    [  188.255299] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  188.256109] PM: noirq resume of devices complete after 1.066 msecs
+    [  188.256254] ---[allen] hall_switch_isr: 711 
+    [  188.256705] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  188.257347] PM: early resume of devices complete after 0.845 msecs
+    [  188.257455] [ehci3-controller]: is disable, can not resume
+    [  188.257457] [ehci1-controller]: is disable, can not resume
+    [  188.257464] [ohci3-controller]: is disable, can not resume
+    [  188.257470] refresh hdcp key failed!!!
+    [  188.257477] [ehci2-controller]: is disable, can not resume
+    [  188.257485] [ohci2-controller]: is disable, can not resume
+    [  188.257494] [ohci1-controller]: is disable, can not resume
+    [  188.257520] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  188.257534] [cedar] standby resume
+    [  188.261686] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  188.261725] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  188.261735] udc is disable, need not enter to resume
+    [  188.261740] hci: ERR: hcd is null
+    [  188.261980] [DISP] disp_register_irq,line:544:
+    [  188.261980] irq for 0 already registered
+    [  188.264907] [DISP] lcd_clk_config,line:665:
+    [  188.264907] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [  188.264907]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [  188.265481] tcon_de_attach:de=0, tcon=0
+    [  188.265481] hci: ERR: hcd is null
+    [  188.269366] CPU2: update max cpu_capacity 1024
+
+----- Wake 7 (driver loaded: no) -----
+  suspend entry: freeze 193.344, last suspend-side line 194.360
+  resume: CPUs back 194.634, noirq done 194.766, early done 194.767, display resumed 194.767
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 195.423, finishing wakeup 195.424, tasks restarted 195.424
+  watcher thawed 195.426, backlight on -, first GPU interrupt 195.443
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 808
+  [  195.423470] PM: resume of devices complete after 656.176 msecs
+  [  194.767286] PM: early resume of devices complete after 0.820 msecs
+  [  194.766078] PM: noirq resume of devices complete after 1.100 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  192.698836] ---[allen] hall_switch_isr: 711 
+    [  192.723477] ---[allen] hall_press_work_func: state=0 
+    [  193.288001] PM: suspend entry 2026-10-15 06:17:11.966623253 UTC
+    [  193.288009] PM: Syncing filesystems ... done.
+    [  193.297650] PM: Preparing system for sleep (mem)
+    [  193.343583] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  193.344952] Freezing remaining freezable tasks ... (elapsed 0.082 seconds) done.
+    [  193.427688] PM: Suspending system (mem)
+    [  193.428792] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  193.462869] disp_suspend
+    [  193.713684] [ohci3-controller]: is disable, can not suspend
+    [  193.713705] [ehci3-controller]: is disable, can not suspend
+    [  193.713726] [ohci2-controller]: is disable, can not suspend
+    [  193.713746] [ehci2-controller]: is disable, can not suspend
+    [  193.713766] [ohci1-controller]: is disable, can not suspend
+    [  193.713787] [ehci1-controller]: is disable, can not suspend
+    [  193.713800] hci: ERR: hcd is null
+    [  193.717513] hci: ERR: hcd is null
+    [  193.721226] udc is disable, need not enter to suspend
+    [  193.721254] sw_uart_suspend()2052 - uart1 suspend
+    [  193.721297] sw_uart_suspend()2052 - uart0 suspend
+    [  193.721312] [cedar] standby suspend
+    [  193.721364] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  194.353618] disp_suspend finish
+    [  194.353720] PM: suspend of devices complete after 925.142 msecs
+    [  194.355048] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  194.355217] PM: late suspend of devices complete after 1.489 msecs
+    [  194.359984] PM: noirq suspend of devices complete after 4.761 msecs
+    [  194.359990] Disabling non-boot CPUs ...
+    [  194.413515] Invalid sched_group_energy for CPU3
+    [  194.413520] Invalid sched_group_energy for Cluster3
+    [  194.413524] Invalid sched_group_energy for CPU2
+    [  194.413528] Invalid sched_group_energy for Cluster2
+    [  194.413532] Invalid sched_group_energy for CPU0
+    [  194.413536] Invalid sched_group_energy for Cluster0
+    [  194.413766] IRQ3 no longer affine to CPU1
+    [  194.414005] CPU1: shutdown
+    [  194.414025] psci: CPU1 killed.
+    [  194.423400] CPU0: update max cpu_capacity 1024
+    [  194.493468] Invalid sched_group_energy for CPU3
+    [  194.493473] Invalid sched_group_energy for Cluster3
+    [  194.493477] Invalid sched_group_energy for CPU0
+    [  194.493481] Invalid sched_group_energy for Cluster0
+    [  194.493853] CPU2: shutdown
+    [  194.493877] psci: CPU2 killed.
+    [  194.503402] CPU0: update max cpu_capacity 1024
+    [  194.603454] Invalid sched_group_energy for CPU0
+    [  194.603459] Invalid sched_group_energy for Cluster0
+    [  194.603758] CPU3: shutdown
+    [  194.603780] psci: CPU3 killed.
+    [  194.634424] Enabling non-boot CPUs ...
+    [  194.664209] Detected VIPT I-cache on CPU1
+    [  194.664253] Invalid sched_group_energy for CPU1
+    [  194.664256] CPU1: update cpu_capacity 1024
+    [  194.664259] CPU1: Booted secondary processor [410fd034]
+    [  194.664549] Invalid sched_group_energy for CPU1
+    [  194.664556] Invalid sched_group_energy for Cluster1
+    [  194.664559] Invalid sched_group_energy for CPU0
+    [  194.664563] Invalid sched_group_energy for Cluster0
+    [  194.664660] CPU1 is up
+    [  194.673327] CPU0: update max cpu_capacity 1024
+    [  194.704243] Detected VIPT I-cache on CPU2
+    [  194.704261] Invalid sched_group_energy for CPU2
+    [  194.704264] CPU2: update cpu_capacity 1024
+    [  194.704266] CPU2: Booted secondary processor [410fd034]
+    [  194.704475] Invalid sched_group_energy for CPU2
+    [  194.704480] Invalid sched_group_energy for Cluster2
+    [  194.704483] Invalid sched_group_energy for CPU1
+    [  194.704487] Invalid sched_group_energy for Cluster1
+    [  194.704491] Invalid sched_group_energy for CPU0
+    [  194.704495] Invalid sched_group_energy for Cluster0
+    [  194.704578] CPU2 is up
+    [  194.713320] CPU1: update max cpu_capacity 1024
+    [  194.764422] Detected VIPT I-cache on CPU3
+    [  194.764440] Invalid sched_group_energy for CPU3
+    [  194.764442] CPU3: update cpu_capacity 1024
+    [  194.764444] CPU3: Booted secondary processor [410fd034]
+    [  194.764666] Invalid sched_group_energy for CPU3
+    [  194.764671] Invalid sched_group_energy for Cluster3
+    [  194.764675] Invalid sched_group_energy for CPU2
+    [  194.764679] Invalid sched_group_energy for Cluster2
+    [  194.764682] Invalid sched_group_energy for CPU1
+    [  194.764687] Invalid sched_group_energy for Cluster1
+    [  194.764690] Invalid sched_group_energy for CPU0
+    [  194.764694] Invalid sched_group_energy for Cluster0
+    [  194.764836] Invalid sched_group_energy for CPU3
+    [  194.764841] Invalid sched_group_energy for Cluster3
+    [  194.764844] Invalid sched_group_energy for CPU2
+    [  194.764848] Invalid sched_group_energy for Cluster2
+    [  194.764852] Invalid sched_group_energy for CPU1
+    [  194.764856] Invalid sched_group_energy for Cluster1
+    [  194.764860] Invalid sched_group_energy for CPU0
+    [  194.764864] Invalid sched_group_energy for Cluster0
+    [  194.764951] CPU3 is up
+    [  194.765270] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  194.766078] PM: noirq resume of devices complete after 1.100 msecs
+    [  194.766221] ---[allen] hall_switch_isr: 711 
+    [  194.766653] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  194.767286] PM: early resume of devices complete after 0.820 msecs
+    [  194.767355] [ehci1-controller]: is disable, can not resume
+    [  194.767363] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  194.767364] [ohci1-controller]: is disable, can not resume
+    [  194.767370] [ehci2-controller]: is disable, can not resume
+    [  194.767377] [ohci2-controller]: is disable, can not resume
+    [  194.767380] [cedar] standby resume
+    [  194.767384] [ehci3-controller]: is disable, can not resume
+    [  194.767391] [ohci3-controller]: is disable, can not resume
+    [  194.767403] refresh hdcp key failed!!!
+    [  194.767411] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  194.767450] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  194.767459] udc is disable, need not enter to resume
+    [  194.767462] hci: ERR: hcd is null
+    [  194.767465] hci: ERR: hcd is null
+    [  194.768046] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+    [  194.768213] 6000000.hdmi supply vdd-hdmi not found, using dummy regulator
+    [  194.769134] ---[allen] hall_release_work_func: 0000
+    [  194.773332] CPU0: update max cpu_capacity 1024
+    [  194.779222] [DISP] disp_register_irq,line:544:
+    [  194.779227] irq for 0 already registered
+    [  194.782123] [DISP] lcd_clk_config,line:665:
+
+----- Wake 8 (driver loaded: no) -----
+  suspend entry: freeze 200.283, last suspend-side line 201.320
+  resume: CPUs back 201.614, noirq done 201.746, early done 201.747, display resumed 201.747
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 202.403, finishing wakeup 202.404, tasks restarted 202.409
+  watcher thawed 202.410, backlight on -, first GPU interrupt 202.418
+  TIMELINE (ms from resume start): devices 789, tasks 794, backlight -, first frame 803
+  [  202.403446] PM: resume of devices complete after 656.260 msecs
+  [  201.747179] PM: early resume of devices complete after 0.849 msecs
+  [  201.745944] PM: noirq resume of devices complete after 1.038 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  199.610341] ---[allen] hall_switch_isr: 711 
+    [  199.633413] ---[allen] hall_press_work_func: state=0 
+    [  200.112096] PM: suspend entry 2026-10-15 06:17:32.292588378 UTC
+    [  200.112104] PM: Syncing filesystems ... done.
+    [  200.121498] PM: Preparing system for sleep (mem)
+    [  200.283420] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  200.284809] Freezing remaining freezable tasks ... (elapsed 0.096 seconds) done.
+    [  200.381536] PM: Suspending system (mem)
+    [  200.382631] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  200.418002] disp_suspend
+    [  200.663610] [ohci3-controller]: is disable, can not suspend
+    [  200.663632] [ehci3-controller]: is disable, can not suspend
+    [  200.663652] [ohci2-controller]: is disable, can not suspend
+    [  200.663672] [ehci2-controller]: is disable, can not suspend
+    [  200.663692] [ohci1-controller]: is disable, can not suspend
+    [  200.663712] [ehci1-controller]: is disable, can not suspend
+    [  200.663725] hci: ERR: hcd is null
+    [  200.667439] hci: ERR: hcd is null
+    [  200.671151] udc is disable, need not enter to suspend
+    [  200.671177] sw_uart_suspend()2052 - uart1 suspend
+    [  200.671220] sw_uart_suspend()2052 - uart0 suspend
+    [  200.671236] [cedar] standby suspend
+    [  200.671288] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  201.313481] disp_suspend finish
+    [  201.313585] PM: suspend of devices complete after 931.160 msecs
+    [  201.314774] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  201.314914] PM: late suspend of devices complete after 1.321 msecs
+    [  201.319645] PM: noirq suspend of devices complete after 4.724 msecs
+    [  201.319650] Disabling non-boot CPUs ...
+    [  201.373437] Invalid sched_group_energy for CPU3
+    [  201.373442] Invalid sched_group_energy for Cluster3
+    [  201.373446] Invalid sched_group_energy for CPU2
+    [  201.373451] Invalid sched_group_energy for Cluster2
+    [  201.373454] Invalid sched_group_energy for CPU0
+    [  201.373458] Invalid sched_group_energy for Cluster0
+    [  201.373922] CPU1: shutdown
+    [  201.373945] psci: CPU1 killed.
+    [  201.383327] CPU0: update max cpu_capacity 1024
+    [  201.463397] Invalid sched_group_energy for CPU3
+    [  201.463402] Invalid sched_group_energy for Cluster3
+    [  201.463405] Invalid sched_group_energy for CPU0
+    [  201.463410] Invalid sched_group_energy for Cluster0
+    [  201.463793] CPU2: shutdown
+    [  201.463815] psci: CPU2 killed.
+    [  201.473324] CPU3: update max cpu_capacity 1024
+    [  201.583380] Invalid sched_group_energy for CPU0
+    [  201.583385] Invalid sched_group_energy for Cluster0
+    [  201.583692] CPU3: shutdown
+    [  201.583715] psci: CPU3 killed.
+    [  201.614301] Enabling non-boot CPUs ...
+    [  201.644130] Detected VIPT I-cache on CPU1
+    [  201.644176] Invalid sched_group_energy for CPU1
+    [  201.644178] CPU1: update cpu_capacity 1024
+    [  201.644181] CPU1: Booted secondary processor [410fd034]
+    [  201.644472] Invalid sched_group_energy for CPU1
+    [  201.644479] Invalid sched_group_energy for Cluster1
+    [  201.644483] Invalid sched_group_energy for CPU0
+    [  201.644487] Invalid sched_group_energy for Cluster0
+    [  201.644583] CPU1 is up
+    [  201.653255] CPU0: update max cpu_capacity 1024
+    [  201.684162] Detected VIPT I-cache on CPU2
+    [  201.684181] Invalid sched_group_energy for CPU2
+    [  201.684183] CPU2: update cpu_capacity 1024
+    [  201.684185] CPU2: Booted secondary processor [410fd034]
+    [  201.684391] Invalid sched_group_energy for CPU2
+    [  201.684396] Invalid sched_group_energy for Cluster2
+    [  201.684400] Invalid sched_group_energy for CPU1
+    [  201.684404] Invalid sched_group_energy for Cluster1
+    [  201.684408] Invalid sched_group_energy for CPU0
+    [  201.684412] Invalid sched_group_energy for Cluster0
+    [  201.684494] CPU2 is up
+    [  201.693248] CPU1: update max cpu_capacity 1024
+    [  201.744352] Detected VIPT I-cache on CPU3
+    [  201.744370] Invalid sched_group_energy for CPU3
+    [  201.744372] CPU3: update cpu_capacity 1024
+    [  201.744374] CPU3: Booted secondary processor [410fd034]
+    [  201.744596] Invalid sched_group_energy for CPU3
+    [  201.744601] Invalid sched_group_energy for Cluster3
+    [  201.744605] Invalid sched_group_energy for CPU2
+    [  201.744609] Invalid sched_group_energy for Cluster2
+    [  201.744613] Invalid sched_group_energy for CPU1
+    [  201.744617] Invalid sched_group_energy for Cluster1
+    [  201.744620] Invalid sched_group_energy for CPU0
+    [  201.744625] Invalid sched_group_energy for Cluster0
+    [  201.744766] Invalid sched_group_energy for CPU3
+    [  201.744770] Invalid sched_group_energy for Cluster3
+    [  201.744774] Invalid sched_group_energy for CPU2
+    [  201.744778] Invalid sched_group_energy for Cluster2
+    [  201.744782] Invalid sched_group_energy for CPU1
+    [  201.744786] Invalid sched_group_energy for Cluster1
+    [  201.744789] Invalid sched_group_energy for CPU0
+    [  201.744793] Invalid sched_group_energy for Cluster0
+    [  201.744879] CPU3 is up
+    [  201.745161] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  201.745944] PM: noirq resume of devices complete after 1.038 msecs
+    [  201.746087] ---[allen] hall_switch_isr: 711 
+    [  201.746542] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  201.747179] PM: early resume of devices complete after 0.849 msecs
+    [  201.747358] [ehci1-controller]: is disable, can not resume
+    [  201.747369] [ohci1-controller]: is disable, can not resume
+    [  201.747379] [ehci2-controller]: is disable, can not resume
+    [  201.747389] [ohci2-controller]: is disable, can not resume
+    [  201.747398] [ohci3-controller]: is disable, can not resume
+    [  201.747412] refresh hdcp key failed!!!
+    [  201.751627] [ehci3-controller]: is disable, can not resume
+    [  201.751653] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  201.751671] [cedar] standby resume
+    [  201.751703] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  201.751741] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  201.751752] udc is disable, need not enter to resume
+    [  201.751756] hci: ERR: hcd is null
+    [  201.751974] [DISP] disp_register_irq,line:544:
+    [  201.751975] irq for 0 already registered
+    [  201.754898] [DISP] lcd_clk_config,line:665:
+    [  201.754898] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [  201.754898]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [  201.755495] tcon_de_attach:de=0, tcon=0
+    [  201.755495] hci: ERR: hcd is null
+    [  201.759393] CPU1: update max cpu_capacity 1024
+    [  201.759875] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+
+----- Wake 9 (driver loaded: no) -----
+  suspend entry: freeze 206.183, last suspend-side line 207.190
+  resume: CPUs back 207.484, noirq done 207.616, early done 207.617, display resumed 207.617
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 208.273, finishing wakeup 208.274, tasks restarted 208.274
+  watcher thawed 208.275, backlight on -, first GPU interrupt 208.293
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 808
+  [  208.273331] PM: resume of devices complete after 656.162 msecs
+  [  207.617161] PM: early resume of devices complete after 0.830 msecs
+  [  207.615945] PM: noirq resume of devices complete after 1.121 msecs
+  slot.advance: slot: sleep: woke after 14s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  205.558367] ---[allen] hall_switch_isr: 711 
+    [  205.583338] ---[allen] hall_press_work_func: state=0 
+    [  206.015787] PM: suspend entry 2026-10-15 06:17:51.204247336 UTC
+    [  206.015795] PM: Syncing filesystems ... done.
+    [  206.025958] PM: Preparing system for sleep (mem)
+    [  206.183347] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  206.184776] Freezing remaining freezable tasks ... (elapsed 0.066 seconds) done.
+    [  206.251496] PM: Suspending system (mem)
+    [  206.252539] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  206.287374] disp_suspend
+    [  206.533539] [ohci3-controller]: is disable, can not suspend
+    [  206.533560] [ehci3-controller]: is disable, can not suspend
+    [  206.533581] [ohci2-controller]: is disable, can not suspend
+    [  206.533601] [ehci2-controller]: is disable, can not suspend
+    [  206.533621] [ohci1-controller]: is disable, can not suspend
+    [  206.533641] [ehci1-controller]: is disable, can not suspend
+    [  206.533654] hci: ERR: hcd is null
+    [  206.537368] hci: ERR: hcd is null
+    [  206.541078] udc is disable, need not enter to suspend
+    [  206.541105] sw_uart_suspend()2052 - uart1 suspend
+    [  206.541148] sw_uart_suspend()2052 - uart0 suspend
+    [  206.541164] [cedar] standby suspend
+    [  206.541218] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  207.183458] disp_suspend finish
+    [  207.183563] PM: suspend of devices complete after 931.176 msecs
+    [  207.184764] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  207.184935] PM: late suspend of devices complete after 1.364 msecs
+    [  207.189674] PM: noirq suspend of devices complete after 4.732 msecs
+    [  207.189679] Disabling non-boot CPUs ...
+    [  207.243362] Invalid sched_group_energy for CPU3
+    [  207.243368] Invalid sched_group_energy for Cluster3
+    [  207.243371] Invalid sched_group_energy for CPU2
+    [  207.243376] Invalid sched_group_energy for Cluster2
+    [  207.243379] Invalid sched_group_energy for CPU0
+    [  207.243383] Invalid sched_group_energy for Cluster0
+    [  207.243848] CPU1: shutdown
+    [  207.243870] psci: CPU1 killed.
+    [  207.253250] CPU3: update max cpu_capacity 1024
+    [  207.333324] Invalid sched_group_energy for CPU3
+    [  207.333329] Invalid sched_group_energy for Cluster3
+    [  207.333333] Invalid sched_group_energy for CPU0
+    [  207.333337] Invalid sched_group_energy for Cluster0
+    [  207.333721] CPU2: shutdown
+    [  207.333743] psci: CPU2 killed.
+    [  207.343254] CPU0: update max cpu_capacity 1024
+    [  207.453306] Invalid sched_group_energy for CPU0
+    [  207.453311] Invalid sched_group_energy for Cluster0
+    [  207.453465] IRQ3 no longer affine to CPU3
+    [  207.453621] CPU3: shutdown
+    [  207.453644] psci: CPU3 killed.
+    [  207.484248] Enabling non-boot CPUs ...
+    [  207.514080] Detected VIPT I-cache on CPU1
+    [  207.514125] Invalid sched_group_energy for CPU1
+    [  207.514128] CPU1: update cpu_capacity 1024
+    [  207.514131] CPU1: Booted secondary processor [410fd034]
+    [  207.514423] Invalid sched_group_energy for CPU1
+    [  207.514429] Invalid sched_group_energy for Cluster1
+    [  207.514433] Invalid sched_group_energy for CPU0
+    [  207.514437] Invalid sched_group_energy for Cluster0
+    [  207.514534] CPU1 is up
+    [  207.523183] CPU0: update max cpu_capacity 1024
+    [  207.554093] Detected VIPT I-cache on CPU2
+    [  207.554111] Invalid sched_group_energy for CPU2
+    [  207.554113] CPU2: update cpu_capacity 1024
+    [  207.554115] CPU2: Booted secondary processor [410fd034]
+    [  207.554325] Invalid sched_group_energy for CPU2
+    [  207.554330] Invalid sched_group_energy for Cluster2
+    [  207.554334] Invalid sched_group_energy for CPU1
+    [  207.554338] Invalid sched_group_energy for Cluster1
+    [  207.554341] Invalid sched_group_energy for CPU0
+    [  207.554346] Invalid sched_group_energy for Cluster0
+    [  207.554430] CPU2 is up
+    [  207.563175] CPU1: update max cpu_capacity 1024
+    [  207.614275] Detected VIPT I-cache on CPU3
+    [  207.614293] Invalid sched_group_energy for CPU3
+    [  207.614295] CPU3: update cpu_capacity 1024
+    [  207.614297] CPU3: Booted secondary processor [410fd034]
+    [  207.614518] Invalid sched_group_energy for CPU3
+    [  207.614523] Invalid sched_group_energy for Cluster3
+    [  207.614526] Invalid sched_group_energy for CPU2
+    [  207.614531] Invalid sched_group_energy for Cluster2
+    [  207.614534] Invalid sched_group_energy for CPU1
+    [  207.614538] Invalid sched_group_energy for Cluster1
+    [  207.614542] Invalid sched_group_energy for CPU0
+    [  207.614546] Invalid sched_group_energy for Cluster0
+    [  207.614684] Invalid sched_group_energy for CPU3
+    [  207.614689] Invalid sched_group_energy for Cluster3
+    [  207.614692] Invalid sched_group_energy for CPU2
+    [  207.614696] Invalid sched_group_energy for Cluster2
+    [  207.614700] Invalid sched_group_energy for CPU1
+    [  207.614704] Invalid sched_group_energy for Cluster1
+    [  207.614707] Invalid sched_group_energy for CPU0
+    [  207.614712] Invalid sched_group_energy for Cluster0
+    [  207.614797] CPU3 is up
+    [  207.615139] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  207.615945] PM: noirq resume of devices complete after 1.121 msecs
+    [  207.616087] ---[allen] hall_switch_isr: 711 
+    [  207.616523] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  207.617161] PM: early resume of devices complete after 0.830 msecs
+    [  207.617229] [ehci1-controller]: is disable, can not resume
+    [  207.617238] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  207.617240] [ohci1-controller]: is disable, can not resume
+    [  207.617246] [ehci2-controller]: is disable, can not resume
+    [  207.617253] [ohci2-controller]: is disable, can not resume
+    [  207.617256] [cedar] standby resume
+    [  207.617261] [ehci3-controller]: is disable, can not resume
+    [  207.617269] [ohci3-controller]: is disable, can not resume
+    [  207.617281] refresh hdcp key failed!!!
+    [  207.617289] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  207.617328] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  207.617337] udc is disable, need not enter to resume
+    [  207.617340] hci: ERR: hcd is null
+    [  207.617343] hci: ERR: hcd is null
+    [  207.618016] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+    [  207.618100] 6000000.hdmi supply vdd-hdmi not found, using dummy regulator
+    [  207.619004] ---[allen] hall_release_work_func: 0000
+    [  207.623188] CPU0: update max cpu_capacity 1024
+    [  207.629165] [DISP] disp_register_irq,line:544:
+    [  207.629170] irq for 0 already registered
+    [  207.632066] [DISP] lcd_clk_config,line:665:
+
+----- Wake 10 (driver loaded: no) -----
+  suspend entry: freeze 212.473, last suspend-side line 213.500
+  resume: CPUs back 213.774, noirq done 213.906, early done 213.907, display resumed 213.907
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 214.563, finishing wakeup 214.564, tasks restarted 214.564
+  watcher thawed 214.565, backlight on -, first GPU interrupt 214.581
+  TIMELINE (ms from resume start): devices 789, tasks 789, backlight -, first frame 806
+  [  214.563305] PM: resume of devices complete after 656.233 msecs
+  [  213.907064] PM: early resume of devices complete after 0.780 msecs
+  [  213.905898] PM: noirq resume of devices complete after 1.141 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  211.830531] ---[allen] hall_switch_isr: 711 
+    [  211.853265] ---[allen] hall_press_work_func: state=0 
+    [  212.384002] PM: suspend entry 2026-10-15 06:18:11.714012168 UTC
+    [  212.384010] PM: Syncing filesystems ... done.
+    [  212.392399] PM: Preparing system for sleep (mem)
+    [  212.473356] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  212.474733] Freezing remaining freezable tasks ... (elapsed 0.090 seconds) done.
+    [  212.565523] PM: Suspending system (mem)
+    [  212.566522] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  212.602249] disp_suspend
+    [  212.843467] [ohci3-controller]: is disable, can not suspend
+    [  212.843489] [ehci3-controller]: is disable, can not suspend
+    [  212.843509] [ohci2-controller]: is disable, can not suspend
+    [  212.843529] [ehci2-controller]: is disable, can not suspend
+    [  212.843549] [ohci1-controller]: is disable, can not suspend
+    [  212.843568] [ehci1-controller]: is disable, can not suspend
+    [  212.843581] hci: ERR: hcd is null
+    [  212.847296] hci: ERR: hcd is null
+    [  212.851008] udc is disable, need not enter to suspend
+    [  212.851035] sw_uart_suspend()2052 - uart1 suspend
+    [  212.851078] sw_uart_suspend()2052 - uart0 suspend
+    [  212.851093] [cedar] standby suspend
+    [  212.851145] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  213.493387] disp_suspend finish
+    [  213.493489] PM: suspend of devices complete after 927.075 msecs
+    [  213.494675] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  213.494843] PM: late suspend of devices complete after 1.347 msecs
+    [  213.499629] PM: noirq suspend of devices complete after 4.779 msecs
+    [  213.499634] Disabling non-boot CPUs ...
+    [  213.553296] Invalid sched_group_energy for CPU3
+    [  213.553302] Invalid sched_group_energy for Cluster3
+    [  213.553306] Invalid sched_group_energy for CPU2
+    [  213.553310] Invalid sched_group_energy for Cluster2
+    [  213.553313] Invalid sched_group_energy for CPU0
+    [  213.553318] Invalid sched_group_energy for Cluster0
+    [  213.553554] IRQ3 no longer affine to CPU1
+    [  213.553794] CPU1: shutdown
+    [  213.553814] psci: CPU1 killed.
+    [  213.563183] CPU0: update max cpu_capacity 1024
+    [  213.633250] Invalid sched_group_energy for CPU3
+    [  213.633255] Invalid sched_group_energy for Cluster3
+    [  213.633259] Invalid sched_group_energy for CPU0
+    [  213.633263] Invalid sched_group_energy for Cluster0
+    [  213.633635] CPU2: shutdown
+    [  213.633659] psci: CPU2 killed.
+    [  213.643185] CPU0: update max cpu_capacity 1024
+    [  213.743237] Invalid sched_group_energy for CPU0
+    [  213.743242] Invalid sched_group_energy for Cluster0
+    [  213.743548] CPU3: shutdown
+    [  213.743570] psci: CPU3 killed.
+    [  213.774160] Enabling non-boot CPUs ...
+    [  213.803993] Detected VIPT I-cache on CPU1
+    [  213.804038] Invalid sched_group_energy for CPU1
+    [  213.804041] CPU1: update cpu_capacity 1024
+    [  213.804043] CPU1: Booted secondary processor [410fd034]
+    [  213.804338] Invalid sched_group_energy for CPU1
+    [  213.804345] Invalid sched_group_energy for Cluster1
+    [  213.804349] Invalid sched_group_energy for CPU0
+    [  213.804353] Invalid sched_group_energy for Cluster0
+    [  213.804449] CPU1 is up
+    [  213.813110] CPU0: update max cpu_capacity 1024
+    [  213.844045] Detected VIPT I-cache on CPU2
+    [  213.844063] Invalid sched_group_energy for CPU2
+    [  213.844065] CPU2: update cpu_capacity 1024
+    [  213.844067] CPU2: Booted secondary processor [410fd034]
+    [  213.844274] Invalid sched_group_energy for CPU2
+    [  213.844279] Invalid sched_group_energy for Cluster2
+    [  213.844283] Invalid sched_group_energy for CPU1
+    [  213.844287] Invalid sched_group_energy for Cluster1
+    [  213.844290] Invalid sched_group_energy for CPU0
+    [  213.844295] Invalid sched_group_energy for Cluster0
+    [  213.844377] CPU2 is up
+    [  213.853107] CPU1: update max cpu_capacity 1024
+    [  213.904206] Detected VIPT I-cache on CPU3
+    [  213.904224] Invalid sched_group_energy for CPU3
+    [  213.904226] CPU3: update cpu_capacity 1024
+    [  213.904229] CPU3: Booted secondary processor [410fd034]
+    [  213.904448] Invalid sched_group_energy for CPU3
+    [  213.904453] Invalid sched_group_energy for Cluster3
+    [  213.904457] Invalid sched_group_energy for CPU2
+    [  213.904461] Invalid sched_group_energy for Cluster2
+    [  213.904464] Invalid sched_group_energy for CPU1
+    [  213.904469] Invalid sched_group_energy for Cluster1
+    [  213.904472] Invalid sched_group_energy for CPU0
+    [  213.904476] Invalid sched_group_energy for Cluster0
+    [  213.904617] Invalid sched_group_energy for CPU3
+    [  213.904622] Invalid sched_group_energy for Cluster3
+    [  213.904626] Invalid sched_group_energy for CPU2
+    [  213.904630] Invalid sched_group_energy for Cluster2
+    [  213.904633] Invalid sched_group_energy for CPU1
+    [  213.904638] Invalid sched_group_energy for Cluster1
+    [  213.904641] Invalid sched_group_energy for CPU0
+    [  213.904645] Invalid sched_group_energy for Cluster0
+    [  213.904730] CPU3 is up
+    [  213.905095] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  213.905898] PM: noirq resume of devices complete after 1.141 msecs
+    [  213.906041] ---[allen] hall_switch_isr: 711 
+    [  213.906444] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  213.907064] PM: early resume of devices complete after 0.780 msecs
+    [  213.907162] [ehci1-controller]: is disable, can not resume
+    [  213.907164] [ohci2-controller]: is disable, can not resume
+    [  213.907168] [ehci3-controller]: is disable, can not resume
+    [  213.907171] [ohci3-controller]: is disable, can not resume
+    [  213.907176] refresh hdcp key failed!!!
+    [  213.907192] [ehci2-controller]: is disable, can not resume
+    [  213.911392] [ohci1-controller]: is disable, can not resume
+    [  213.911419] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  213.911436] [cedar] standby resume
+    [  213.911469] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  213.911507] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  213.911518] udc is disable, need not enter to resume
+    [  213.911522] hci: ERR: hcd is null
+    [  213.911688] [DISP] disp_register_irq,line:544:
+    [  213.911689] irq for 0 already registered
+    [  213.914627] [DISP] lcd_clk_config,line:665:
+    [  213.914627] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [  213.914627]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [  213.915250] tcon_de_attach:de=0, tcon=0
+    [  213.915251] CPU2: update max cpu_capacity 1024
+    [  213.915260] hci: ERR: hcd is null
+
+----- Wake 11 (driver loaded: no) -----
+  suspend entry: freeze 218.983, last suspend-side line 220.010
+  resume: CPUs back 220.304, noirq done 220.456, early done 220.457, display resumed 220.457
+  Wi-Fi driver resume: none (driver not loaded)
+  devices resumed 221.113, finishing wakeup 221.114, tasks restarted 221.114
+  watcher thawed 221.115, backlight on -, first GPU interrupt 221.133
+  TIMELINE (ms from resume start): devices 809, tasks 809, backlight -, first frame 828
+  [  221.113227] PM: resume of devices complete after 656.259 msecs
+  [  220.456960] PM: early resume of devices complete after 0.814 msecs
+  [  220.455757] PM: noirq resume of devices complete after 1.071 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [  218.298322] ---[allen] hall_switch_isr: 711 
+    [  218.323180] ---[allen] hall_press_work_func: state=0 
+    [  218.818659] PM: suspend entry 2026-10-15 06:18:30.847416503 UTC
+    [  218.818668] PM: Syncing filesystems ... done.
+    [  218.828808] PM: Preparing system for sleep (mem)
+    [  218.983258] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [  218.984614] Freezing remaining freezable tasks ... (elapsed 0.088 seconds) done.
+    [  219.073169] PM: Suspending system (mem)
+    [  219.074219] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [  219.109180] disp_suspend
+    [  219.353393] [ohci3-controller]: is disable, can not suspend
+    [  219.353415] [ehci3-controller]: is disable, can not suspend
+    [  219.353436] [ohci2-controller]: is disable, can not suspend
+    [  219.353456] [ehci2-controller]: is disable, can not suspend
+    [  219.353476] [ohci1-controller]: is disable, can not suspend
+    [  219.353496] [ehci1-controller]: is disable, can not suspend
+    [  219.353509] hci: ERR: hcd is null
+    [  219.357222] hci: ERR: hcd is null
+    [  219.360935] udc is disable, need not enter to suspend
+    [  219.360964] sw_uart_suspend()2052 - uart1 suspend
+    [  219.361006] sw_uart_suspend()2052 - uart0 suspend
+    [  219.361021] [cedar] standby suspend
+    [  219.361076] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [  220.003316] disp_suspend finish
+    [  220.003423] PM: suspend of devices complete after 929.356 msecs
+    [  220.004751] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [  220.004920] PM: late suspend of devices complete after 1.488 msecs
+    [  220.009669] PM: noirq suspend of devices complete after 4.742 msecs
+    [  220.009674] Disabling non-boot CPUs ...
+    [  220.063218] Invalid sched_group_energy for CPU3
+    [  220.063223] Invalid sched_group_energy for Cluster3
+    [  220.063227] Invalid sched_group_energy for CPU2
+    [  220.063231] Invalid sched_group_energy for Cluster2
+    [  220.063235] Invalid sched_group_energy for CPU0
+    [  220.063239] Invalid sched_group_energy for Cluster0
+    [  220.063699] CPU1: shutdown
+    [  220.063723] psci: CPU1 killed.
+    [  220.073104] CPU3: update max cpu_capacity 1024
+    [  220.153182] Invalid sched_group_energy for CPU3
+    [  220.153187] Invalid sched_group_energy for Cluster3
+    [  220.153190] Invalid sched_group_energy for CPU0
+    [  220.153194] Invalid sched_group_energy for Cluster0
+    [  220.153578] CPU2: shutdown
+    [  220.153601] psci: CPU2 killed.
+    [  220.163109] CPU0: update max cpu_capacity 1024
+    [  220.273165] Invalid sched_group_energy for CPU0
+    [  220.273170] Invalid sched_group_energy for Cluster0
+    [  220.273326] IRQ3 no longer affine to CPU3
+    [  220.273479] CPU3: shutdown
+    [  220.273502] psci: CPU3 killed.
+    [  220.304140] Enabling non-boot CPUs ...
+    [  220.333919] Detected VIPT I-cache on CPU1
+    [  220.333964] Invalid sched_group_energy for CPU1
+    [  220.333966] CPU1: update cpu_capacity 1024
+    [  220.333969] CPU1: Booted secondary processor [410fd034]
+    [  220.334259] Invalid sched_group_energy for CPU1
+    [  220.334266] Invalid sched_group_energy for Cluster1
+    [  220.334270] Invalid sched_group_energy for CPU0
+    [  220.334274] Invalid sched_group_energy for Cluster0
+    [  220.334369] CPU1 is up
+    [  220.343039] CPU0: update max cpu_capacity 1024
+    [  220.373950] Detected VIPT I-cache on CPU2
+    [  220.373968] Invalid sched_group_energy for CPU2
+    [  220.373970] CPU2: update cpu_capacity 1024
+    [  220.373972] CPU2: Booted secondary processor [410fd034]
+    [  220.374178] Invalid sched_group_energy for CPU2
+    [  220.374183] Invalid sched_group_energy for Cluster2
+    [  220.374187] Invalid sched_group_energy for CPU1
+    [  220.374191] Invalid sched_group_energy for Cluster1
+    [  220.374195] Invalid sched_group_energy for CPU0
+    [  220.374199] Invalid sched_group_energy for Cluster0
+    [  220.374282] CPU2 is up
+    [  220.383031] CPU1: update max cpu_capacity 1024
+    [  220.454133] Detected VIPT I-cache on CPU3
+    [  220.454151] Invalid sched_group_energy for CPU3
+    [  220.454153] CPU3: update cpu_capacity 1024
+    [  220.454155] CPU3: Booted secondary processor [410fd034]
+    [  220.454375] Invalid sched_group_energy for CPU3
+    [  220.454380] Invalid sched_group_energy for Cluster3
+    [  220.454383] Invalid sched_group_energy for CPU2
+    [  220.454387] Invalid sched_group_energy for Cluster2
+    [  220.454391] Invalid sched_group_energy for CPU1
+    [  220.454395] Invalid sched_group_energy for Cluster1
+    [  220.454399] Invalid sched_group_energy for CPU0
+    [  220.454403] Invalid sched_group_energy for Cluster0
+    [  220.454544] Invalid sched_group_energy for CPU3
+    [  220.454549] Invalid sched_group_energy for Cluster3
+    [  220.454552] Invalid sched_group_energy for CPU2
+    [  220.454557] Invalid sched_group_energy for Cluster2
+    [  220.454560] Invalid sched_group_energy for CPU1
+    [  220.454564] Invalid sched_group_energy for Cluster1
+    [  220.454568] Invalid sched_group_energy for CPU0
+    [  220.454572] Invalid sched_group_energy for Cluster0
+    [  220.454659] CPU3 is up
+    [  220.454951] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [  220.455757] PM: noirq resume of devices complete after 1.071 msecs
+    [  220.455899] ---[allen] hall_switch_isr: 711 
+    [  220.456327] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [  220.456960] PM: early resume of devices complete after 0.814 msecs
+    [  220.457028] [ehci1-controller]: is disable, can not resume
+    [  220.457037] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [  220.457038] [ohci1-controller]: is disable, can not resume
+    [  220.457044] [ehci2-controller]: is disable, can not resume
+    [  220.457051] [ohci2-controller]: is disable, can not resume
+    [  220.457053] [cedar] standby resume
+    [  220.457059] [ehci3-controller]: is disable, can not resume
+    [  220.457067] [ohci3-controller]: is disable, can not resume
+    [  220.457078] refresh hdcp key failed!!!
+    [  220.457083] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [  220.457122] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [  220.457131] udc is disable, need not enter to resume
+    [  220.457134] hci: ERR: hcd is null
+    [  220.457137] hci: ERR: hcd is null
+    [  220.457757] 6000000.hdmi supply vcc-hdmi not found, using dummy regulator
+    [  220.457875] 6000000.hdmi supply vdd-hdmi not found, using dummy regulator
+    [  220.458838] ---[allen] hall_release_work_func: 0000
+    [  220.463058] CPU0: update max cpu_capacity 1024
+    [  220.468926] [DISP] disp_register_irq,line:544:
+    [  220.468931] irq for 0 already registered
+    [  220.471824] [DISP] lcd_clk_config,line:665:
+
+==================================================================
+Boot: Thu Oct 15 06:21:22 UTC 2026 (device clock), watcher started at uptime 2.43 s
+Kernel command line: earlyprintk=sunxi-uart,0x05000000 initcall_debug=0 console=ttyS0,115200 loglevel=4 root=/dev/mmcblk0p5 rootwait quiet splash init=/init partitions=special@mmcblk0p1:boot-resource@mmcblk0p2:env@mmcblk0p3:boot@mmcblk0p4:rootfs@mmcblk0p5:UDISK@mmcblk0p6:primary@mmcblk0p7 cma=64M snum=5c001089d75608c2252 mac_addr= wifi_mac= bt_mac= selinux=0 specialstr= gpt=1 androidboot.mode=normal androidboot.serialno=5c001089d75608c2252 androidboot.hardware=sun50iw9p1 boot_type=1 androidboot.boot_type=1 androidboot.secure_os_exist=0 gpt=1 uboot_message=2018.05(06/24/2026-19:09:39) disp_reserve=1382400,0x7bf24800 bootreason=button lcd_type=old 
+printk levels: 4	7	1	7
+Consoles: ttyS0                -W- (EC    )  248:0;
+Backlight file: none found (slot.advance may use dispdbg; item 3 not observable)
+GPU interrupt lines:
+  303:          0          0          0          0  wakeupgen  96 Level     gpu
+  318:          0          0          0          0  wakeupgen  95 Level     gpu
+  319:          1          0          0          0  wakeupgen  97 Level     gpu
+Wi-Fi driver loaded after start-up: yes   (no = 0.4.0 Off; yes = wifi=on, driver kept loaded)
+slot.advance start-up line: slot: backlight dispdbg (0 to 255), battery axp2202-battery, rtc0, motor event1
+Close the lid, wait about 15 s, open it. Each wake is recorded below.
+
+----- Wake 1 (driver loaded: yes) -----
+  suspend entry: freeze 36.404, last suspend-side line 37.440
+  resume: CPUs back 37.725, noirq done 37.856, early done 37.858, display resumed 37.858
+  Wi-Fi driver resume: 37.870 to 38.531 ([   38.530696] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 38.531, finishing wakeup 38.532, tasks restarted 38.532
+  watcher thawed 38.533, backlight on -, first GPU interrupt 38.551
+  TIMELINE (ms from resume start): devices 806, tasks 807, backlight -, first frame 826
+  [   38.530844] PM: resume of devices complete after 673.227 msecs
+  [   37.857608] PM: early resume of devices complete after 0.869 msecs
+  [   37.856347] PM: noirq resume of devices complete after 1.121 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   35.809849] ---[allen] hall_switch_isr: 711 
+    [   35.833718] ---[allen] hall_press_work_func: state=0 
+    [   36.366279] PM: suspend entry 2026-10-15 06:22:33.461880586 UTC
+    [   36.366286] PM: Syncing filesystems ... done.
+    [   36.378024] PM: Preparing system for sleep (mem)
+    [   36.403820] Freezing user space processes ... (elapsed 0.000 seconds) done.
+    [   36.404835] Freezing remaining freezable tasks ... (elapsed 0.087 seconds) done.
+    [   36.491867] PM: Suspending system (mem)
+    [   36.492903] RTW:  suspend start
+    [   36.492991] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   36.493444] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   36.493444] 
+    [   36.493449] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   36.493449] 
+    [   36.493473] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   36.493866] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   36.495174] RTW: rtw suspend success in 10 ms
+    [   36.528444] disp_suspend
+    [   36.773936] [ohci3-controller]: is disable, can not suspend
+    [   36.773958] [ehci3-controller]: is disable, can not suspend
+    [   36.773978] [ohci2-controller]: is disable, can not suspend
+    [   36.773998] [ehci2-controller]: is disable, can not suspend
+    [   36.774018] [ohci1-controller]: is disable, can not suspend
+    [   36.774038] [ehci1-controller]: is disable, can not suspend
+    [   36.774050] hci: ERR: hcd is null
+    [   36.777762] hci: ERR: hcd is null
+    [   36.781472] udc is disable, need not enter to suspend
+    [   36.781500] sw_uart_suspend()2052 - uart1 suspend
+    [   36.781540] sw_uart_suspend()2052 - uart0 suspend
+    [   36.781556] [cedar] standby suspend
+    [   36.781610] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   37.433852] disp_suspend finish
+    [   37.433956] PM: suspend of devices complete after 941.180 msecs
+    [   37.435230] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   37.435371] PM: late suspend of devices complete after 1.406 msecs
+    [   37.440209] PM: noirq suspend of devices complete after 4.832 msecs
+    [   37.440215] Disabling non-boot CPUs ...
+    [   37.493767] Invalid sched_group_energy for CPU3
+    [   37.493772] Invalid sched_group_energy for Cluster3
+    [   37.493776] Invalid sched_group_energy for CPU2
+    [   37.493781] Invalid sched_group_energy for Cluster2
+    [   37.493784] Invalid sched_group_energy for CPU0
+    [   37.493788] Invalid sched_group_energy for Cluster0
+    [   37.494256] CPU1: shutdown
+    [   37.494277] psci: CPU1 killed.
+    [   37.503654] CPU0: update max cpu_capacity 1024
+    [   37.603724] Invalid sched_group_energy for CPU3
+    [   37.603729] Invalid sched_group_energy for Cluster3
+    [   37.603733] Invalid sched_group_energy for CPU0
+    [   37.603737] Invalid sched_group_energy for Cluster0
+    [   37.604120] CPU2: shutdown
+    [   37.604143] psci: CPU2 killed.
+    [   37.613652] CPU0: update max cpu_capacity 1024
+    [   37.693704] Invalid sched_group_energy for CPU0
+    [   37.693708] Invalid sched_group_energy for Cluster0
+    [   37.694005] CPU3: shutdown
+    [   37.694029] psci: CPU3 killed.
+    [   37.724667] Enabling non-boot CPUs ...
+    [   37.754462] Detected VIPT I-cache on CPU1
+    [   37.754506] Invalid sched_group_energy for CPU1
+    [   37.754509] CPU1: update cpu_capacity 1024
+    [   37.754512] CPU1: Booted secondary processor [410fd034]
+    [   37.754815] Invalid sched_group_energy for CPU1
+    [   37.754822] Invalid sched_group_energy for Cluster1
+    [   37.754826] Invalid sched_group_energy for CPU0
+    [   37.754830] Invalid sched_group_energy for Cluster0
+    [   37.754927] CPU1 is up
+    [   37.763581] CPU0: update max cpu_capacity 1024
+    [   37.794500] Detected VIPT I-cache on CPU2
+    [   37.794518] Invalid sched_group_energy for CPU2
+    [   37.794520] CPU2: update cpu_capacity 1024
+    [   37.794522] CPU2: Booted secondary processor [410fd034]
+    [   37.794742] Invalid sched_group_energy for CPU2
+    [   37.794747] Invalid sched_group_energy for Cluster2
+    [   37.794751] Invalid sched_group_energy for CPU1
+    [   37.794755] Invalid sched_group_energy for Cluster1
+    [   37.794758] Invalid sched_group_energy for CPU0
+    [   37.794762] Invalid sched_group_energy for Cluster0
+    [   37.794845] CPU2 is up
+    [   37.803574] CPU1: update max cpu_capacity 1024
+    [   37.854683] Detected VIPT I-cache on CPU3
+    [   37.854701] Invalid sched_group_energy for CPU3
+    [   37.854703] CPU3: update cpu_capacity 1024
+    [   37.854705] CPU3: Booted secondary processor [410fd034]
+    [   37.854921] Invalid sched_group_energy for CPU3
+    [   37.854926] Invalid sched_group_energy for Cluster3
+    [   37.854929] Invalid sched_group_energy for CPU2
+    [   37.854933] Invalid sched_group_energy for Cluster2
+    [   37.854937] Invalid sched_group_energy for CPU1
+    [   37.854941] Invalid sched_group_energy for Cluster1
+    [   37.854944] Invalid sched_group_energy for CPU0
+    [   37.854948] Invalid sched_group_energy for Cluster0
+    [   37.855086] Invalid sched_group_energy for CPU3
+    [   37.855091] Invalid sched_group_energy for Cluster3
+    [   37.855094] Invalid sched_group_energy for CPU2
+    [   37.855099] Invalid sched_group_energy for Cluster2
+    [   37.855102] Invalid sched_group_energy for CPU1
+    [   37.855106] Invalid sched_group_energy for Cluster1
+    [   37.855110] Invalid sched_group_energy for CPU0
+    [   37.855114] Invalid sched_group_energy for Cluster0
+    [   37.855199] CPU3 is up
+    [   37.855517] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   37.856347] PM: noirq resume of devices complete after 1.121 msecs
+    [   37.856492] ---[allen] hall_switch_isr: 711 
+    [   37.856961] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   37.857608] PM: early resume of devices complete after 0.869 msecs
+    [   37.857775] [ehci1-controller]: is disable, can not resume
+    [   37.857787] [ohci2-controller]: is disable, can not resume
+    [   37.857798] [ehci3-controller]: is disable, can not resume
+    [   37.857808] [ohci3-controller]: is disable, can not resume
+    [   37.857824] refresh hdcp key failed!!!
+    [   37.862031] [ohci1-controller]: is disable, can not resume
+    [   37.862042] [ehci2-controller]: is disable, can not resume
+    [   37.862067] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [   37.862085] [cedar] standby resume
+    [   37.862114] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [   37.862152] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [   37.862162] udc is disable, need not enter to resume
+    [   37.862167] hci: ERR: hcd is null
+    [   37.862280] [DISP] disp_register_irq,line:544:
+
+----- Wake 2 (driver loaded: yes) -----
+  suspend entry: freeze 42.744, last suspend-side line 43.760
+  resume: CPUs back 44.105, noirq done 44.236, early done 44.238, display resumed 44.238
+  Wi-Fi driver resume: 44.250 to 44.909 ([   44.909160] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 44.909, finishing wakeup 44.910, tasks restarted 44.910
+  watcher thawed 44.911, backlight on -, first GPU interrupt 44.929
+  TIMELINE (ms from resume start): devices 804, tasks 805, backlight -, first frame 824
+  [   44.909265] PM: resume of devices complete after 671.731 msecs
+  [   44.237525] PM: early resume of devices complete after 0.862 msecs
+  [   44.236278] PM: noirq resume of devices complete after 1.114 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   42.065586] ---[allen] hall_switch_isr: 711 
+    [   42.093686] ---[allen] hall_press_work_func: state=0 
+    [   42.612935] PM: suspend entry 2026-10-15 06:22:52.688697419 UTC
+    [   42.612944] PM: Syncing filesystems ... done.
+    [   42.622151] PM: Preparing system for sleep (mem)
+    [   42.743682] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [   42.745017] Freezing remaining freezable tasks ... (elapsed 0.078 seconds) done.
+    [   42.823738] PM: Suspending system (mem)
+    [   42.824754] RTW:  suspend start
+    [   42.824935] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   42.826556] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   42.826556] 
+    [   42.826562] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   42.826562] 
+    [   42.826632] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   42.827068] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   42.828461] RTW: rtw suspend success in 0 ms
+    [   42.859384] disp_suspend
+    [   43.103865] [ohci3-controller]: is disable, can not suspend
+    [   43.103887] [ehci3-controller]: is disable, can not suspend
+    [   43.103907] [ohci2-controller]: is disable, can not suspend
+    [   43.103927] [ehci2-controller]: is disable, can not suspend
+    [   43.103947] [ohci1-controller]: is disable, can not suspend
+    [   43.103966] [ehci1-controller]: is disable, can not suspend
+    [   43.103979] hci: ERR: hcd is null
+    [   43.107689] hci: ERR: hcd is null
+    [   43.111400] udc is disable, need not enter to suspend
+    [   43.111427] sw_uart_suspend()2052 - uart1 suspend
+    [   43.111467] sw_uart_suspend()2052 - uart0 suspend
+    [   43.111483] [cedar] standby suspend
+    [   43.111536] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   43.753782] disp_suspend finish
+    [   43.753887] PM: suspend of devices complete after 929.235 msecs
+    [   43.755152] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   43.755321] PM: late suspend of devices complete after 1.427 msecs
+    [   43.760138] PM: noirq suspend of devices complete after 4.810 msecs
+    [   43.760143] Disabling non-boot CPUs ...
+    [   43.813689] Invalid sched_group_energy for CPU3
+    [   43.813694] Invalid sched_group_energy for Cluster3
+    [   43.813698] Invalid sched_group_energy for CPU2
+    [   43.813702] Invalid sched_group_energy for Cluster2
+    [   43.813706] Invalid sched_group_energy for CPU0
+    [   43.813710] Invalid sched_group_energy for Cluster0
+    [   43.814165] CPU1: shutdown
+    [   43.814190] psci: CPU1 killed.
+    [   43.823577] CPU0: update max cpu_capacity 1024
+    [   43.953650] Invalid sched_group_energy for CPU3
+    [   43.953655] Invalid sched_group_energy for Cluster3
+    [   43.953659] Invalid sched_group_energy for CPU0
+    [   43.953663] Invalid sched_group_energy for Cluster0
+    [   43.954051] CPU2: shutdown
+    [   43.954073] psci: CPU2 killed.
+    [   43.963580] CPU0: update max cpu_capacity 1024
+    [   44.073634] Invalid sched_group_energy for CPU0
+    [   44.073639] Invalid sched_group_energy for Cluster0
+    [   44.073953] CPU3: shutdown
+    [   44.073975] psci: CPU3 killed.
+    [   44.104605] Enabling non-boot CPUs ...
+    [   44.134399] Detected VIPT I-cache on CPU1
+    [   44.134443] Invalid sched_group_energy for CPU1
+    [   44.134446] CPU1: update cpu_capacity 1024
+    [   44.134449] CPU1: Booted secondary processor [410fd034]
+    [   44.134756] Invalid sched_group_energy for CPU1
+    [   44.134763] Invalid sched_group_energy for Cluster1
+    [   44.134767] Invalid sched_group_energy for CPU0
+    [   44.134771] Invalid sched_group_energy for Cluster0
+    [   44.134869] CPU1 is up
+    [   44.143510] CPU0: update max cpu_capacity 1024
+    [   44.174429] Detected VIPT I-cache on CPU2
+    [   44.174447] Invalid sched_group_energy for CPU2
+    [   44.174449] CPU2: update cpu_capacity 1024
+    [   44.174451] CPU2: Booted secondary processor [410fd034]
+    [   44.174671] Invalid sched_group_energy for CPU2
+    [   44.174676] Invalid sched_group_energy for Cluster2
+    [   44.174680] Invalid sched_group_energy for CPU1
+    [   44.174684] Invalid sched_group_energy for Cluster1
+    [   44.174687] Invalid sched_group_energy for CPU0
+    [   44.174691] Invalid sched_group_energy for Cluster0
+    [   44.174775] CPU2 is up
+    [   44.183503] CPU1: update max cpu_capacity 1024
+    [   44.234613] Detected VIPT I-cache on CPU3
+    [   44.234632] Invalid sched_group_energy for CPU3
+    [   44.234633] CPU3: update cpu_capacity 1024
+    [   44.234635] CPU3: Booted secondary processor [410fd034]
+    [   44.234856] Invalid sched_group_energy for CPU3
+    [   44.234861] Invalid sched_group_energy for Cluster3
+    [   44.234864] Invalid sched_group_energy for CPU2
+    [   44.234868] Invalid sched_group_energy for Cluster2
+    [   44.234872] Invalid sched_group_energy for CPU1
+    [   44.234876] Invalid sched_group_energy for Cluster1
+    [   44.234879] Invalid sched_group_energy for CPU0
+    [   44.234884] Invalid sched_group_energy for Cluster0
+    [   44.235025] Invalid sched_group_energy for CPU3
+    [   44.235030] Invalid sched_group_energy for Cluster3
+    [   44.235033] Invalid sched_group_energy for CPU2
+    [   44.235038] Invalid sched_group_energy for Cluster2
+    [   44.235041] Invalid sched_group_energy for CPU1
+    [   44.235045] Invalid sched_group_energy for Cluster1
+    [   44.235049] Invalid sched_group_energy for CPU0
+    [   44.235053] Invalid sched_group_energy for Cluster0
+    [   44.235138] CPU3 is up
+    [   44.235450] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   44.236278] PM: noirq resume of devices complete after 1.114 msecs
+    [   44.236420] ---[allen] hall_switch_isr: 711 
+    [   44.236867] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   44.237525] PM: early resume of devices complete after 0.862 msecs
+    [   44.237606] [ohci1-controller]: is disable, can not resume
+    [   44.237608] [ehci1-controller]: is disable, can not resume
+    [   44.237615] [ehci2-controller]: is disable, can not resume
+    [   44.237617] [ohci2-controller]: is disable, can not resume
+    [   44.237622] [ehci3-controller]: is disable, can not resume
+    [   44.237624] [ohci3-controller]: is disable, can not resume
+    [   44.237634] refresh hdcp key failed!!!
+    [   44.241867] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [   44.241883] [cedar] standby resume
+    [   44.241914] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [   44.241953] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [   44.241963] udc is disable, need not enter to resume
+    [   44.241967] hci: ERR: hcd is null
+    [   44.242101] [DISP] disp_register_irq,line:544:
+
+----- Wake 3 (driver loaded: yes) -----
+  suspend entry: freeze 49.334, last suspend-side line 50.360
+  resume: CPUs back 50.625, noirq done 50.756, early done 50.758, display resumed 50.758
+  Wi-Fi driver resume: 50.770 to 51.429 ([   51.429424] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 51.430, finishing wakeup 51.430, tasks restarted 51.430
+  watcher thawed 51.432, backlight on -, first GPU interrupt 51.451
+  TIMELINE (ms from resume start): devices 805, tasks 805, backlight -, first frame 826
+  [   51.429542] PM: resume of devices complete after 671.948 msecs
+  [   50.757584] PM: early resume of devices complete after 0.854 msecs
+  [   50.756340] PM: noirq resume of devices complete after 1.251 msecs
+  slot.advance: slot: sleep: woke after 11s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   48.756776] ---[allen] hall_switch_isr: 711 
+    [   48.783560] ---[allen] hall_press_work_func: state=0 
+    [   49.290219] PM: suspend entry 2026-10-15 06:23:12.009191169 UTC
+    [   49.290229] PM: Syncing filesystems ... done.
+    [   49.300274] PM: Preparing system for sleep (mem)
+    [   49.333669] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [   49.335084] Freezing remaining freezable tasks ... (elapsed 0.082 seconds) done.
+    [   49.417985] PM: Suspending system (mem)
+    [   49.418989] RTW:  suspend start
+    [   49.419178] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   49.419424] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   49.419424] 
+    [   49.419429] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   49.419429] 
+    [   49.419453] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   49.419703] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   49.420916] RTW: rtw suspend success in 0 ms
+    [   49.455974] disp_suspend
+    [   49.703795] [ohci3-controller]: is disable, can not suspend
+    [   49.703816] [ehci3-controller]: is disable, can not suspend
+    [   49.703836] [ohci2-controller]: is disable, can not suspend
+    [   49.703856] [ehci2-controller]: is disable, can not suspend
+    [   49.703875] [ohci1-controller]: is disable, can not suspend
+    [   49.703895] [ehci1-controller]: is disable, can not suspend
+    [   49.703907] hci: ERR: hcd is null
+    [   49.707619] hci: ERR: hcd is null
+    [   49.711329] udc is disable, need not enter to suspend
+    [   49.711355] sw_uart_suspend()2052 - uart1 suspend
+    [   49.711396] sw_uart_suspend()2052 - uart0 suspend
+    [   49.711412] [cedar] standby suspend
+    [   49.711465] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   50.353710] disp_suspend finish
+    [   50.353814] PM: suspend of devices complete after 934.925 msecs
+    [   50.355224] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   50.355368] PM: late suspend of devices complete after 1.546 msecs
+    [   50.360236] PM: noirq suspend of devices complete after 4.862 msecs
+    [   50.360242] Disabling non-boot CPUs ...
+    [   50.413627] Invalid sched_group_energy for CPU3
+    [   50.413632] Invalid sched_group_energy for Cluster3
+    [   50.413636] Invalid sched_group_energy for CPU2
+    [   50.413640] Invalid sched_group_energy for Cluster2
+    [   50.413644] Invalid sched_group_energy for CPU0
+    [   50.413648] Invalid sched_group_energy for Cluster0
+    [   50.413885] IRQ3 no longer affine to CPU1
+    [   50.414119] CPU1: shutdown
+    [   50.414139] psci: CPU1 killed.
+    [   50.423511] CPU0: update max cpu_capacity 1024
+    [   50.503577] Invalid sched_group_energy for CPU3
+    [   50.503582] Invalid sched_group_energy for Cluster3
+    [   50.503585] Invalid sched_group_energy for CPU0
+    [   50.503590] Invalid sched_group_energy for Cluster0
+    [   50.503960] CPU2: shutdown
+    [   50.503983] psci: CPU2 killed.
+    [   50.513509] CPU0: update max cpu_capacity 1024
+    [   50.593564] Invalid sched_group_energy for CPU0
+    [   50.593569] Invalid sched_group_energy for Cluster0
+    [   50.593875] CPU3: shutdown
+    [   50.593896] psci: CPU3 killed.
+    [   50.624522] Enabling non-boot CPUs ...
+    [   50.654325] Detected VIPT I-cache on CPU1
+    [   50.654370] Invalid sched_group_energy for CPU1
+    [   50.654372] CPU1: update cpu_capacity 1024
+    [   50.654374] CPU1: Booted secondary processor [410fd034]
+    [   50.654680] Invalid sched_group_energy for CPU1
+    [   50.654686] Invalid sched_group_energy for Cluster1
+    [   50.654690] Invalid sched_group_energy for CPU0
+    [   50.654694] Invalid sched_group_energy for Cluster0
+    [   50.654791] CPU1 is up
+    [   50.663438] CPU0: update max cpu_capacity 1024
+    [   50.694362] Detected VIPT I-cache on CPU2
+    [   50.694380] Invalid sched_group_energy for CPU2
+    [   50.694382] CPU2: update cpu_capacity 1024
+    [   50.694384] CPU2: Booted secondary processor [410fd034]
+    [   50.694605] Invalid sched_group_energy for CPU2
+    [   50.694610] Invalid sched_group_energy for Cluster2
+    [   50.694613] Invalid sched_group_energy for CPU1
+    [   50.694618] Invalid sched_group_energy for Cluster1
+    [   50.694621] Invalid sched_group_energy for CPU0
+    [   50.694625] Invalid sched_group_energy for Cluster0
+    [   50.694709] CPU2 is up
+    [   50.703431] CPU1: update max cpu_capacity 1024
+    [   50.754540] Detected VIPT I-cache on CPU3
+    [   50.754559] Invalid sched_group_energy for CPU3
+    [   50.754561] CPU3: update cpu_capacity 1024
+    [   50.754563] CPU3: Booted secondary processor [410fd034]
+    [   50.754779] Invalid sched_group_energy for CPU3
+    [   50.754784] Invalid sched_group_energy for Cluster3
+    [   50.754788] Invalid sched_group_energy for CPU2
+    [   50.754792] Invalid sched_group_energy for Cluster2
+    [   50.754796] Invalid sched_group_energy for CPU1
+    [   50.754800] Invalid sched_group_energy for Cluster1
+    [   50.754803] Invalid sched_group_energy for CPU0
+    [   50.754808] Invalid sched_group_energy for Cluster0
+    [   50.754950] Invalid sched_group_energy for CPU3
+    [   50.754955] Invalid sched_group_energy for Cluster3
+    [   50.754958] Invalid sched_group_energy for CPU2
+    [   50.754962] Invalid sched_group_energy for Cluster2
+    [   50.754966] Invalid sched_group_energy for CPU1
+    [   50.754970] Invalid sched_group_energy for Cluster1
+    [   50.754974] Invalid sched_group_energy for CPU0
+    [   50.754978] Invalid sched_group_energy for Cluster0
+    [   50.755062] CPU3 is up
+    [   50.755495] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   50.756340] PM: noirq resume of devices complete after 1.251 msecs
+    [   50.756484] ---[allen] hall_switch_isr: 711 
+    [   50.756923] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   50.757584] PM: early resume of devices complete after 0.854 msecs
+    [   50.757748] [ehci1-controller]: is disable, can not resume
+    [   50.757760] [ohci1-controller]: is disable, can not resume
+    [   50.757771] [ohci3-controller]: is disable, can not resume
+    [   50.757782] [ehci2-controller]: is disable, can not resume
+    [   50.757797] refresh hdcp key failed!!!
+    [   50.762008] [ohci2-controller]: is disable, can not resume
+    [   50.762018] [ehci3-controller]: is disable, can not resume
+    [   50.762044] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [   50.762062] [cedar] standby resume
+    [   50.762091] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [   50.762130] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [   50.762141] udc is disable, need not enter to resume
+    [   50.762145] hci: ERR: hcd is null
+
+----- Wake 4 (driver loaded: yes) -----
+  suspend entry: freeze 56.334, last suspend-side line 57.370
+  resume: CPUs back 57.714, noirq done 57.846, early done 57.847, display resumed 57.847
+  Wi-Fi driver resume: 57.860 to 58.520 ([   58.520401] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 58.521, finishing wakeup 58.521, tasks restarted 58.522
+  watcher thawed 58.523, backlight on -, first GPU interrupt 58.540
+  TIMELINE (ms from resume start): devices 806, tasks 807, backlight -, first frame 825
+  [   58.520551] PM: resume of devices complete after 673.196 msecs
+  [   57.847346] PM: early resume of devices complete after 0.827 msecs
+  [   57.846134] PM: noirq resume of devices complete after 1.094 msecs
+  slot.advance: slot: sleep: woke after 15s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   55.721137] ---[allen] hall_switch_isr: 711 
+    [   55.753489] ---[allen] hall_press_work_func: state=0 
+    [   56.267555] PM: suspend entry 2026-10-15 06:23:30.442123211 UTC
+    [   56.267562] PM: Syncing filesystems ... done.
+    [   56.276935] PM: Preparing system for sleep (mem)
+    [   56.333532] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [   56.334889] Freezing remaining freezable tasks ... (elapsed 0.096 seconds) done.
+    [   56.431669] PM: Suspending system (mem)
+    [   56.432680] RTW:  suspend start
+    [   56.432825] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   56.433256] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   56.433256] 
+    [   56.433262] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   56.433262] 
+    [   56.433333] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   56.433833] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   56.435199] RTW: rtw suspend success in 10 ms
+    [   56.468949] disp_suspend
+    [   56.713812] [ohci3-controller]: is disable, can not suspend
+    [   56.713834] [ehci3-controller]: is disable, can not suspend
+    [   56.713854] [ohci2-controller]: is disable, can not suspend
+    [   56.713874] [ehci2-controller]: is disable, can not suspend
+    [   56.713894] [ohci1-controller]: is disable, can not suspend
+    [   56.713914] [ehci1-controller]: is disable, can not suspend
+    [   56.713926] hci: ERR: hcd is null
+    [   56.717636] hci: ERR: hcd is null
+    [   56.721354] udc is disable, need not enter to suspend
+    [   56.721382] sw_uart_suspend()2052 - uart1 suspend
+    [   56.721423] sw_uart_suspend()2052 - uart0 suspend
+    [   56.721438] [cedar] standby suspend
+    [   56.721492] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   57.363635] disp_suspend finish
+    [   57.363742] PM: suspend of devices complete after 931.163 msecs
+    [   57.365208] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   57.365350] PM: late suspend of devices complete after 1.600 msecs
+    [   57.370184] PM: noirq suspend of devices complete after 4.828 msecs
+    [   57.370189] Disabling non-boot CPUs ...
+    [   57.423544] Invalid sched_group_energy for CPU3
+    [   57.423549] Invalid sched_group_energy for Cluster3
+    [   57.423553] Invalid sched_group_energy for CPU2
+    [   57.423558] Invalid sched_group_energy for Cluster2
+    [   57.423561] Invalid sched_group_energy for CPU0
+    [   57.423565] Invalid sched_group_energy for Cluster0
+    [   57.424024] CPU1: shutdown
+    [   57.424049] psci: CPU1 killed.
+    [   57.433434] CPU0: update max cpu_capacity 1024
+    [   57.563506] Invalid sched_group_energy for CPU3
+    [   57.563511] Invalid sched_group_energy for Cluster3
+    [   57.563515] Invalid sched_group_energy for CPU0
+    [   57.563519] Invalid sched_group_energy for Cluster0
+    [   57.563904] CPU2: shutdown
+    [   57.563928] psci: CPU2 killed.
+    [   57.573437] CPU0: update max cpu_capacity 1024
+    [   57.683493] Invalid sched_group_energy for CPU0
+    [   57.683497] Invalid sched_group_energy for Cluster0
+    [   57.683803] CPU3: shutdown
+    [   57.683825] psci: CPU3 killed.
+    [   57.714448] Enabling non-boot CPUs ...
+    [   57.744255] Detected VIPT I-cache on CPU1
+    [   57.744301] Invalid sched_group_energy for CPU1
+    [   57.744303] CPU1: update cpu_capacity 1024
+    [   57.744306] CPU1: Booted secondary processor [410fd034]
+    [   57.744616] Invalid sched_group_energy for CPU1
+    [   57.744622] Invalid sched_group_energy for Cluster1
+    [   57.744626] Invalid sched_group_energy for CPU0
+    [   57.744630] Invalid sched_group_energy for Cluster0
+    [   57.744725] CPU1 is up
+    [   57.753365] CPU0: update max cpu_capacity 1024
+    [   57.784283] Detected VIPT I-cache on CPU2
+    [   57.784302] Invalid sched_group_energy for CPU2
+    [   57.784304] CPU2: update cpu_capacity 1024
+    [   57.784306] CPU2: Booted secondary processor [410fd034]
+    [   57.784527] Invalid sched_group_energy for CPU2
+    [   57.784532] Invalid sched_group_energy for Cluster2
+    [   57.784535] Invalid sched_group_energy for CPU1
+    [   57.784539] Invalid sched_group_energy for Cluster1
+    [   57.784543] Invalid sched_group_energy for CPU0
+    [   57.784547] Invalid sched_group_energy for Cluster0
+    [   57.784631] CPU2 is up
+    [   57.793359] CPU1: update max cpu_capacity 1024
+    [   57.844490] Detected VIPT I-cache on CPU3
+    [   57.844509] Invalid sched_group_energy for CPU3
+    [   57.844511] CPU3: update cpu_capacity 1024
+    [   57.844512] CPU3: Booted secondary processor [410fd034]
+    [   57.844730] Invalid sched_group_energy for CPU3
+    [   57.844735] Invalid sched_group_energy for Cluster3
+    [   57.844739] Invalid sched_group_energy for CPU2
+    [   57.844743] Invalid sched_group_energy for Cluster2
+    [   57.844747] Invalid sched_group_energy for CPU1
+    [   57.844751] Invalid sched_group_energy for Cluster1
+    [   57.844754] Invalid sched_group_energy for CPU0
+    [   57.844758] Invalid sched_group_energy for Cluster0
+    [   57.844902] Invalid sched_group_energy for CPU3
+    [   57.844906] Invalid sched_group_energy for Cluster3
+    [   57.844910] Invalid sched_group_energy for CPU2
+    [   57.844914] Invalid sched_group_energy for Cluster2
+    [   57.844918] Invalid sched_group_energy for CPU1
+    [   57.844922] Invalid sched_group_energy for Cluster1
+    [   57.844925] Invalid sched_group_energy for CPU0
+    [   57.844930] Invalid sched_group_energy for Cluster0
+    [   57.845013] CPU3 is up
+    [   57.845308] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   57.846134] PM: noirq resume of devices complete after 1.094 msecs
+    [   57.846276] ---[allen] hall_switch_isr: 711 
+    [   57.846701] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   57.847346] PM: early resume of devices complete after 0.827 msecs
+    [   57.847484] [ehci1-controller]: is disable, can not resume
+    [   57.847486] refresh hdcp key failed!!!
+    [   57.847809] [DISP] disp_register_irq,line:544:
+    [   57.847809] irq for 0 already registered
+    [   57.850704] [DISP] lcd_clk_config,line:665:
+    [   57.850705] disp 0, clk: pll(286000000),clk(286000000),dclk(26000000) dsi_rate(286000000)
+    [   57.850705]      clk real:pll(288000000),clk(288000000),dclk(26181818) dsi_rate(0)
+    [   57.851689] tcon_de_attach:de=0, tcon=0
+    [   57.851690] [ohci1-controller]: is disable, can not resume
+    [   57.851700] [ohci2-controller]: is disable, can not resume
+    [   57.851709] [ohci3-controller]: is disable, can not resume
+    [   57.851720] [ehci2-controller]: is disable, can not resume
+    [   57.851730] [ehci3-controller]: is disable, can not resume
+    [   57.851756] MBUS_PMU 47fa000.mbus-controller: resume okay
+
+----- Wake 5 (driver loaded: yes) -----
+  suspend entry: freeze 63.174, last suspend-side line 64.200
+  resume: CPUs back 64.504, noirq done 64.636, early done 64.637, display resumed 64.638
+  Wi-Fi driver resume: 64.638 to 65.300 ([   65.299866] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 65.300, finishing wakeup 65.301, tasks restarted 65.301
+  watcher thawed 65.302, backlight on -, first GPU interrupt 65.320
+  TIMELINE (ms from resume start): devices 795, tasks 796, backlight -, first frame 815
+  [   65.299935] PM: resume of devices complete after 662.462 msecs
+  [   64.637464] PM: early resume of devices complete after 0.964 msecs
+  [   64.636115] PM: noirq resume of devices complete after 1.173 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   62.585289] ---[allen] hall_switch_isr: 711 
+    [   62.613480] ---[allen] hall_press_work_func: state=0 
+    [   63.057464] PM: suspend entry 2026-10-15 06:23:52.145171336 UTC
+    [   63.057473] PM: Syncing filesystems ... done.
+    [   63.065750] PM: Preparing system for sleep (mem)
+    [   63.173508] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [   63.174889] Freezing remaining freezable tasks ... (elapsed 0.082 seconds) done.
+    [   63.257726] PM: Suspending system (mem)
+    [   63.258723] RTW:  suspend start
+    [   63.258904] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   63.259264] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   63.259264] 
+    [   63.259270] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   63.259270] 
+    [   63.259295] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   63.259568] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   63.260759] RTW: rtw suspend success in 0 ms
+    [   63.293930] disp_suspend
+    [   63.543599] [ohci3-controller]: is disable, can not suspend
+    [   63.543621] [ehci3-controller]: is disable, can not suspend
+    [   63.543641] [ohci2-controller]: is disable, can not suspend
+    [   63.543661] [ehci2-controller]: is disable, can not suspend
+    [   63.543681] [ohci1-controller]: is disable, can not suspend
+    [   63.543701] [ehci1-controller]: is disable, can not suspend
+    [   63.543715] hci: ERR: hcd is null
+    [   63.547429] hci: ERR: hcd is null
+    [   63.551141] udc is disable, need not enter to suspend
+    [   63.551169] sw_uart_suspend()2052 - uart1 suspend
+    [   63.551209] sw_uart_suspend()2052 - uart0 suspend
+    [   63.551225] [cedar] standby suspend
+    [   63.551277] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   64.193565] disp_suspend finish
+    [   64.193668] PM: suspend of devices complete after 935.031 msecs
+    [   64.195119] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   64.195259] PM: late suspend of devices complete after 1.583 msecs
+    [   64.200079] PM: noirq suspend of devices complete after 4.812 msecs
+    [   64.200084] Disabling non-boot CPUs ...
+    [   64.253474] Invalid sched_group_energy for CPU3
+    [   64.253480] Invalid sched_group_energy for Cluster3
+    [   64.253483] Invalid sched_group_energy for CPU2
+    [   64.253488] Invalid sched_group_energy for Cluster2
+    [   64.253491] Invalid sched_group_energy for CPU0
+    [   64.253495] Invalid sched_group_energy for Cluster0
+    [   64.253961] CPU1: shutdown
+    [   64.253983] psci: CPU1 killed.
+    [   64.263362] CPU0: update max cpu_capacity 1024
+    [   64.333433] Invalid sched_group_energy for CPU3
+    [   64.333438] Invalid sched_group_energy for Cluster3
+    [   64.333442] Invalid sched_group_energy for CPU0
+    [   64.333446] Invalid sched_group_energy for Cluster0
+    [   64.333822] CPU2: shutdown
+    [   64.333843] psci: CPU2 killed.
+    [   64.343362] CPU3: update max cpu_capacity 1024
+    [   64.443417] Invalid sched_group_energy for CPU0
+    [   64.443421] Invalid sched_group_energy for Cluster0
+    [   64.443574] IRQ3 no longer affine to CPU3
+    [   64.443726] CPU3: shutdown
+    [   64.443750] psci: CPU3 killed.
+    [   64.504372] Enabling non-boot CPUs ...
+    [   64.534176] Detected VIPT I-cache on CPU1
+    [   64.534221] Invalid sched_group_energy for CPU1
+    [   64.534223] CPU1: update cpu_capacity 1024
+    [   64.534226] CPU1: Booted secondary processor [410fd034]
+    [   64.534536] Invalid sched_group_energy for CPU1
+    [   64.534542] Invalid sched_group_energy for Cluster1
+    [   64.534546] Invalid sched_group_energy for CPU0
+    [   64.534550] Invalid sched_group_energy for Cluster0
+    [   64.534647] CPU1 is up
+    [   64.543294] CPU0: update max cpu_capacity 1024
+    [   64.574210] Detected VIPT I-cache on CPU2
+    [   64.574228] Invalid sched_group_energy for CPU2
+    [   64.574230] CPU2: update cpu_capacity 1024
+    [   64.574232] CPU2: Booted secondary processor [410fd034]
+    [   64.574453] Invalid sched_group_energy for CPU2
+    [   64.574458] Invalid sched_group_energy for Cluster2
+    [   64.574462] Invalid sched_group_energy for CPU1
+    [   64.574466] Invalid sched_group_energy for Cluster1
+    [   64.574469] Invalid sched_group_energy for CPU0
+    [   64.574473] Invalid sched_group_energy for Cluster0
+    [   64.574555] CPU2 is up
+    [   64.583286] CPU1: update max cpu_capacity 1024
+    [   64.634397] Detected VIPT I-cache on CPU3
+    [   64.634415] Invalid sched_group_energy for CPU3
+    [   64.634417] CPU3: update cpu_capacity 1024
+    [   64.634419] CPU3: Booted secondary processor [410fd034]
+    [   64.634633] Invalid sched_group_energy for CPU3
+    [   64.634638] Invalid sched_group_energy for Cluster3
+    [   64.634642] Invalid sched_group_energy for CPU2
+    [   64.634646] Invalid sched_group_energy for Cluster2
+    [   64.634650] Invalid sched_group_energy for CPU1
+    [   64.634654] Invalid sched_group_energy for Cluster1
+    [   64.634658] Invalid sched_group_energy for CPU0
+    [   64.634662] Invalid sched_group_energy for Cluster0
+    [   64.634803] Invalid sched_group_energy for CPU3
+    [   64.634807] Invalid sched_group_energy for Cluster3
+    [   64.634811] Invalid sched_group_energy for CPU2
+    [   64.634815] Invalid sched_group_energy for Cluster2
+    [   64.634819] Invalid sched_group_energy for CPU1
+    [   64.634823] Invalid sched_group_energy for Cluster1
+    [   64.634826] Invalid sched_group_energy for CPU0
+    [   64.634830] Invalid sched_group_energy for Cluster0
+    [   64.634914] CPU3 is up
+    [   64.635269] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   64.636115] PM: noirq resume of devices complete after 1.173 msecs
+    [   64.636256] ---[allen] hall_switch_isr: 711 
+    [   64.636811] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   64.637464] PM: early resume of devices complete after 0.964 msecs
+    [   64.637548] [ohci1-controller]: is disable, can not resume
+    [   64.637557] [ehci2-controller]: is disable, can not resume
+    [   64.637562] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [   64.637569] [ohci2-controller]: is disable, can not resume
+    [   64.637576] [cedar] standby resume
+    [   64.637577] [ehci3-controller]: is disable, can not resume
+    [   64.637583] [ohci3-controller]: is disable, can not resume
+    [   64.637595] refresh hdcp key failed!!!
+    [   64.637607] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [   64.637645] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [   64.637653] udc is disable, need not enter to resume
+    [   64.637656] hci: ERR: hcd is null
+    [   64.637660] hci: ERR: hcd is null
+
+----- Wake 6 (driver loaded: yes) -----
+  suspend entry: freeze 70.173, last suspend-side line 71.230
+  resume: CPUs back 71.514, noirq done 71.646, early done 71.647, display resumed 71.647
+  Wi-Fi driver resume: 71.660 to 72.320 ([   72.320397] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 72.321, finishing wakeup 72.321, tasks restarted 72.321
+  watcher thawed 72.323, backlight on -, first GPU interrupt 72.340
+  TIMELINE (ms from resume start): devices 806, tasks 807, backlight -, first frame 825
+  [   72.320504] PM: resume of devices complete after 673.296 msecs
+  [   71.647199] PM: early resume of devices complete after 0.832 msecs
+  [   71.645980] PM: noirq resume of devices complete after 1.069 msecs
+  slot.advance: slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   69.462540] ---[allen] hall_switch_isr: 711 
+    [   69.483422] ---[allen] hall_press_work_func: state=0 
+    [   69.981286] PM: suspend entry 2026-10-15 06:24:12.292320586 UTC
+    [   69.981295] PM: Syncing filesystems ... done.
+    [   69.991055] PM: Preparing system for sleep (mem)
+    [   70.173418] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [   70.174863] Freezing remaining freezable tasks ... (elapsed 0.112 seconds) done.
+    [   70.287673] PM: Suspending system (mem)
+    [   70.288683] RTW:  suspend start
+    [   70.289026] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   70.289026] 
+    [   70.289031] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   70.289031] 
+    [   70.289105] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   70.289261] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   70.289368] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   70.290460] RTW: rtw suspend success in 0 ms
+    [   70.326706] disp_suspend
+    [   70.574023] hci: ERR: hcd is null
+    [   70.574067] [ohci3-controller]: is disable, can not suspend
+    [   70.574076] [ehci3-controller]: is disable, can not suspend
+    [   70.574084] [ohci2-controller]: is disable, can not suspend
+    [   70.574092] [ehci2-controller]: is disable, can not suspend
+    [   70.574100] [ohci1-controller]: is disable, can not suspend
+    [   70.574108] [ehci1-controller]: is disable, can not suspend
+    [   70.577734] hci: ERR: hcd is null
+    [   70.581445] udc is disable, need not enter to suspend
+    [   70.581471] sw_uart_suspend()2052 - uart1 suspend
+    [   70.581511] sw_uart_suspend()2052 - uart0 suspend
+    [   70.581527] [cedar] standby suspend
+    [   70.581579] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   71.223494] disp_suspend finish
+    [   71.223600] PM: suspend of devices complete after 935.019 msecs
+    [   71.225051] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   71.225194] PM: late suspend of devices complete after 1.587 msecs
+    [   71.230031] PM: noirq suspend of devices complete after 4.830 msecs
+    [   71.230036] Disabling non-boot CPUs ...
+    [   71.263402] Invalid sched_group_energy for CPU3
+    [   71.263407] Invalid sched_group_energy for Cluster3
+    [   71.263411] Invalid sched_group_energy for CPU2
+    [   71.263415] Invalid sched_group_energy for Cluster2
+    [   71.263419] Invalid sched_group_energy for CPU0
+    [   71.263423] Invalid sched_group_energy for Cluster0
+    [   71.263904] CPU1: shutdown
+    [   71.263923] psci: CPU1 killed.
+    [   71.273292] CPU2: update max cpu_capacity 1024
+    [   71.383362] Invalid sched_group_energy for CPU3
+    [   71.383367] Invalid sched_group_energy for Cluster3
+    [   71.383371] Invalid sched_group_energy for CPU0
+    [   71.383375] Invalid sched_group_energy for Cluster0
+    [   71.383558] IRQ3 no longer affine to CPU2
+    [   71.383750] CPU2: shutdown
+    [   71.383774] psci: CPU2 killed.
+    [   71.393295] CPU0: update max cpu_capacity 1024
+    [   71.463344] Invalid sched_group_energy for CPU0
+    [   71.463349] Invalid sched_group_energy for Cluster0
+    [   71.463642] CPU3: shutdown
+    [   71.463666] psci: CPU3 killed.
+    [   71.514306] Enabling non-boot CPUs ...
+    [   71.544105] Detected VIPT I-cache on CPU1
+    [   71.544150] Invalid sched_group_energy for CPU1
+    [   71.544153] CPU1: update cpu_capacity 1024
+    [   71.544155] CPU1: Booted secondary processor [410fd034]
+    [   71.544467] Invalid sched_group_energy for CPU1
+    [   71.544474] Invalid sched_group_energy for Cluster1
+    [   71.544478] Invalid sched_group_energy for CPU0
+    [   71.544482] Invalid sched_group_energy for Cluster0
+    [   71.544579] CPU1 is up
+    [   71.553222] CPU0: update max cpu_capacity 1024
+    [   71.584144] Detected VIPT I-cache on CPU2
+    [   71.584162] Invalid sched_group_energy for CPU2
+    [   71.584164] CPU2: update cpu_capacity 1024
+    [   71.584166] CPU2: Booted secondary processor [410fd034]
+    [   71.584388] Invalid sched_group_energy for CPU2
+    [   71.584393] Invalid sched_group_energy for Cluster2
+    [   71.584396] Invalid sched_group_energy for CPU1
+    [   71.584400] Invalid sched_group_energy for Cluster1
+    [   71.584404] Invalid sched_group_energy for CPU0
+    [   71.584408] Invalid sched_group_energy for Cluster0
+    [   71.584491] CPU2 is up
+    [   71.593214] CPU1: update max cpu_capacity 1024
+    [   71.644346] Detected VIPT I-cache on CPU3
+    [   71.644365] Invalid sched_group_energy for CPU3
+    [   71.644367] CPU3: update cpu_capacity 1024
+    [   71.644369] CPU3: Booted secondary processor [410fd034]
+    [   71.644586] Invalid sched_group_energy for CPU3
+    [   71.644591] Invalid sched_group_energy for Cluster3
+    [   71.644594] Invalid sched_group_energy for CPU2
+    [   71.644598] Invalid sched_group_energy for Cluster2
+    [   71.644602] Invalid sched_group_energy for CPU1
+    [   71.644606] Invalid sched_group_energy for Cluster1
+    [   71.644610] Invalid sched_group_energy for CPU0
+    [   71.644614] Invalid sched_group_energy for Cluster0
+    [   71.644772] Invalid sched_group_energy for CPU3
+    [   71.644777] Invalid sched_group_energy for Cluster3
+    [   71.644780] Invalid sched_group_energy for CPU2
+    [   71.644785] Invalid sched_group_energy for Cluster2
+    [   71.644788] Invalid sched_group_energy for CPU1
+    [   71.644792] Invalid sched_group_energy for Cluster1
+    [   71.644796] Invalid sched_group_energy for CPU0
+    [   71.644800] Invalid sched_group_energy for Cluster0
+    [   71.644884] CPU3 is up
+    [   71.645172] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   71.645980] PM: noirq resume of devices complete after 1.069 msecs
+    [   71.646124] ---[allen] hall_switch_isr: 711 
+    [   71.646540] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   71.647199] PM: early resume of devices complete after 0.832 msecs
+    [   71.647288] [ehci2-controller]: is disable, can not resume
+    [   71.647290] [ehci1-controller]: is disable, can not resume
+    [   71.647292] [ohci2-controller]: is disable, can not resume
+    [   71.647297] [ehci3-controller]: is disable, can not resume
+    [   71.647299] [ohci3-controller]: is disable, can not resume
+    [   71.647305] refresh hdcp key failed!!!
+    [   71.647324] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [   71.647339] [cedar] standby resume
+    [   71.647348] [ohci1-controller]: is disable, can not resume
+    [   71.651520] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [   71.651558] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [   71.651568] udc is disable, need not enter to resume
+    [   71.651573] hci: ERR: hcd is null
+
+----- Wake 7 (driver loaded: yes) -----
+  suspend entry: freeze 80.733, last suspend-side line 81.750
+  resume: CPUs back 82.064, noirq done 82.196, early done 82.197, display resumed 82.197
+  Wi-Fi driver resume: 82.210 to 82.870 ([   82.869746] RTW: rtw_resume_common:0 in 660 ms)
+  devices resumed 82.870, finishing wakeup 82.871, tasks restarted 82.871
+  watcher thawed 82.872, backlight on -, first GPU interrupt 82.890
+  TIMELINE (ms from resume start): devices 805, tasks 806, backlight -, first frame 825
+  [   82.869850] PM: resume of devices complete after 672.648 msecs
+  [   82.197193] PM: early resume of devices complete after 0.843 msecs
+  [   82.195963] PM: noirq resume of devices complete after 1.152 msecs
+  slot.advance: slot: sleep: woke after 15s asleep (slept true, lid open): Resume
+  kernel messages for this wake:
+    [   80.084834] ---[allen] hall_switch_isr: 711 
+    [   80.113362] ---[allen] hall_press_work_func: state=0 
+    [   80.683487] PM: suspend entry 2026-10-15 06:24:35.973289921 UTC
+    [   80.683496] PM: Syncing filesystems ... done.
+    [   80.692205] PM: Preparing system for sleep (mem)
+    [   80.733259] Freezing user space processes ... (elapsed 0.001 seconds) done.
+    [   80.734680] Freezing remaining freezable tasks ... (elapsed 0.066 seconds) done.
+    [   80.801441] PM: Suspending system (mem)
+    [   80.802439] RTW:  suspend start
+    [   80.802632] sunxi-mmc sdc2: sdc set ios:clk 0Hz bm PP pm OFF vdd 0 width 1 timing LEGACY(SDR12) dt B
+    [   80.803742] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   80.803742] 
+    [   80.803748] RTW: ERROR Free disconnecting network of scanned_queue failed due to pwlan == NULL
+    [   80.803748] 
+    [   80.803817] RTW: rtw_suspend_normal: ### ERROR #### driver in IPS ####ERROR###!!!
+    [   80.804454] RTW: rtw_dev_unload: driver in IPS-FWLPS
+    [   80.805707] RTW: rtw suspend success in 10 ms
+    [   80.838690] disp_suspend
+    [   81.083606] [ohci3-controller]: is disable, can not suspend
+    [   81.083627] [ehci3-controller]: is disable, can not suspend
+    [   81.083647] [ohci2-controller]: is disable, can not suspend
+    [   81.083667] [ehci2-controller]: is disable, can not suspend
+    [   81.083687] [ohci1-controller]: is disable, can not suspend
+    [   81.083707] [ehci1-controller]: is disable, can not suspend
+    [   81.083720] hci: ERR: hcd is null
+    [   81.087432] hci: ERR: hcd is null
+    [   81.091143] udc is disable, need not enter to suspend
+    [   81.091170] sw_uart_suspend()2052 - uart1 suspend
+    [   81.091211] sw_uart_suspend()2052 - uart0 suspend
+    [   81.091226] [cedar] standby suspend
+    [   81.091280] MBUS_PMU 47fa000.mbus-controller: suspend okay
+    [   81.743424] disp_suspend finish
+    [   81.743526] PM: suspend of devices complete after 941.175 msecs
+    [   81.744978] sunxi:i2c_sunxi@twi3[INFO]: suspend late
+    [   81.745118] PM: late suspend of devices complete after 1.584 msecs
+    [   81.749960] PM: noirq suspend of devices complete after 4.835 msecs
+    [   81.749965] Disabling non-boot CPUs ...
+    [   81.783332] Invalid sched_group_energy for CPU3
+    [   81.783337] Invalid sched_group_energy for Cluster3
+    [   81.783341] Invalid sched_group_energy for CPU2
+    [   81.783345] Invalid sched_group_energy for Cluster2
+    [   81.783349] Invalid sched_group_energy for CPU0
+    [   81.783353] Invalid sched_group_energy for Cluster0
+    [   81.783818] CPU1: shutdown
+    [   81.783838] psci: CPU1 killed.
+    [   81.793219] CPU2: update max cpu_capacity 1024
+    [   81.943290] Invalid sched_group_energy for CPU3
+    [   81.943295] Invalid sched_group_energy for Cluster3
+    [   81.943298] Invalid sched_group_energy for CPU0
+    [   81.943302] Invalid sched_group_energy for Cluster0
+    [   81.943492] IRQ3 no longer affine to CPU2
+    [   81.943686] CPU2: shutdown
+    [   81.943709] psci: CPU2 killed.
+    [   81.953220] CPU0: update max cpu_capacity 1024
+    [   82.033275] Invalid sched_group_energy for CPU0
+    [   82.033280] Invalid sched_group_energy for Cluster0
+    [   82.033586] CPU3: shutdown
+    [   82.033608] psci: CPU3 killed.
+    [   82.064254] Enabling non-boot CPUs ...
+    [   82.094039] Detected VIPT I-cache on CPU1
+    [   82.094085] Invalid sched_group_energy for CPU1
+    [   82.094087] CPU1: update cpu_capacity 1024
+    [   82.094090] CPU1: Booted secondary processor [410fd034]
+    [   82.094395] Invalid sched_group_energy for CPU1
+    [   82.094402] Invalid sched_group_energy for Cluster1
+    [   82.094405] Invalid sched_group_energy for CPU0
+    [   82.094409] Invalid sched_group_energy for Cluster0
+    [   82.094521] CPU1 is up
+    [   82.103151] CPU0: update max cpu_capacity 1024
+    [   82.134067] Detected VIPT I-cache on CPU2
+    [   82.134085] Invalid sched_group_energy for CPU2
+    [   82.134087] CPU2: update cpu_capacity 1024
+    [   82.134089] CPU2: Booted secondary processor [410fd034]
+    [   82.134312] Invalid sched_group_energy for CPU2
+    [   82.134317] Invalid sched_group_energy for Cluster2
+    [   82.134320] Invalid sched_group_energy for CPU1
+    [   82.134324] Invalid sched_group_energy for Cluster1
+    [   82.134328] Invalid sched_group_energy for CPU0
+    [   82.134332] Invalid sched_group_energy for Cluster0
+    [   82.134415] CPU2 is up
+    [   82.143141] CPU1: update max cpu_capacity 1024
+    [   82.194249] Detected VIPT I-cache on CPU3
+    [   82.194267] Invalid sched_group_energy for CPU3
+    [   82.194269] CPU3: update cpu_capacity 1024
+    [   82.194271] CPU3: Booted secondary processor [410fd034]
+    [   82.194488] Invalid sched_group_energy for CPU3
+    [   82.194493] Invalid sched_group_energy for Cluster3
+    [   82.194497] Invalid sched_group_energy for CPU2
+    [   82.194501] Invalid sched_group_energy for Cluster2
+    [   82.194505] Invalid sched_group_energy for CPU1
+    [   82.194509] Invalid sched_group_energy for Cluster1
+    [   82.194512] Invalid sched_group_energy for CPU0
+    [   82.194516] Invalid sched_group_energy for Cluster0
+    [   82.194670] Invalid sched_group_energy for CPU3
+    [   82.194675] Invalid sched_group_energy for Cluster3
+    [   82.194678] Invalid sched_group_energy for CPU2
+    [   82.194683] Invalid sched_group_energy for Cluster2
+    [   82.194686] Invalid sched_group_energy for CPU1
+    [   82.194690] Invalid sched_group_energy for Cluster1
+    [   82.194694] Invalid sched_group_energy for CPU0
+    [   82.194698] Invalid sched_group_energy for Cluster0
+    [   82.194783] CPU3 is up
+    [   82.195130] sunxi:i2c_sunxi@twi5[INFO]: new resume noirq
+    [   82.195963] PM: noirq resume of devices complete after 1.152 msecs
+    [   82.196105] ---[allen] hall_switch_isr: 711 
+    [   82.196543] sunxi:i2c_sunxi@twi3[INFO]: resume early
+    [   82.197193] PM: early resume of devices complete after 0.843 msecs
+    [   82.197353] [ehci2-controller]: is disable, can not resume
+    [   82.197355] [ehci1-controller]: is disable, can not resume
+    [   82.197368] [ohci3-controller]: is disable, can not resume
+    [   82.197379] MBUS_PMU 47fa000.mbus-controller: resume okay
+    [   82.197384] refresh hdcp key failed!!!
+    [   82.197396] [cedar] standby resume
+    [   82.197398] [ehci3-controller]: is disable, can not resume
+    [   82.201594] sw_uart_resume()2098 - uart0 resume. DLH: 0, DLL: 13. 
+    [   82.201606] [ohci1-controller]: is disable, can not resume
+    [   82.201616] [ohci2-controller]: is disable, can not resume
+    [   82.201632] sw_uart_resume()2098 - uart1 resume. DLH: 0, DLL: 0. 
+    [   82.201642] udc is disable, need not enter to resume
+    [   82.201647] hci: ERR: hcd is null
+
+======================================================================== slot.log, session A (the file was slot.log.1)
+slot: slot advance 0.4.1-beta.1 (497c8e5, built 2026-10-14)
+slot: boot: start at 0.0 ms
+slot: fb0 hint 720x480
+slot: boot: surface at 742.5 ms
+slot: audio plug:default at 32768 Hz
+slot: boot: compositor at 1450.9 ms
+slot: panel 720x480, canvas 720x480, turned false, ccw false
+slot: lid: sensor reads hi with the lid open
+slot: backlight dispdbg (0 to 255), battery axp2202-battery, rtc0, motor event1
+slot: sleep: ready (lid and rtc1 wake armed)
+slot: boot: platform at 1483.9 ms
+slot: boot: audio at 1483.9 ms
+slot: boot: root and theme at 1521.6 ms
+slot: boot: scan at 1524.8 ms
+slot: boot: session at 1526.5 ms
+slot: boot: frontend at 1527.2 ms
+slot: boot: paper at 1562.6 ms
+slot: boot: cart faces at 1641.1 ms
+slot: boot: shelf faces at 1655.3 ms
+slot: boot: faces at 1655.4 ms
+slot: boot: bezel at 1655.5 ms
+slot: input /dev/input/event0 (axp2202-pek)
+slot: input /dev/input/event1 (ANBERNIC-keys)
+slot: input /dev/input/event1: poll 20 ms -> 10 ms
+slot: input /dev/input/event2 (dierct-keys-polled)
+slot: input /dev/input/event2: poll 20 ms -> 10 ms
+slot: boot: input at 1657.4 ms
+slot: lid: sensor reads hi with the lid open
+slot: boot: first frame at 1703.1 ms
+slot: boot: ui faces at 1747.0 ms
+slot: quiet: usb host controllers off: 6 of 6
+slot: audio released after silence
+slot: quiet: wifi off (driver unloaded, radio supply off)
+slot: quiet: stale wifi card mmc2:0001 discarded in 15 ms (resume no longer waits for it)
+slot: core /mnt/sdcard/System/mgba_libretro.so
+slot: audio plug:default at 32768 Hz
+slot: audio released after silence
+slot: audio plug:default at 32768 Hz
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 17s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 11s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 14s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 91%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: audio: 23852 samples dropped, 7168 starved
+slot: audio released after silence
+
+======================================================================== slot.log, session B
+slot: slot advance 0.4.1-beta.1 (497c8e5, built 2026-10-14)
+slot: boot: start at 0.0 ms
+slot: fb0 hint 720x480
+slot: boot: surface at 768.3 ms
+slot: audio plug:default at 32768 Hz
+slot: boot: compositor at 1554.7 ms
+slot: panel 720x480, canvas 720x480, turned false, ccw false
+slot: lid: sensor reads hi with the lid open
+slot: backlight dispdbg (0 to 255), battery axp2202-battery, rtc0, motor event1
+slot: sleep: ready (lid and rtc1 wake armed)
+slot: boot: platform at 1587.5 ms
+slot: boot: audio at 1587.6 ms
+slot: boot: root and theme at 1625.1 ms
+slot: boot: scan at 1628.3 ms
+slot: boot: session at 1629.8 ms
+slot: boot: frontend at 1630.5 ms
+slot: boot: paper at 1666.2 ms
+slot: boot: cart faces at 1746.9 ms
+slot: boot: shelf faces at 1761.3 ms
+slot: boot: faces at 1761.5 ms
+slot: boot: bezel at 1761.5 ms
+slot: input /dev/input/event0 (axp2202-pek)
+slot: input /dev/input/event1 (ANBERNIC-keys)
+slot: input /dev/input/event1: poll 20 ms -> 10 ms
+slot: input /dev/input/event2 (dierct-keys-polled)
+slot: input /dev/input/event2: poll 20 ms -> 10 ms
+slot: boot: input at 1763.4 ms
+slot: boot: first frame at 1785.6 ms
+slot: boot: ui faces at 1851.0 ms
+slot: quiet: usb host controllers off: 6 of 6
+slot: quiet: wifi=on, Wi-Fi left as BaseOS started it
+slot: lid: sensor reads hi with the lid open
+slot: core /mnt/sdcard/System/mgba_libretro.so
+slot: audio released after silence
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 11s asleep (slept true, lid open): Resume
+slot: audio plug:default at 32768 Hz
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 14s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 12s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 11s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 15s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 13s asleep (slept true, lid open): Resume
+slot: sleep: suspending for up to 7200s (battery 90%)
+slot: sleep: woke after 15s asleep (slept true, lid open): Resume
+slot: audio: 18936 samples dropped, 12760 starved
+slot: audio released after silence
