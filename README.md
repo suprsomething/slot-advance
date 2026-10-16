@@ -26,9 +26,13 @@ See [Installing and updating](#installing-and-updating) to install or upgrade.
 > [!IMPORTANT]
 > **Supported device: Anbernic RG SP (2026) only**: the clamshell model with the 720 x 480 display. Not compatible with the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot).
 
+**Jump to:** [Features](#what-slotadvance-does) · [Screenshots](#what-it-looks-like) · [Faster wake-up](#faster-wake-up) · [Sleep & battery](#sleep-and-battery) · [Installing & updating](#installing-and-updating)<br>
+[Settings & controls](#configuration-and-controls) · [Known limitations](#known-limitations) · [Versions](#versions) · [Credits](#credits-and-acknowledgements)<br>
+**In depth:** [Technical reference](documentation/technical.md) (how 0.4.1 works) · [Sleep and battery methodology](documentation/sleep-and-battery.md) (how it was tested)
+
 ---
 
-# What slot.advance does
+## What slot.advance does
 
 slot.advance brings genuine Linux suspend-to-RAM to the RG SP (2026). Close the lid and your game waits in memory, drawing a fraction of the power of the old standby. Open it, and you carry on from the same moment.
 
@@ -86,7 +90,7 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 
 ---
 
-# Faster wake-up
+## Faster wake-up
 
 <p align="center">
 <img src=".github/resources/wake/wake-first-frame.svg" width="100%" alt="Waking from sleep with Wi-Fi off, median time from the kernel's first logged resume marker to the game's first rendered frame: 1.25 s on 0.4.0 (10 wakes, 1236 to 1270 ms) and 0.81 s on 0.4.1, timed as 0.4.1-beta.1 (11 wakes, 803 to 828 ms), 443 ms sooner, 35% less measured time. With wifi=on both take about 0.82 s">
@@ -94,15 +98,13 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 
 With Wi-Fi off (the default), **0.4.1 shows your game 443 ms sooner after a wake**: a median of **0.81 s** against **1.25 s** in 0.4.0, 35% less measured time. The time runs from the kernel's first logged resume marker to the first rendered frame, from the device's own kernel log. It leaves out the unlogged interval between the lid starting to open and that marker, and it isn't the kernel's total device-resume time. The timings were taken on 0.4.1-beta.1, whose runtime source is the same as 0.4.1's apart from the version number.
 
-- **Why 0.4.0 was slower.** Switching Wi-Fi off unloads its driver and cuts power to the radio, but the kernel kept the radio's card registered. On every wake it tried to resume that unpowered card and waited about a second for it to time out.
-- **What 0.4.1 changes.** Once, at start-up, straight after unloading the Wi-Fi driver, slot.advance asks the system to remove that stale card, exactly as BaseOS does before loading the driver. Wakes no longer wait for it.
-- **What it doesn't change.** Sleep itself, the radio's power state and `wifi=on` are as in 0.4.0. With `wifi=on`, wakes take about 0.82 s on both versions, because the driver is still loaded and resumes the radio; no improvement is claimed there.
+**Why it's faster.** In 0.4.0, switching Wi-Fi off cut power to the radio but left its card registered with the kernel, so every wake waited about a second for that unpowered card to time out. 0.4.1 removes the stale card once, at start-up, straight after Wi-Fi switches off, so wakes no longer wait for it. Sleep itself, the radio's power state and `wifi=on` are as in 0.4.0. With `wifi=on`, wakes take about 0.82 s on both versions, because the driver is still loaded and resumes the radio; no improvement is claimed there.
 
-The measurements, the raw logs and the full explanation are in **[Sleep and battery](documentation/sleep-and-battery.md#waking-up-faster-in-041)**.
+How the removal works and the checks it makes first: **[Technical reference](documentation/technical.md#the-041-wi-fi-card-removal)**. The measurements and raw logs: **[Sleep and battery](documentation/sleep-and-battery.md#waking-up-faster-in-041)**.
 
 ---
 
-# Sleep and battery
+## Sleep and battery
 
 ### Battery used with the lid closed
 
@@ -119,13 +121,13 @@ The measurements, the raw logs and the full explanation are in **[Sleep and batt
   | 0.4.0 | 7 h 46 min | 94% to 74% (20%) | ~2.6% an hour |
   | 0.4.1-beta.1 | 7 h 37 min | 99% to 75% (24%) | ~3.2% an hour |
 
-- **Estimated current**, worked out from the gauge in separate shorter runs, fell from about **250 mA** to about **70 mA**, around **72% less**. These are estimates, not electrical measurements, and the 72% isn't calculated from the hourly blocks above.
-- **Why the sleeps differ.** The battery gauge counts in whole 1% steps, and its steps are not all the same size: near 83% one step was about 26 mAh, near 70% about 36 mAh, and above 85% it hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a different rate depending on where the charge started. The 70 mA estimate comes from a separate run below 80%, where the step sizes were estimated; the extended sleeps are reported only as the percentages the gauge showed.
+- **Estimated current**, worked out from the gauge in separate shorter runs, fell from about **250 mA** to about **70 mA**, around **72% less**. These are estimates, not electrical measurements, and the 72% isn't calculated from the hourly blocks above. The 70 mA estimate comes from a run below 80%, where the gauge's step sizes were estimated.
+- **Why the sleeps differ.** The battery gauge counts in whole 1% steps that are not all the same size, and above 85% their size hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a different rate depending on where the charge started. The extended sleeps are reported only as the percentages the gauge showed. The measured step sizes are in [Methodology and uncertainty](documentation/sleep-and-battery.md#methodology-and-uncertainty).
 - **0.4.0 and 0.4.1 have not been shown to differ in standby use, or to match.** The 0.4.1 sleep started at 99%, the 0.4.0 one at 94%, and the top of the gauge behaves differently, so the comparison is inconclusive.
 - **The point of hardware sleep isn't to beat switching off.** A switched-off RG SP (2026) draws only a negligible amount compared with any standby. Sleep lets it stay asleep efficiently for hours and wake the moment you open the lid.
 - No change to battery use **during gameplay** has been measured or claimed.
 
-The run-by-run comparison, the current estimates, the raw logs and the uncertainty calculations are in **[Sleep and battery: how it works and how it was measured](documentation/sleep-and-battery.md)**.
+The run-by-run comparison, the current estimates, the raw logs and the uncertainty calculations are in **[Sleep and battery: how it works and how it was measured](documentation/sleep-and-battery.md)**. How sleep, wake and the timed shutdown work in 0.4.1, with the source files, is in the **[Technical reference](documentation/technical.md)**.
 
 ### Sleep duration
 
@@ -161,27 +163,7 @@ Before sleeping, slot.advance attempts to save your game to its separate suspend
 
 ---
 
-# Optional game titles
-
-**Settings > Screen > Show Game Titles** puts the selected game's title in small text above its cartridge on the carousel. *(0.4.0)*
-
-<table>
-<tr>
-<td width="50%" align="center"><img src=".github/resources/screenshots/advance/titles-off.png" alt="The carousel with game titles off: Pokémon FireRed's cartridge centred, with Metroid: Zero Mission and The Minish Cap partly visible either side"><br><sub><b>Show Game Titles: Off</b> (the default)</sub></td>
-<td width="50%" align="center"><img src=".github/resources/screenshots/advance/titles-on.png" alt="The same carousel with game titles on: POKEMON - FIRE RED VERSION in small capitals above the centred cartridge"><br><sub><b>Show Game Titles: On</b></sub></td>
-</tr>
-</table>
-
-- **Off by default**: with it off, the carousel looks exactly as before. Changes take effect straight away and are **remembered** after a restart (`show_titles` in `Config/slot.state`).
-- **Only the selected cartridge** shows a title, centred above it in a fixed space, never over its neighbours.
-- **The title comes from the file name**, minus naming tags such as `(USA)`, `(Rev 1)`, `(V1.1)` or `[!]`. Your files are never renamed: `Pokemon - Fire Red Version (U) (V1.1).gba` shows as **POKEMON - FIRE RED VERSION**.
-- **Long titles** show cut short with "…" for 2 seconds, then scroll slowly to their end, pause, and start again. Scrolling stops while Settings is open or the device is asleep.
-
-<sub>Rendered by slot.advance's own drawing code with labels from the [starter pack](artwork/gba-originals); regenerate with `cargo run -p slot --no-default-features --example readme_titles`.</sub>
-
----
-
-# Installing and updating
+## Installing and updating
 
 The download is **[slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)** ([`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip)). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
@@ -217,7 +199,7 @@ Copy `System/slot` from an earlier download, such as [0.4.0](https://github.com/
 
 ---
 
-# Configuration and controls
+## Configuration and controls
 
 ### Settings
 
@@ -230,9 +212,27 @@ Press `MENU` on the carousel.
 | GBA Shader, Color Correction and more | Settings > Screen | As in slot. Changes made in game apply to that game only |
 | Fast Forward, Rewind, Turbo and more | Settings > Gameplay | As in slot |
 
+### Optional game titles
+
+**Settings > Screen > Show Game Titles** puts the selected game's title in small text above its cartridge on the carousel. *(0.4.0)*
+
+<table>
+<tr>
+<td width="50%" align="center"><img src=".github/resources/screenshots/advance/titles-off.png" alt="The carousel with game titles off: Pokémon FireRed's cartridge centred, with Metroid: Zero Mission and The Minish Cap partly visible either side"><br><sub><b>Show Game Titles: Off</b> (the default)</sub></td>
+<td width="50%" align="center"><img src=".github/resources/screenshots/advance/titles-on.png" alt="The same carousel with game titles on: POKEMON - FIRE RED VERSION in small capitals above the centred cartridge"><br><sub><b>Show Game Titles: On</b></sub></td>
+</tr>
+</table>
+
+- **Off by default**: with it off, the carousel looks exactly as before. Changes take effect straight away and are **remembered** after a restart (`show_titles` in `Config/slot.state`).
+- **Only the selected cartridge** shows a title, centred above it in a fixed space, never over its neighbours.
+- **The title comes from the file name**, minus naming tags such as `(USA)`, `(Rev 1)`, `(V1.1)` or `[!]`. Your files are never renamed: `Pokemon - Fire Red Version (U) (V1.1).gba` shows as **POKEMON - FIRE RED VERSION**.
+- **Long titles** show cut short with "…" for 2 seconds, then scroll slowly to their end, pause, and start again. Scrolling stops while Settings is open or the device is asleep.
+
+<sub>Rendered by slot.advance's own drawing code with labels from the [starter pack](artwork/gba-originals); regenerate with `cargo run -p slot --no-default-features --example readme_titles`.</sub>
+
 ### Wi-Fi and link play
 
-From 0.4.0, slot.advance switches Wi-Fi off about 20 seconds after starting, because only link play uses it. It also switches off six USB host controllers the RG SP (2026) has no ports for; the USB-C port has its own controller and still works for charging. BaseOS turns both back on at the next boot.
+From 0.4.0, slot.advance switches Wi-Fi off once the system has been running for at least 20 seconds, because only link play uses it. It also switches off six USB host controllers the RG SP (2026) has no ports for; the USB-C port has its own controller and still works for charging. BaseOS turns both back on at the next boot.
 
 Link play (the link cable and the wireless adapter) runs over Wi-Fi between two devices, so with Wi-Fi off the link shortcut shows **Link Off**. To use link play, add this line to `Config/slot.state` on the games card and restart:
 
@@ -327,11 +327,11 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 
 ---
 
-# Known limitations
+## Known limitations
 
 - **Rapidly flicking the lid** closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress. See [Validation status](documentation/sleep-and-battery.md#validation-status).
 - **The faster wake can occasionally be missed for one session.** If the lid is closed at almost exactly the moment Wi-Fi switches off, about 20 seconds after power-on, the stale Wi-Fi card may not be removed. Sleep and wake still work normally; wakes in that session simply take as long as in 0.4.0, and the next power-on removes it as usual. *(0.4.1)*
-- **Battery figures come from the battery gauge**, which reads in whole 1% steps, with one run per configuration.
+- **Battery figures come from the battery gauge**, which reads in whole 1% steps, with one run per configuration. See [Methodology and uncertainty](documentation/sleep-and-battery.md#methodology-and-uncertainty).
 - **Link play needs `wifi=on`** from 0.4.0. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
 
@@ -343,7 +343,7 @@ The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on a
 
 ---
 
-# Versions
+## Versions
 
 This build: **0.4.1**
 
@@ -359,7 +359,7 @@ The version and Git commit a build came from are written as the first line of `s
 
 ---
 
-# Credits and acknowledgements
+## Credits and acknowledgements
 
 - **[slot](https://github.com/BrandonKowalski/slot)** by Brandon T. Kowalski: the frontend this fork is built on.
 - **slots** by **[ciscosweater](https://github.com/ciscosweater)**: the Recents category is adapted from this community fork of slot, and its favourites tab inspired ours.
@@ -375,7 +375,7 @@ slot.advance is released under the same licence as slot, the [GNU GPL v3 or late
 
 ---
 
-# AI disclosure
+## AI disclosure
 
 slot's Rust frontend was put together with Claude Opus and reviewed by its author.
 
