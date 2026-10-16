@@ -6,6 +6,18 @@ Releases are tagged with an `advance-` prefix, such as `advance-0.4.0`, so they 
 
 The release previously named v3 is now displayed as 0.3.0; its contents are unchanged.
 
+## Version numbers
+
+From 0.4.0, slot.advance uses [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
+
+- A **test build** has a pre-release suffix, such as `0.4.0-beta.1`. If a beta needs fixing, the next one is `0.4.0-beta.2`.
+- Once a build is approved on the RG SP (2026), it is released without the suffix, such as `0.4.0`.
+- A **fix** to a release raises the last number (`0.4.1`); **new features** raise the middle one (`0.5.0`).
+- Releases on GitHub are tagged with an `advance-` prefix, such as `advance-0.4.0`, to keep them apart from upstream slot's tags in this repository. 0.3.0 keeps its original tag, `advance-v3`.
+- From the stable 0.4.0 release, downloads are named `slot.advance-<version>-rg-sp.zip`, such as `slot.advance-0.4.0-rg-sp.zip`. Earlier downloads, including the 0.4.0 betas, keep their original `slot-advance-…` names.
+
+The version and Git commit a build came from are written as the first line of `slot.log`.
+
 ---
 
 ## 0.4.1 (current release)

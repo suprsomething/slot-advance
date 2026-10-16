@@ -1,4 +1,4 @@
-# Sleep and battery: how it works and how it was measured
+# Sleep and battery: how it evolved and how it was measured
 
 This page is the detail behind the sleep, wake-up and battery figures in the [README](../README.md). It covers how sleep has changed across slot.advance's releases, what 0.4.0 does when the lid closes, why 0.4.1 wakes faster, how the figures were obtained, how far they can be trusted, and what was checked on the device before each release. How the current release works, with the source files involved, is in the [Technical reference](technical.md).
 
@@ -48,7 +48,7 @@ Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) runn
 | Drawing | A black frame every display refresh (~60 a second) | Two black frames, then none | None |
 | Display | Backlight off | Backlight off | Suspended by its driver |
 | Memory | Active | Active | Kept powered; the game is preserved |
-| Unused USB host controllers and Wi-Fi | On | On | Off from startup |
+| Unused USB host controllers and Wi-Fi | On | On | USB hosts off after start-up; Wi-Fi off by default after at least 20 seconds of system uptime |
 | Emulator | Paused | Paused, no longer ticked | Paused, then frozen with the whole system |
 | After the lid closes | Powers off after 3 minutes | Powers off after 3 minutes | Sleeps for the chosen time (3 min to 8 hr), then shuts down cleanly |
 | Observed battery per hour, lid closed | Not measured | ~7% (modified build held awake) | ~2 to 3.2% (0.4.x, three extended sleeps) |
