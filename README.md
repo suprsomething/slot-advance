@@ -94,7 +94,7 @@ slot.advance is a fork of **[slot](https://github.com/BrandonKowalski/slot)** by
 - **Read from the battery gauge** in whole 1% steps. The estimated current fell from about **250 mA** to about **70 mA**, around **72% less**.
 - **0.3.0 software standby, test build held awake.** Ordinary 0.3.0 shuts down 3 minutes after the lid closes. Its hourly figure comes from a test build deliberately held in standby.
 - **The 2 to 2.6% range** comes from two overnight sleeps with the same sleep configuration: **0.4.0-beta.3** went from **98% to 82%** in 8 hours (about 2% an hour), and **0.4.0** went from **94% to 74%** in 7 hours 46 minutes (about 2.6% an hour).
-- **Why two nights differ.** The battery gauge counts in whole 1% steps, and its steps are not all the same size: near 83% one step was about 26 mAh, near 70% about 36 mAh, and above 85% it hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a slightly different rate depending on where the charge started. The 70 mA estimate comes from a separate run below 80%, where the step sizes were measured; the overnight sleeps are reported only as the percentages the gauge showed.
+- **Why two nights differ.** The battery gauge counts in whole 1% steps, and its steps are not all the same size: near 83% one step was about 26 mAh, near 70% about 36 mAh, and above 85% it hasn't been measured. So a percentage drop does not convert exactly into a current, and the same sleep can show a slightly different rate depending on where the charge started. The 70 mA estimate comes from a separate run below 80%, where the step sizes were estimated; the overnight sleeps are reported only as the percentages the gauge showed.
 - **The point of 0.4.0 isn't to beat switching off.** A switched-off RG SP (2026) draws only a negligible amount compared with any standby. 0.4.0 lets it stay asleep efficiently for hours and wake the moment you open the lid.
 - No change to battery use **during gameplay** has been measured or claimed.
 
@@ -111,9 +111,9 @@ The current-draw chart, the long-sleep projection, the raw logs and the uncertai
 | `30 min` (default) | 30 minutes | ~1 to 1.3% |
 | `1 hr` | 1 hour | ~2 to 2.6% |
 | `2 hr` | 2 hours | ~4 to 5.2% |
-| `8 hr` | 8 hours | ~16 to 21% (measured: 16% and 20%) |
+| `8 hr` | 8 hours | ~16 to 21% (observed: 16% over exactly 8 hours on 0.4.0-beta.3; 20% over 7 h 46 min on 0.4.0) |
 
-<sub>Projected at 2 to 2.6% an hour, the range of the two overnight sleeps; only the 8-hour row has been measured directly. Real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
+<sub>Projected at 2 to 2.6% an hour, the range of the two overnight sleeps, which are also listed in the 8-hour row with their actual durations. Real use varies with battery age, temperature and charge level. Longer settings are more convenient but use more battery.</sub>
 
 ### Waking up: two kinds of resume
 
