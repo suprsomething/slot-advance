@@ -17,9 +17,9 @@
 > [!IMPORTANT]
 > **Supported device: Anbernic RG SP (2026) only**: the clamshell model with the 720 x 480 display. Not compatible with the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot).
 
-**Current release:** [slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1) · [`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip)<br>
-**Previous release:** [slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0) · [`slot.advance-0.4.0-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.0/slot.advance-0.4.0-rg-sp.zip)<br>
-[Release notes](documentation/release-notes.md) · [How to install](#installing-and-updating)
+**Latest release: [slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)** · **[Download&nbsp;ZIP](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip)**
+
+[How to install](#installing-and-updating) · [Release notes](documentation/release-notes.md) · Previous: [0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)
 
 **On this page**
 
@@ -198,7 +198,7 @@ wifi=on
 
 - **Rapidly flicking the lid** closed and open can occasionally leave the screen dark with the lid open. Deliberate stress testing reproduced this in both 0.4.0 and 0.4.1. Normal wake behaviour is unaffected, and closing and reopening the lid restores the game without losing progress. See [Validation status](documentation/sleep-and-battery.md#validation-status).
 - **The faster wake can occasionally be missed for one session.** If the lid is closed at almost exactly the moment Wi-Fi switches off, about 20 seconds after power-on, the stale Wi-Fi card may not be removed. Sleep and wake still work normally; wakes in that session simply take as long as in 0.4.0, and the next power-on removes it as usual.
-- **Battery figures come from the battery gauge**, which reads in whole 1% steps, with one run per configuration. See [Methodology and uncertainty](documentation/sleep-and-battery.md#methodology-and-uncertainty).
+- **Battery figures come from the battery gauge**, which reads in whole 1% steps. The results are based on a small number of individual runs. See [Methodology and uncertainty](documentation/sleep-and-battery.md#methodology-and-uncertainty).
 - **Link play needs `wifi=on`**. With it on, the radio stays powered.
 - **The sleep timer always ends with a shutdown**, even on the charger. The game is restored at the next power-on.
 
