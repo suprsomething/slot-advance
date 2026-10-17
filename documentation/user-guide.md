@@ -231,6 +231,7 @@ How much battery sleep uses is under [Sleep duration](#sleep-duration), and what
 | `States/GBA/<core>/<game>/older/` | States moved out of the switcher when a game had more than five from an earlier version. Nothing is deleted. |
 | `Saves/GBA/` | Battery saves (`.sav` / `.srm`), exactly as in slot. |
 | `slot.log`, `slot.log.1` | What slot.advance did this session and the one before, including each sleep and wake. The first line names the exact build: `slot advance` followed by the version, the commit and the build date. |
+| `crash/` | Only appears if slot.advance itself has crashed: `cores.log` (one line per crash), the log of each of the last five crashed sessions (`slot-<date>_<time>.log`), and the most recent crash's `slot.core` and `slot.maps` for diagnosis. Safe to delete. |
 
 The `.txt` files and `slot.state` live in `Config/`, so replacing `System/` on an update leaves them alone.
 
@@ -249,6 +250,8 @@ The slot.advance **boot logo** appears from the second power-on: on the first st
 **The link shortcut shows Link Off.** Wi-Fi is off. See [Wi-Fi and link play](#wi-fi-and-link-play).
 
 **I want to go back to an earlier version.** See [Going back](../README.md#going-back) in the README.
+
+**slot.advance went back to the carousel by itself.** It probably crashed, and the RG SP (2026) started it again straight away. The game's battery save and suspend slot are as they were at the last automatic save, at most about a minute earlier, and your five save states are untouched. The details are kept in the `crash` folder on the games card; please [report it](../README.md#reporting-a-problem).
 
 **Something else went wrong.** Don't power on again yet: `slot.log` and `slot.log.1` are replaced each time slot.advance starts. Copy them from the games card first, then follow [Reporting a problem](../README.md#reporting-a-problem).
 

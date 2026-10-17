@@ -17,9 +17,9 @@
 > [!IMPORTANT]
 > **Supported device: Anbernic RG SP (2026) only**: the clamshell model with the 720 x 480 display. Not compatible with the older RG35XX SP. For that model or any other Anbernic device, use upstream [slot](https://github.com/BrandonKowalski/slot).
 
-**Latest release: [slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)** · **[Download&nbsp;ZIP](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip)**
+**Latest release: [slot.advance 0.4.2](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.2)** · **[Download&nbsp;ZIP](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.2/slot.advance-0.4.2-rg-sp.zip)**
 
-[How to install](#installing-and-updating) · [Release notes](documentation/release-notes.md) · Previous: [0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0)
+[How to install](#installing-and-updating) · [Release notes](documentation/release-notes.md) · Previous: [0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)
 
 **On this page**
 
@@ -120,15 +120,15 @@ The time saved is a stale Wi-Fi card that 0.4.0's wakes waited about a second fo
 
 ## Installing and updating
 
-The download is **[slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1)** ([`slot.advance-0.4.1-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.1/slot.advance-0.4.1-rg-sp.zip)). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
+The download is **[slot.advance 0.4.2](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.2)** ([`slot.advance-0.4.2-rg-sp.zip`](https://github.com/suprsomething/slot.advance/releases/download/advance-0.4.2/slot.advance-0.4.2-rg-sp.zip)). It is a complete games-card layout for the RG SP (2026). It holds no games, saves or settings, so it never overwrites yours. slot.advance runs on the same system card (SD1) as slot; if your RG SP (2026) already runs slot, skip to **Upgrading**.
 
-The previous release, [slot.advance 0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0) (`slot.advance-0.4.0-rg-sp.zip`), installs the same way and is the way back if you need it. So is [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3), from before hardware sleep.
+The previous release, [slot.advance 0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1) (`slot.advance-0.4.1-rg-sp.zip`), installs the same way and is the way back if you need it. So is [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3), from before hardware sleep.
 
 ### New install
 
 1. Follow the [slot guide](https://slot-cfw.fyi) to set up the system card (SD1) for the RG SP (2026).
 2. Put your games card (SD2) in your computer, formatted as the slot guide describes.
-3. Unzip `slot.advance-0.4.1-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot.advance-0.4.1-rg-sp`.
+3. Unzip `slot.advance-0.4.2-rg-sp.zip`. On a Mac, double-clicking it makes a folder called `slot.advance-0.4.2-rg-sp`.
 4. Open that folder and copy **everything inside it** (`BIOS`, `Config`, `Games`, `Labels`, `Saves`, `States`, `System`, `Wallpapers`) onto the top level of the games card. Copy the contents, not the folder itself.
 5. Put your `.gba` files in `Games/GBA` and, if you have it, the GBA BIOS (`gba_bios.bin`) in `BIOS`.
 6. Eject the card, put it in the RG SP (2026)'s second slot, and power on. Set the clock when asked.
@@ -150,7 +150,7 @@ The slot.advance **boot logo** appears from the second power-on: on the first st
 
 ### Going back
 
-Copy `System/slot` from an earlier download, such as [0.4.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.0) or [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
+Copy `System/slot` from an earlier download, such as [0.4.1](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1) or [0.3.0](https://github.com/suprsomething/slot.advance/releases/tag/advance-v3) (or your `slot.previous`), over `System/slot` on the card. Your saves and settings work with either.
 
 ---
 
@@ -205,14 +205,14 @@ wifi=on
 ### Reporting a problem
 
 1. **Don't power on again yet.** `slot.log` and `slot.log.1` are replaced each time slot.advance starts, so the record of the problem is on the card only until the next start or two.
-2. Power off, take the games card (SD2) out and put it in your computer. Copy `slot.log` and `slot.log.1` from the top of the card somewhere safe.
-3. [Open an issue](https://github.com/suprsomething/slot.advance/issues/new/choose) and choose **Bug report**. Say which version you're on (the first line of `slot.log`), what you were doing and what you saw, then drag both log files into the issue.
+2. Power off, take the games card (SD2) out and put it in your computer. Copy `slot.log` and `slot.log.1` from the top of the card somewhere safe. If there is a `crash` folder, copy `crash/cores.log` and the newest `crash/slot-….log` too.
+3. [Open an issue](https://github.com/suprsomething/slot.advance/issues/new/choose) and choose **Bug report**. Say which version you're on (the first line of `slot.log`), what you were doing and what you saw, then drag the log files into the issue. Leave out `crash/slot.core`: it is large, and only needed if asked for.
 
 ---
 
 ## Versions
 
-This build: **0.4.2-beta.1**
+This build: **0.4.2**
 
 Every release is on the [releases page](https://github.com/suprsomething/slot.advance/releases). What changed in each, and how versions are numbered, is in the [release notes](documentation/release-notes.md). The first line of `slot.log` names the version and Git commit a build came from. [CHANGELOG.md](CHANGELOG.md) is upstream slot's changelog, inherited unchanged.
 

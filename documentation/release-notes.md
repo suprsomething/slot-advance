@@ -20,25 +20,37 @@ The version and Git commit a build came from are written as the first line of `s
 
 ---
 
-## 0.4.2-beta.1 (candidate, under device validation, not released)
+## 0.4.2 (current release)
 
-A maintenance release: small fixes taken from upstream slot, each checked against slot.advance and adapted where needed. Nothing in it touches sleep, wake, the lid, the RTC timer, Wi-Fi, USB or power management.
+Tag `advance-0.4.2`. Download: `slot.advance-0.4.2-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.2). [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.
+
+A maintenance release: fixes taken from upstream slot, each checked against slot.advance and adapted where needed. Nothing in it touches sleep, wake, the lid, the RTC timer, Wi-Fi, USB or power management.
 
 **Fixed**
 - **A new save state could vanish when the clock had gone backwards** (set back in Set Clock, or reset after the battery ran flat). With all five slots full, the new state was saved, "saved" was shown, and the state was deleted straight away to make room. A new state is now always stamped after the newest one, so it lands first in the switcher and the oldest is the one replaced. From upstream slot.
 - **Muted play could drop frames.** After 3 seconds of silence slot lets go of the speaker, and its timing then ran slightly slow, holding the game back. It now keeps time to a deadline. From upstream slot (flo333).
-- **Crashes of slot itself were not being kept.** slot.advance starts slot through the system loader, which the crash helper did not recognise, so a crash left almost nothing to diagnose. Crashes are now kept in `crash/` on the games card with that run's log, and slot writes a line naming where it crashed. See [Crashes](technical.md#crashes). From upstream slot, with a 2-second safety limit and the newest five logs kept.
+- **Crashes of slot itself were not being kept.** slot.advance starts slot through the system loader, which the crash helper did not recognise, so a crash left almost nothing to diagnose. Crashes are now kept in `crash/` on the games card with that run's log, and slot writes a line naming the signal, the thread and where it crashed. See [Crashes](technical.md#crashes). From upstream slot, with a 2-second safety limit, the newest five logs kept, and the main thread reported as `slot` rather than the loader's name.
 - **gpSP could fail to start** if memory near it was crowded at boot. Its code cache is now part of the core itself. From upstream slot.
 
 **Faster**
-- **Rewind does about half the work.** mGBA was asked to build every state twice, and rewind takes one every second frame. The size is now remembered while a game runs (on a computer, 0.73 ms down to 0.39 ms per state). States written to the card still ask afresh, so they are exactly the size mGBA reports, as in 0.4.1. From upstream slot, adapted.
+- **Rewind does about half the work.** mGBA was asked to build every state twice, and rewind takes one every second frame. The size is now remembered while a game runs (on a computer, 0.73 ms down to 0.39 ms per state; not timed on the RG SP). States written to the card still ask afresh, so they are exactly the size mGBA reports, as in 0.4.1. From upstream slot, adapted.
 
 **Diagnostics**
-- `slot.log` records each step of a game launch with its time, and the rom's size. From upstream slot.
+- `slot.log` records each step of a game launch with its time, and the rom's size. See [Logging](technical.md#logging).
+
+**Checked on the device** with 0.4.2-beta.1 (17 October 2026), which differs from 0.4.2 in its version and the crash line's thread label:
+- Save states: five kept, newest first, load and undo; with the clock set a day back, the new state was listed first and five remained.
+- Rewind, fast-forward and fast-forward sound; a minute of muted play with no stutter seen, and the speaker came back cleanly each time (17 times in the session).
+- gpSP: two games started, saved, loaded and ejected.
+- Sleep, unchanged code, rechecked: three lid closes, and a 3-minute timed shutdown that restored the game at the next power-on.
+- A deliberate crash (`kill -SEGV`, one minute after start-up, no game running): the crash line, `cores.log`, the core, the memory map and the session log were all kept, and BaseOS had the carousel back about 5 seconds later.
+- Launch times, from starting a game to its first frame: about 0.75 s for any game whose rom has already been read since power-on, and 1.8 s the first time a 32 MB game is read from the card. These are measurements, not a change: 0.4.1 was not timed.
+
+The muted-play fix is upstream's; on the RG SP no stutter was seen with it, but frame rates before and after weren't measured.
 
 ---
 
-## 0.4.1 (current release)
+## 0.4.1 (superseded by 0.4.2)
 
 Tag `advance-0.4.1`. Download: `slot.advance-0.4.1-rg-sp.zip` from the [release page](https://github.com/suprsomething/slot.advance/releases/tag/advance-0.4.1). [Report problems](https://github.com/suprsomething/slot.advance/issues/new/choose), attaching `slot.log` and `slot.log.1` if you can.
 

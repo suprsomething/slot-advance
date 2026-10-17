@@ -1,8 +1,8 @@
 # Technical reference
 
-This page describes how the current release, **slot.advance 0.4.1**, puts the RG SP (2026) to sleep, wakes it, shuts it down on a timer and manages hardware it doesn't use. It is written for technically curious players and anyone who wants to work on the code, and it names the source files involved.
+This page describes how the current release, **slot.advance 0.4.2**, puts the RG SP (2026) to sleep, wakes it, shuts it down on a timer and manages hardware it doesn't use. It is written for technically curious players and anyone who wants to work on the code, and it names the source files involved.
 
-It describes **0.4.1 only**. How sleep evolved through 0.3.0 and 0.4.0, the configurations that were tested, the battery and wake-up measurements, and how far they can be trusted are in **[Sleep and battery: how it evolved and how it was measured](sleep-and-battery.md)**. What the features do and how to use them is in the **[README](../README.md)** and the **[User guide](user-guide.md)**.
+It describes **0.4.2 only**. Sleep, wake, the lid, the RTC timer, Wi-Fi, USB and power management are unchanged from 0.4.1; what 0.4.2 adds is under [Logging](#logging). How sleep evolved through 0.3.0 and 0.4.0, the configurations that were tested, the battery and wake-up measurements, and how far they can be trusted are in **[Sleep and battery: how it evolved and how it was measured](sleep-and-battery.md)**. What the features do and how to use them is in the **[README](../README.md)** and the **[User guide](user-guide.md)**.
 
 Everything here applies to the **Anbernic RG SP (2026)** (720 x 480 screen) running BaseOS 1.3.0 (Linux 4.9). It does not apply to the RG35XX SP.
 
@@ -194,7 +194,7 @@ The wake-up measurements are in [Waking up faster in 0.4.1](sleep-and-battery.md
 
 ## Logging
 
-slot.advance writes what it does to `slot.log` on the games card. Its first line names the build, for example `slot advance 0.4.1 (` followed by the commit and build date. Each start renames the previous log to `slot.log.1`, so only the current and previous sessions are kept.
+slot.advance writes what it does to `slot.log` on the games card. Its first line names the build, for example `slot advance 0.4.2 (` followed by the commit and build date. Each start renames the previous log to `slot.log.1`, so only the current and previous sessions are kept.
 
 Sleep and power lines include:
 
@@ -211,10 +211,10 @@ From 0.4.2, each game launch is logged step by step, in milliseconds since slot 
 
 If slot itself crashes, two things record it, both on the games card:
 
-- slot writes one line to `slot.log` before it dies: `slot: crash: SIGSEGV in thread slot-emu addr … pc … lr …`, naming the signal, the thread and the code location (`crates/slot/src/crash.rs`). If writing that line takes more than 2 seconds, the process is ended anyway, so a crash can never leave the screen frozen.
+- slot writes one line to `slot.log` before it dies: `slot: crash: SIGSEGV in thread slot-emu addr … pc … lr …`, naming the signal, the thread and the code location (`crates/slot/src/crash.rs`). The main thread is reported as `slot`; the kernel's own name for it is the loader's, `ld-linux-aarch6`, because slot is started through ld-linux. For a signal sent by another program (`kill -SEGV`), `pc` is wherever the thread happened to be, not a fault. If writing that line takes more than 2 seconds, the process is ended anyway, so a crash can never leave the screen frozen.
 - The kernel then hands the crash to `card/System/coresave.sh`, which adds a line to `crash/cores.log` and keeps `crash/slot.core` and `crash/slot.maps` (replaced at each crash) and a copy of that run's log as `crash/slot-<date>_<time>.log` (the newest five are kept). Crashes of other programs only get the `cores.log` line.
 
-Nothing here runs unless slot is already crashing, so sleep, wake and shutdown are unaffected.
+Nothing here runs unless slot is already crashing, so sleep, wake and shutdown are unaffected. BaseOS starts slot again by itself after a crash; on the 0.4.2 candidate the carousel was back about 5 seconds later, most of it spent writing the core.
 
 ---
 
