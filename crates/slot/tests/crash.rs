@@ -86,3 +86,42 @@ fn a_crash_signal_sent_from_outside_is_reported_and_still_kills() {
         out.status
     );
 }
+
+#[test]
+fn a_crash_on_the_main_thread_is_reported_as_slot() {
+    if std::env::var_os(CHILD).is_some() {
+        slot::crash::install();
+        // Run with one test thread, so this thread and the main thread are the only ones.
+        // Block the signal here so the kernel hands it to the main thread, as on the
+        // device, where the main thread is named after ld-linux.
+        unsafe {
+            let mut set: libc::sigset_t = std::mem::zeroed();
+            libc::sigemptyset(&mut set);
+            libc::sigaddset(&mut set, libc::SIGSEGV);
+            libc::pthread_sigmask(libc::SIG_BLOCK, &set, std::ptr::null_mut());
+            libc::kill(libc::getpid(), libc::SIGSEGV);
+        }
+        std::thread::sleep(std::time::Duration::from_secs(10));
+        return;
+    }
+    let out = Command::new(std::env::current_exe().unwrap())
+        .args([
+            "a_crash_on_the_main_thread_is_reported_as_slot",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1",
+        ])
+        .env(CHILD, "1")
+        .output()
+        .unwrap();
+    let log = String::from_utf8_lossy(&out.stderr);
+    let line = log
+        .lines()
+        .find(|l| l.starts_with("slot: crash: SIGSEGV"))
+        .unwrap_or_else(|| panic!("no crash line in the log:\n{log}"));
+    assert!(
+        line.contains("in thread slot addr"),
+        "the main thread is not reported as slot: {line}"
+    );
+    assert_eq!(out.status.signal(), Some(11), "{:?}", out.status);
+}

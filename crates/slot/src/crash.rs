@@ -59,7 +59,14 @@ extern "C" fn on_crash(sig: i32, info: *mut libc::siginfo_t, ctx: *mut c_void) {
     unsafe {
         libc::pthread_getname_np(libc::pthread_self(), thread.as_mut_ptr(), thread.len());
     }
-    let thread = unsafe { CStr::from_ptr(thread.as_ptr()) }.to_string_lossy();
+    // The main thread's name is the program file's, and on the device slot runs through
+    // ld-linux, so the kernel names it "ld-linux-aarch6". Report it as slot; this changes
+    // the line only, never the thread's real name.
+    let thread = if unsafe { on_main_thread() } {
+        "slot".into()
+    } else {
+        unsafe { CStr::from_ptr(thread.as_ptr()) }.to_string_lossy()
+    };
     let _ = write!(
         line,
         "slot: crash: {name} in thread {thread} addr {addr:#x} "
@@ -103,6 +110,18 @@ fn locate(line: &mut Line, addr: usize) {
             addr.wrapping_sub(info.dli_saddr as usize)
         );
     }
+}
+
+/// Whether the signal is being handled on the process's first thread. Both calls are
+/// async-signal-safe.
+#[cfg(target_os = "linux")]
+unsafe fn on_main_thread() -> bool {
+    libc::syscall(libc::SYS_gettid) == libc::getpid() as libc::c_long
+}
+
+#[cfg(target_os = "macos")]
+unsafe fn on_main_thread() -> bool {
+    libc::pthread_main_np() != 0
 }
 
 #[cfg(target_os = "linux")]
